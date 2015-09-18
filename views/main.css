@@ -1,0 +1,9 @@
+.event-list-item {
+  background-color: white;
+  opacity: 1;
+}
+
+.event-list-item:hover {
+  background-color: rgb(230,230,250);
+}
+
