@@ -1,11 +1,5 @@
 # rsvp
 RSVP to one of our events
 
-To start:
-`npm start`
-
-To remove lib:
-`npm run clean`
-
-To build:
-`npm run build`
+To start (cross-domain needs to run on localhost:3000):
+python server.py
