@@ -1,23 +1,30 @@
 var DropDownMenu = React.createClass({
   getInitialState: function() {
     return {
-      selectedEvents: {}
+      selectedEvents: {},
+      rsvpComplete: false
     };
   },
 
-  _getRSVP: function(event) {
-    event.preventDefault();
+  _getRSVP: function() {
+    var selected = this.state.selectedEvents;
     this.props.eventIds.map(function(id, i) {
-      $.ajax({
-        type: "POST",
-        url: "https://api.tnyu.org/v2/events/" + id + "/check-in",
-        async: false,
-        success: function(data) { console.log(data); },
-        error: function(err) { console.log(err); }
-      });
-
+      if (selected[id]) { 
+        $.ajax({
+          type: "GET",
+          acccepts: 'application/vnd.api+json, application/*, */*',
+          ContentType: 'application/vnd.api+json; ext=bulk',
+          url: "https://api.tnyu.org/v2/events/" + id + "/rsvp",
+          async: false,
+          dataType: "jsonp",
+          success: function(data) {console.log(data); },
+          error: this.props._onRsvpFailed(err, id)
+        });
+      }
     });
+    this.props._onRsvpCompleted();
   },
+
 
   _handleChange: function(i) {
     var id = this.props.eventIds[i];
@@ -43,24 +50,25 @@ var DropDownMenu = React.createClass({
 
       return (
         <li key={i} className="list-group-item event-list-item row">
-        <input className="col-md-1" type="checkbox" key={i} onChange={this._handleChange.bind(this, i)} />
-            <span className="col-md-7"> { title }</span>
-            <span className="col-md-2">{ date }</span>
-            <span className="col-md-2">{ time } { timeStr }</span>
+          <div className="col-md-1"><input type="checkbox" key={i} onChange={this._handleChange.bind(this, i)} /></div>
+          <div className="col-md-7"><span> { title }</span></div>
+          <div className="col-md-2"><span>{ date }</span></div>
+          <div className="col-md-2"><span>{ time } { timeStr }</span></div>
         </li>
       );
     });
 
     return(
-      <div className="col-md-8">
+      <div>
         <h3 className="text-center">Tech@NYU: RSVP for Events</h3>
-        <div className="well">
-          <ul className="list-group">
+        <div className="well col-md-8 col-md-offset-2">
+          <div className="list-group panel">
           {itemNodes}
-          </ul>
+          </div>
         </div>
-
-      <button onClick={this._getRSVP}>RSVP</button>
+        <div className="col-md-1 col-md-offset-2">
+          <button onClick={this._getRSVP}>RSVP</button>
+        </div>
       </div>
     )
   }
@@ -74,15 +82,23 @@ var AppHandler = React.createClass({
       eventTitles: [],
       eventIds: [],
       eventStartDates: [],
-      rawJson: []
+      rawJson: [],
+      nNumber: false,
+      email: '',
+      rsvpComplete: false,
+      rsvpFailed: false
     };
   },
 
   componentWillMount: function() {
     $.getJSON('https://api.tnyu.org/v2/people/me')
       .done( (user) => {
+        // user is logged in
+        var nNumberExist = ('nNumber' in user.data.attributes) ? true: false;
+
         this.setState({
-          userId: user.data.id
+          userId: user.data.id,
+          nNumber: nNumberExist
         });
 
         $.getJSON('https://api.tnyu.org/v2/events/next-10-publicly')
@@ -102,15 +118,44 @@ var AppHandler = React.createClass({
       })
       .fail((err) => {
         // redirect to login
-        console.log(err);
+        var url = 'https://api.tnyu.org/v2/auth/facebook?success=' + window.location;
+        window.location.href = url;
       });
 
   },
 
+  _onRsvpCompleted: function() {
+    this.setState({
+      rsvpComplete: true
+    });
+  },
+
+  _onRsvpFailed: function(err, id) {
+    console.log('RSVP for event ' + id + 'failed. Please try again later.');
+    console.log(err);
+    this.setState({
+      rsvpFailed: true
+    });
+  },
+
   render: function() {
+    var dropDownNode = (
+      <DropDownMenu eventTitles={this.state.eventTitles} eventIds={this.state.eventIds} eventStartDates={this.state.eventStartDates} rawJson={this.state.rawJson} _onRsvpCompleted={this._onRsvpCompleted} _onRsvpFailed={this._onRsvpFailed} />
+    );
+
+    var rsvpDoneNode = (
+      <h1>RSVP completed. Remember to check-in at the event! Thanks!</h1>
+    )
+
+    var rsvpFailedNode = (
+      <h1>RSVP failed. Please try again later.</h1>
+    );
+
+    var renderNode = (this.state.rsvpFailed) ? rsvpFailedNode:  (this.state.rsvpComplete) ? rsvpDoneNode: dropDownNode;
+
     return (
       <div>
-      <DropDownMenu eventTitles={this.state.eventTitles} eventIds={this.state.eventIds} eventStartDates={this.state.eventStartDates} rawJson={this.state.rawJson}/>
+      {renderNode}
       </div>
     );
   }
