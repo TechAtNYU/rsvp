@@ -8,6 +8,7 @@ var DropDownMenu = React.createClass({
 
   _getRSVP: function() {
     var selected = this.state.selectedEvents;
+    var _onRsvpFailed = this.props._onRsvpFailed;
     this.props.eventIds.map(function(id, i) {
       if (selected[id]) { 
         $.ajax({
@@ -17,8 +18,8 @@ var DropDownMenu = React.createClass({
           url: "https://api.tnyu.org/v2/events/" + id + "/rsvp",
           async: false,
           dataType: "jsonp",
-          success: function(data) {console.log(data); },
-          error: this.props._onRsvpFailed(err, id)
+          success: function(data) { console.log(data); },
+          error: _onRsvpFailed
         });
       }
     });
@@ -130,8 +131,8 @@ var AppHandler = React.createClass({
     });
   },
 
-  _onRsvpFailed: function(err, id) {
-    console.log('RSVP for event ' + id + 'failed. Please try again later.');
+  _onRsvpFailed: function(err) {
+    console.log('RSVP for event failed. Please try again later.');
     console.log(err);
     this.setState({
       rsvpFailed: true
@@ -148,7 +149,7 @@ var AppHandler = React.createClass({
     )
 
     var rsvpFailedNode = (
-      <h1>RSVP failed. Please try again later.</h1>
+      <h1>RSVP failed. Please try again later. If you keep getting to this page, then you've already been RSVP'd.</h1>
     );
 
     var renderNode = (this.state.rsvpFailed) ? rsvpFailedNode:  (this.state.rsvpComplete) ? rsvpDoneNode: dropDownNode;
