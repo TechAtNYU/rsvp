@@ -238,7 +238,9 @@ var AppHandler = React.createClass({
 
   render: function() {
     var loginNode = (
-      <button className="btn btn-primary btn-lg" onClick={this._loginWithFacebook}>Login with Facebook</button>
+      <div className="fb-login">
+      <button className="btn btn-primary btn-lg text-center" onClick={this._loginWithFacebook}>Login with Facebook</button>
+      </div>
     );
 
     var dropDownNode = (

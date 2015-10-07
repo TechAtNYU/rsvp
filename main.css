@@ -6,6 +6,16 @@ body {
   margin-top: 50px;
 }
 
+.fb-login {
+  padding: 10px;
+  position:relative;
+  text-align:center;
+}
+
+.fb-login button {
+  text-align: center;
+}
+
 .heading {
   font-size: 32px;
   font-weight: bold;
