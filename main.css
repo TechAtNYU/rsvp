@@ -7,7 +7,7 @@ body {
 }
 
 .heading {
-  font-size: 26px;
+  font-size: 32px;
   font-weight: bold;
   padding: 5px;
 }
@@ -27,6 +27,11 @@ body {
 .user-stat input {
   border-radius: 5px;
   width: 100%;
+}
+
+.user-stat-comment {
+  font-size: 16px;
+  padding: 6px;
 }
 
 .event-list-item {

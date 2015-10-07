@@ -1,14 +1,32 @@
+var EmailNode = React.createClass({
+  _toChange: function() {
+  },
+  render: function() {
+    var emailNode = (this.props.exists) ? (
+        <div>
+          <p>Is this your preferred email?</p>
+          <p>{this.props.email}</p>
+          <button className="btn btn-sm" onClick={this.props._toChangeEmail}>Change my email (optional)</button>
+        </div>
+      ) : (
+        <div className="email-field col-md-12">
+          <div className="col-md-4"><span>Email: </span></div>
+          <div className="col-md-5"><input type="text" onChange={this.props._onEmailInput} /></div>
+        </div>
+      );
+    return emailNode;
+  }
+});
+
 var DropDownMenu = React.createClass({
   getInitialState: function() {
     return {
       selectedEvents: {},
-      rsvpComplete: false
     };
   },
 
   _getRSVP: function() {
     var selected = this.state.selectedEvents;
-    var total = this.props.eventIds.length;
     var len = Object.keys(selected).length;
     this.props.eventIds.map(function(id, i) {
       if (selected[id]) { 
@@ -30,15 +48,9 @@ var DropDownMenu = React.createClass({
     var id = this.props.eventIds[i];
     var selected = this.state.selectedEvents;
 
-    if (id in selected) {
-      // toggle checkbox
-      selected[id] = (selected[id]) ? false: true;
-    } else {
-      selected[id] = true;
-    }
-    this.setState({
-      selectedEvents: selected
-    });
+    selected[id] = (id in selected) ? (selected[id] === true) ? false: true : true;
+
+    this.setState({ selectedEvents: selected });
   },
 
   _getTime: function(i) {
@@ -48,7 +60,6 @@ var DropDownMenu = React.createClass({
     var timeStr = (det < 12) ? "AM": "PM";
 
     return { date: date, time: time, timeStr: timeStr };
-
   },
 
   render: function() {
@@ -57,10 +68,10 @@ var DropDownMenu = React.createClass({
 
       return (
         <li key={i} className="list-group-item event-list-item row">
-        <div className="col-md-1"><input type="checkbox" key={i} onChange={this._toggleCheckbox.bind(this, i)} /></div>
-        <div className="col-md-7"><span> { title }</span></div>
-        <div className="col-md-2"><span>{ dateObj.date }</span></div>
-        <div className="col-md-2"><span>{ dateObj.time } { dateObj.timeStr }</span></div>
+          <div className="col-md-1"><input type="checkbox" key={i} onChange={this._toggleCheckbox.bind(this, i)} /></div>
+          <div className="col-md-7"><span> { title }</span></div>
+          <div className="col-md-2"><span>{ dateObj.date }</span></div>
+          <div className="col-md-2"><span>{ dateObj.time } { dateObj.timeStr }</span></div>
         </li>
       );
     });
@@ -84,59 +95,47 @@ var UserStat = React.createClass({
   getInitialState: function() {
     return {
       email: '',
-      nNumber: ''
+      nNumber: '',
+      changeEmail: false
     }
+  },
+
+  _toChangeEmail: function() {
+    console.log('change');
+    this.setState({ changeEmail: true });
   },
 
   _onEmailInput: function(e) {
-    this.setState({
-      email: e.target.value
-    })
+    this.setState({ email: e.target.value.substring(0, 140) });
   },
 
   _onNNumberInput: function(e) {
-    this.setState({
-      nNumber: e.target.value.substring(0, 140)
-    });
+    this.setState({ nNumber: e.target.value.substring(0, 140) });
   },
 
   render: function() {
-    var emailNode, nNumberNode, submitBtn;
+    var emailNode = (this.props.emailExists || this.state.changeEmail) ? <EmailNode exists={true} _onEmailInput={this._onEmailInput} _toChangeEmail={this._toChangeEmail} /> : <EmailNode exists={false} _onEmailInput={this._onEmailInput} />;
 
-    if (this.props.emailExists) {
-      emailNode = (
-        <div>
-        <p>Is this your preferred email? (optional)</p>
-        <p>{this.props.email}</p>
-        <button>Change my email</button>
-        </div>
-      );
-    } else {
-      emailNode = (
-        <div className="email-field col-md-12">
-          <div className="col-md-3"><span>Email: </span></div>
-          <div className="col-md-5"><input type="text" onChange={this._onEmailInput} /></div>
-        </div>
-      );
-    }
+    var nNumberNode = (!this.props.nNumberExists) ? (
+      <div className="nNumber-field col-md-12">
+        <div className="col-md-4"><span>N-Number (if NYU student): </span></div>
+        <div className="col-md-5"><input defaultValue="N" type="text" onChange={this._onNNumberInput} /></div>
+      </div>
+    ): null;
 
-    if (!this.props.nNumberExists) {
-      nNumberNode = (
-        <div className="nNumber-field col-md-12">
-          <div className="col-md-3"><span>N-Number (if NYU): </span></div>
-          <div className="col-md-5"><input defaultValue="N" type="text" onChange={this._onNNumberInput} /></div>
-        </div>
-      );
-    }
+    var submitBtn = ((!this.props.nNumberExists) || (!this.props.emailExists)) ? (
+      <div className="col-md-offset-6">
+        <button onClick={this.props._onUserStatSubmit.bind(null, this.state.email, this.state.nNumber)} className="btn btn-md">Done</button>
+      </div>
+    ): null;
 
-    if ((!this.props.nNumberExists) || (!this.props.emailExists)) {
-      submitBtn = (
-        <div className="col-md-offset-4"><button onClick={this.props._onUserStatSubmit.bind(null, this.state.email, this.state.nNumber)} className="btn btn-sm col-md-1">Done</button></div>
-      );
-    }
+    var comment = ((!this.props.nNumberExists)||(!this.props.emailExists)) ? (
+      <p className="user-stat-comment">Oops. It looks like you are missing some info in your RSVP.</p>
+    ): null;
 
     return (
       <div className="user-stat well col-md-8 col-md-offset-2">
+      {comment}
       {emailNode}
       {nNumberNode}
       {submitBtn}
@@ -159,13 +158,13 @@ var AppHandler = React.createClass({
       eventStartDates: [],
       rawJson: [],
       rsvpComplete: false,
-      emailUpdate: false
     };
   },
+
   componentWillMount: function() {
     $.getJSON('https://api.tnyu.org/v2/people/me')
     .done( (user) => {
-      // user is logged in
+      // user is logged in, check for nNumber and email existence
       var nNumberExists = ('nNumber' in user.data.attributes) ? true: false;
       var emailExists = false;
       var email = '';
@@ -182,6 +181,7 @@ var AppHandler = React.createClass({
         email: email
       });
 
+      // get events
       $.getJSON('https://api.tnyu.org/v2/events/next-10-publicly?page%5Blimit%5D=10&sort=%2bstartDateTime')
       .done( (json) => {
 
@@ -200,54 +200,40 @@ var AppHandler = React.createClass({
   },
 
   _loginWithFacebook: function() {
-      var url = 'https://api.tnyu.org/v2/auth/facebook?success=' + window.location;
-      window.location.href = url;
+    var url = 'https://api.tnyu.org/v2/auth/facebook?success=' + window.location;
+    window.location.href = url;
   },
 
   _onRsvpCompleted: function() {
-    this.setState({
-      rsvpComplete: true
-    });
+    this.setState({ rsvpComplete: true });
   },
 
-  _getPatchObj: function() {
+  _onUserStatSubmit: function(email, nNumber) {
     var id = this.state.userId;
-    if (!this.state.nNumberExists) var nNumber = this.state.nNumber;
-    if (this.state.emailUpdate)
-    return {
+    var data = { 
       "data": {
         "type": "people",
         "id": id,
         "attributes": {
-          "nNumber": nNumber,
-          "email": email
         }
       }
     }
-  },
 
-  _onUserStatSubmit: function(email, nNumber) {
-    var emailUpdated = (email) ? true : false
-    this.setState({
-      emailExists: true,
-      nNumberExists: true,
-      email: email,
-      nNumber: nNumber,
-      emailUpdate: emailUpdated
-    });
+    if (email) data.data.attributes["email"] = email;
+    if (nNumber) data.data.attributes["nNumber"] = nNumber;
 
-    var data = JSON.stringify(this._getPatchObj());
+    data = JSON.stringify(data);
 
-    $.ajax({
-      type: 'PATCH',
-      acccepts: 'application/vnd.api+json, application/*, */*',
-      ContentType: 'application/vnd.api+json; ext=bulk',
-      url: 'https://api.tnyu.org/v2/people/me',
-      async: false,
-      dataType: "jsonp",
-      data: data,
-      success: function(data) { console.log(data); },
-    });
+    //     $.ajax({
+    //       type: 'PATCH',
+    //       acccepts: 'application/vnd.api+json, application/*, */*',
+    //       ContentType: 'application/vnd.api+json; ext=bulk',
+    //       url: 'https://api.tnyu.org/v2/people/me',
+    //       async: false,
+    //       dataType: "jsonp",
+    //       data: data,
+    //       success: function(data) { console.log(data); },
+    //     });
   },
 
   render: function() {
@@ -267,16 +253,16 @@ var AppHandler = React.createClass({
       <h1>RSVP completed. Remember to check-in at the event! Thanks!</h1>
     )
 
-  var renderNode = (this.state.rsvpComplete) ? rsvpDoneNode: (this.state.loggedIn) ? dropDownNode : loginNode;
+    var renderNode = (this.state.rsvpComplete) ? rsvpDoneNode: (this.state.loggedIn) ? dropDownNode : loginNode;
 
-  return (
-    <div className="main">
-      <p className="heading text-center">Tech@NYU: RSVP for Events</p>
-      <div>
-      {renderNode}
+    return (
+      <div className="main">
+        <p className="heading text-center">Tech@NYU: RSVP for Events</p>
+        <div>
+        {renderNode}
+        </div>
       </div>
-    </div>
-  );
+    );
   }
 });
 
