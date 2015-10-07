@@ -8,6 +8,8 @@ var DropDownMenu = React.createClass({
 
   _getRSVP: function() {
     var selected = this.state.selectedEvents;
+    var total = this.props.eventIds.length;
+    var len = Object.keys(selected).length;
     this.props.eventIds.map(function(id, i) {
       if (selected[id]) { 
         $.ajax({
@@ -21,9 +23,8 @@ var DropDownMenu = React.createClass({
         });
       }
     });
-    this.props._onRsvpCompleted();
+    if (len > 0) this.props._onRsvpCompleted();
   },
-
 
   _toggleCheckbox: function(i) {
     var id = this.props.eventIds[i];
@@ -112,18 +113,18 @@ var UserStat = React.createClass({
       );
     } else {
       emailNode = (
-        <div className="col-md-12">
-        <div className="col-md-3"><span>Email: </span></div>
-        <div className="col-md-3"><input type="text" onChange={this._onEmailInput} /></div>
+        <div className="email-field col-md-12">
+          <div className="col-md-3"><span>Email: </span></div>
+          <div className="col-md-5"><input type="text" onChange={this._onEmailInput} /></div>
         </div>
       );
     }
 
     if (!this.props.nNumberExists) {
       nNumberNode = (
-        <div className="col-md-12">
-        <div className="col-md-3"><span>N-Number (if NYU): </span></div>
-          <div className="col-md-3"><input defaultValue="N" type="text" onChange={this._onNNumberInput} /></div>
+        <div className="nNumber-field col-md-12">
+          <div className="col-md-3"><span>N-Number (if NYU): </span></div>
+          <div className="col-md-5"><input defaultValue="N" type="text" onChange={this._onNNumberInput} /></div>
         </div>
       );
     }
@@ -135,7 +136,7 @@ var UserStat = React.createClass({
     }
 
     return (
-      <div className="well col-md-8 col-md-offset-2">
+      <div className="user-stat well col-md-8 col-md-offset-2">
       {emailNode}
       {nNumberNode}
       {submitBtn}
@@ -235,8 +236,6 @@ var AppHandler = React.createClass({
       emailUpdate: emailUpdated
     });
 
-    var _onRsvpFailed = this._onRsvpFailed;
-
     var data = JSON.stringify(this._getPatchObj());
 
     $.ajax({
@@ -271,8 +270,8 @@ var AppHandler = React.createClass({
   var renderNode = (this.state.rsvpComplete) ? rsvpDoneNode: (this.state.loggedIn) ? dropDownNode : loginNode;
 
   return (
-    <div>
-      <h3 className="text-center">Tech@NYU: RSVP for Events</h3>
+    <div className="main">
+      <p className="heading text-center">Tech@NYU: RSVP for Events</p>
       <div>
       {renderNode}
       </div>

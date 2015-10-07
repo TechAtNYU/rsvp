@@ -1,10 +1,46 @@
+body {
+  font-family: 'Inconsolata', sans-serif;
+}
+
+.main {
+  margin-top: 50px;
+}
+
+.heading {
+  font-size: 26px;
+  font-weight: bold;
+  padding: 5px;
+}
+
+.email-field {
+  padding: 3px;
+}
+
+.nNumber-field {
+  padding: 3px;
+}
+
+.user-stat span {
+  font-size: 18px;
+}
+
+.user-stat input {
+  border-radius: 5px;
+  width: 100%;
+}
+
 .event-list-item {
   background-color: white;
   opacity: 1;
 }
 
+.event-list-item span {
+  font-size: 18px;
+}
+
 .event-list-item:hover {
   background-color: rgb(230,230,250);
 }
+
 
 
