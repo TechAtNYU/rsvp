@@ -1,6 +1,7 @@
 var EmailNode = React.createClass({
   render: function() {
     var emailNode = (this.props.exists) ? (
+
         <div>
           <p>Is this your preferred email?</p>
           <p id="user_email">{this.props.email}</p>
@@ -52,7 +53,7 @@ var UserStat = React.createClass({
     ): (this.state.changeEmail) ? <p className="user-stat-comment">Fill in your new email.</p> : null;
 
     return (
-      <div className="user-stat well col-md-8 col-md-offset-2">
+      <div className="user-stat col-md-8 email-section">
        <div id="user-stat-close" onClick={this.props._onCloseWindow}>Close</div>
         {comment}
         {emailNode}
@@ -112,24 +113,25 @@ var DropDownMenu = React.createClass({
       var dateObj = this._getTime(i);
 
       return (
-        <li key={i} className="list-group-item event-list-item row">
-          <div className="col-md-1"><input type="checkbox" key={i} onChange={this._toggleCheckbox.bind(this, i)} /></div>
-          <div className="col-md-7"><span> { title }</span></div>
-          <div className="col-md-2"><span>{ dateObj.date }</span></div>
-          <div className="col-md-2"><span>{ dateObj.time } { dateObj.timeStr }</span></div>
+        <li key={i} className="list-group-item row">
+          <div className="col-md-2 when">
+            <div className="date"><span>{ dateObj.date }</span></div>
+            <div className="time"><span>{ dateObj.time } { dateObj.timeStr }</span></div>
+          </div>
+          <div className="col-md-7 event-title"><span> { title }</span></div>
+          <div><input type="checkbox" key={i} onChange={this._toggleCheckbox.bind(this, i)} /></div>
         </li>
       );
     });
 
     return(
       <div>
-        <div className="well col-md-8 col-md-offset-2">
+        <div className="col-md-8 events">
+                <h2>UPCOMING EVENTS</h2>
           <div className="list-group panel">
           {itemNodes}
           </div>
-        </div>
-        <div className="col-md-1 col-md-offset-2">
-        <button className="btn" onClick={this._getRSVP}>RSVP</button>
+            <button className="btn" onClick={this._getRSVP}>RSVP</button>
         </div>
       </div>
     )
@@ -260,8 +262,15 @@ var AppHandler = React.createClass({
 
     return (
       <div className="main">
-        <p className="heading text-center">Tech@NYU: RSVP for Events</p>
-        <div>
+        <header>
+          <a href="http://techatnyu.org/"><img src="images/techatnyu.png" alt="tech@nyu logo" className="logo"/>
+          </a>
+          <div>
+            <h3 className="title">Tech@NYU Event RSVP Form</h3>
+            <p className="description">The largest student-run tech organization in NYC</p>
+          </div>
+       </header>
+        <div className="form">
         {renderNode}
         </div>
       </div>

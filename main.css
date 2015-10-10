@@ -1,9 +1,50 @@
 body {
   font-family: 'Inconsolata', sans-serif;
+  color: black;
+  background-color: #EEEEEE;
+}
+input[type=checkbox] {
+  margin-top: 20px;
+  margin-left: 25px;
+  width: 30px;
+  height: 20px;
 }
 
-.main {
-  margin-top: 50px;
+header { 
+  margin: 0 auto;
+  z-index: 1000;
+  width: 100%;
+  position: fixed;
+  background-color: #d7552d;
+  padding-bottom: 20px;
+}
+
+header img.logo { 
+  width: 200px;
+  height: auto;
+  padding: 14px 0px 0px 27px;
+  margin: 0;
+}
+
+header div.description { 
+  margin: 0;  
+}
+
+header p.description, .title { 
+  font-family: 'Inconsolata', Helvetica, Arial, Sans-Serif; 
+  padding: 0px 27px;
+  margin: 0;
+}
+.form {
+    top: 50px;
+    width: 100%;
+    height: 80%;
+    margin-top: 90px;
+    position: absolute;
+}
+.title {
+  float: right;
+  color: black;
 }
 
 .fb-login {
@@ -15,13 +56,45 @@ body {
 .fb-login button {
   text-align: center;
 }
-
+.email-section {
+  float: right;
+  width: 30%;
+  margin-right: 2%;
+  top: 100px;
+  height: 250px;
+}
+.events, .email-section {
+  margin-top: 10px;
+}
+.events {
+  width: 60%;
+  float: left;
+  margin-left: 2%;
+}
 .heading {
   font-size: 32px;
   font-weight: bold;
   padding: 5px;
 }
-
+.list-group-item {
+  height: 100px;
+  font-family: "Inconsolata";
+  font-size: 20px;
+  padding: 20px;
+}
+.when {
+  font-size: 16px;
+  text-align: center;
+  background-color: #d7552d;
+  padding: 10px;
+  width: 20%;
+}
+.event-title {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 60%;
+}
 .email-field {
   padding: 3px;
 }
