@@ -16,6 +16,53 @@ var EmailNode = React.createClass({
   }
 });
 
+var UserStat = React.createClass({
+  getInitialState: function() {
+    return {
+      email: '',
+      nNumber: '',
+      changeEmail: false
+    }
+  },
+
+  _toChangeEmail: function() { this.setState({ changeEmail: true });},
+
+  _onEmailInput: function(e) { this.setState({ email: e.target.value.substring(0, 140) }); },
+
+  _onNNumberInput: function(e) { this.setState({ nNumber: e.target.value.substring(0, 140) }); },
+
+  render: function() {
+    var emailNode = (this.props.emailExists && (!this.state.changeEmail)) ? <EmailNode exists={true} _onEmailInput={this._onEmailInput} _toChangeEmail={this._toChangeEmail} email={this.props.email} /> : <EmailNode exists={false} _onEmailInput={this._onEmailInput} />;
+
+    var nNumberNode = (!this.props.nNumberExists) ? (
+      <div className="nNumber-field col-md-12">
+        <div className="col-md-4"><span>N-Number (if NYU student): </span></div>
+        <div className="col-md-5"><input defaultValue="N" type="text" onChange={this._onNNumberInput} /></div>
+      </div>
+    ): null;
+
+    var submitBtn = ((!this.props.nNumberExists) || (!this.props.emailExists) || this.state.changeEmail) ? (
+      <div className="col-md-offset-6">
+        <button onClick={this.props._onUserStatSubmit.bind(null, this.state.email, this.state.nNumber)} className="btn btn-md">Done</button>
+      </div>
+    ): null;
+
+    var comment = ((!this.props.nNumberExists)||(!this.props.emailExists)) ? (
+      <p className="user-stat-comment">Oops. It looks like you are missing some info in your RSVP.</p>
+    ): (this.state.changeEmail) ? <p className="user-stat-comment">Fill in your new email.</p> : null;
+
+    return (
+      <div className="user-stat well col-md-8 col-md-offset-2">
+       <div id="user-stat-close" onClick={this.props._onCloseWindow}>Close</div>
+        {comment}
+        {emailNode}
+        {nNumberNode}
+        {submitBtn}
+      </div>
+    )
+  }
+});
+
 var DropDownMenu = React.createClass({
   getInitialState: function() {
     return {
@@ -89,51 +136,6 @@ var DropDownMenu = React.createClass({
   }
 });
 
-var UserStat = React.createClass({
-  getInitialState: function() {
-    return {
-      email: '',
-      nNumber: '',
-      changeEmail: false
-    }
-  },
-
-  _toChangeEmail: function() { this.setState({ changeEmail: true }); },
-
-  _onEmailInput: function(e) { this.setState({ email: e.target.value.substring(0, 140) }); },
-
-  _onNNumberInput: function(e) { this.setState({ nNumber: e.target.value.substring(0, 140) }); },
-
-  render: function() {
-    var emailNode = (this.props.emailExists || this.state.changeEmail) ? <EmailNode exists={true} _onEmailInput={this._onEmailInput} _toChangeEmail={this._toChangeEmail} email={this.props.email} /> : <EmailNode exists={false} _onEmailInput={this._onEmailInput} />;
-
-    var nNumberNode = (!this.props.nNumberExists) ? (
-      <div className="nNumber-field col-md-12">
-        <div className="col-md-4"><span>N-Number (if NYU student): </span></div>
-        <div className="col-md-5"><input defaultValue="N" type="text" onChange={this._onNNumberInput} /></div>
-      </div>
-    ): null;
-
-    var submitBtn = ((!this.props.nNumberExists) || (!this.props.emailExists)) ? (
-      <div className="col-md-offset-6">
-        <button onClick={this.props._onUserStatSubmit.bind(null, this.state.email, this.state.nNumber)} className="btn btn-md">Done</button>
-      </div>
-    ): null;
-
-    var comment = ((!this.props.nNumberExists)||(!this.props.emailExists)) ? (
-      <p className="user-stat-comment">Oops. It looks like you are missing some info in your RSVP.</p>
-    ): null;
-
-    return (
-      <div className="user-stat well col-md-8 col-md-offset-2">
-        {comment}
-        {emailNode}
-        {nNumberNode}
-        {submitBtn}
-      </div>
-    )
-  }
-});
 
 var AppHandler = React.createClass({
   getInitialState: function() {
@@ -149,6 +151,7 @@ var AppHandler = React.createClass({
       eventStartDates: [],
       rawJson: [],
       rsvpComplete: false,
+      finishUserStatSubmit: false
     };
   },
 
@@ -199,6 +202,8 @@ var AppHandler = React.createClass({
     this.setState({ rsvpComplete: true });
   },
 
+  _onFinishUserStat: function() { this.setState({ finishUserStatSubmit: true }); },
+
   _onUserStatSubmit: function(email, nNumber) {
     var id = this.state.userId;
     var data = { 
@@ -226,6 +231,7 @@ var AppHandler = React.createClass({
         data: JSON.stringify(data),
       });
     }
+    this._onFinishUserStat();
   },
 
   render: function() {
@@ -234,10 +240,13 @@ var AppHandler = React.createClass({
       <button className="btn btn-primary btn-lg text-center" onClick={this._loginWithFacebook}>Login with Facebook</button>
       </div>
     );
+    
+    var userStatNode = (!this.state.finishUserStatSubmit) ? <UserStat _onUserStatSubmit={this._onUserStatSubmit} emailExists={this.state.emailExists} email={this.state.email} nNumberExists={this.state.nNumberExists} _onCloseWindow={this._onFinishUserStat} /> : null;
+
 
     var dropDownNode = (
       <div>
-        <UserStat _onUserStatSubmit={this._onUserStatSubmit} emailExists={this.state.emailExists} email={this.state.email} nNumberExists={this.state.nNumberExists} />
+        {userStatNode}
         <DropDownMenu eventTitles={this.state.eventTitles} eventIds={this.state.eventIds} eventStartDates={this.state.eventStartDates} rawJson={this.state.rawJson} _onRsvpCompleted={this._onRsvpCompleted} />
       </div>
     );

@@ -44,6 +44,17 @@ body {
   padding: 6px;
 }
 
+#user-stat-close {
+  position: absolute;
+  padding: 5px;
+  top: 0px;
+  right: 0px;
+}
+
+#user-stat-close:hover {
+  color: blue;
+}
+
 #user_email {
   font-style: bold;
   font-size: 18px;
