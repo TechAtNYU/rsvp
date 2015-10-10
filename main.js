@@ -1,11 +1,9 @@
 var EmailNode = React.createClass({
-  _toChange: function() {
-  },
   render: function() {
     var emailNode = (this.props.exists) ? (
         <div>
           <p>Is this your preferred email?</p>
-          <p>{this.props.email}</p>
+          <p id="user_email">{this.props.email}</p>
           <button className="btn btn-sm" onClick={this.props._toChangeEmail}>Change my email (optional)</button>
         </div>
       ) : (
@@ -100,21 +98,14 @@ var UserStat = React.createClass({
     }
   },
 
-  _toChangeEmail: function() {
-    console.log('change');
-    this.setState({ changeEmail: true });
-  },
+  _toChangeEmail: function() { this.setState({ changeEmail: true }); },
 
-  _onEmailInput: function(e) {
-    this.setState({ email: e.target.value.substring(0, 140) });
-  },
+  _onEmailInput: function(e) { this.setState({ email: e.target.value.substring(0, 140) }); },
 
-  _onNNumberInput: function(e) {
-    this.setState({ nNumber: e.target.value.substring(0, 140) });
-  },
+  _onNNumberInput: function(e) { this.setState({ nNumber: e.target.value.substring(0, 140) }); },
 
   render: function() {
-    var emailNode = (this.props.emailExists || this.state.changeEmail) ? <EmailNode exists={true} _onEmailInput={this._onEmailInput} _toChangeEmail={this._toChangeEmail} /> : <EmailNode exists={false} _onEmailInput={this._onEmailInput} />;
+    var emailNode = (this.props.emailExists || this.state.changeEmail) ? <EmailNode exists={true} _onEmailInput={this._onEmailInput} _toChangeEmail={this._toChangeEmail} email={this.props.email} /> : <EmailNode exists={false} _onEmailInput={this._onEmailInput} />;
 
     var nNumberNode = (!this.props.nNumberExists) ? (
       <div className="nNumber-field col-md-12">
@@ -135,10 +126,10 @@ var UserStat = React.createClass({
 
     return (
       <div className="user-stat well col-md-8 col-md-offset-2">
-      {comment}
-      {emailNode}
-      {nNumberNode}
-      {submitBtn}
+        {comment}
+        {emailNode}
+        {nNumberNode}
+        {submitBtn}
       </div>
     )
   }
@@ -215,25 +206,26 @@ var AppHandler = React.createClass({
         "type": "people",
         "id": id,
         "attributes": {
+          "contact": {
+          }
         }
       }
     }
 
-    if (email) data.data.attributes["email"] = email;
-    if (nNumber) data.data.attributes["nNumber"] = nNumber;
+    if (email || nNumber) {
+      if (email) data.data.attributes.contact["email"] = email;
+      if (nNumber) data.data.attributes["nNumber"] = nNumber;
 
-    data = JSON.stringify(data);
-
-    //     $.ajax({
-    //       type: 'PATCH',
-    //       acccepts: 'application/vnd.api+json, application/*, */*',
-    //       ContentType: 'application/vnd.api+json; ext=bulk',
-    //       url: 'https://api.tnyu.org/v2/people/me',
-    //       async: false,
-    //       dataType: "jsonp",
-    //       data: data,
-    //       success: function(data) { console.log(data); },
-    //     });
+      $.ajax({
+        type: 'PATCH',
+        acccepts: 'application/vnd.api+json, application/*, */*',
+        contentType: 'application/vnd.api+json; ext=bulk',
+        url: 'https://api.tnyu.org/v2/people/me',
+        crossDomain: true,
+        dataType: 'json',
+        data: JSON.stringify(data),
+      });
+    }
   },
 
   render: function() {

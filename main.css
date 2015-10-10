@@ -44,6 +44,12 @@ body {
   padding: 6px;
 }
 
+#user_email {
+  font-style: bold;
+  font-size: 18px;
+  padding: 10px;
+}
+
 .event-list-item {
   background-color: white;
   opacity: 1;
