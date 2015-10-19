@@ -9,8 +9,8 @@ var EmailNode = React.createClass({
         </div>
       ) : (
         <div className="email-field col-md-12">
-          <div className="col-md-4"><span>Email: </span></div>
-          <div className="col-md-5"><input type="text" onChange={this.props._onEmailInput} /></div>
+          <div className="col-md-3"><span>Email: </span></div>
+          <div className="col-md-9"><input type="text" onChange={this.props._onEmailInput} /></div>
         </div>
       );
     return emailNode;
