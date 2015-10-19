@@ -255,7 +255,7 @@ var AppHandler = React.createClass({
 
     // different DISPLAY nodes for different state
     var rsvpDoneNode = (
-      <h1>RSVP completed. Remember to check-in at the event! Thanks!</h1>
+      <h1 className="rsvpDoneText">RSVP completed. Remember to check-in at the event! Thanks!</h1>
     )
 
     var renderNode = (this.state.rsvpComplete) ? rsvpDoneNode: (this.state.loggedIn) ? dropDownNode : loginNode;

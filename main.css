@@ -71,6 +71,9 @@ header p.description, .title {
   float: left;
   margin-left: 2%;
 }
+.rsvpDoneText{
+  margin-left: 2%;
+}
 .heading {
   font-size: 32px;
   font-weight: bold;
