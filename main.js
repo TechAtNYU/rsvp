@@ -116,7 +116,6 @@ var DropDownMenu = React.createClass({
         <li key={i} className="list-group-item row">
           <div className="col-md-2 when">
             <div className="date"><span>{ dateObj.date }</span></div>
-            <div className="time"><span>{ dateObj.time } { dateObj.timeStr }</span></div>
           </div>
           <div className="col-md-7 event-title"><span> { title }</span></div>
           <div><input type="checkbox" key={i} onChange={this._toggleCheckbox.bind(this, i)} /></div>
