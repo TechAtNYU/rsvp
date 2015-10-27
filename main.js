@@ -105,12 +105,16 @@ var DropDownMenu = React.createClass({
     var det = parseInt(time.substring(0, 2));
     var timeStr = (det < 12) ? "AM": "PM";
 
+	// convert UST to EST
+	time = (parseInt(time.substring(0, 2)) - 5).toString() + time.substring(2, 5);
+
     return { date: date, time: time, timeStr: timeStr };
   },
 
   render: function() {
     var itemNodes = this.props.eventTitles.map( (title, i) => {
       var dateObj = this._getTime(i);
+	  console.log(dateObj);
 
       return (
         <li key={i} className="list-group-item row">
