@@ -1,284 +1,312 @@
 var EmailNode = React.createClass({
-  render: function() {
-    var emailNode = (this.props.exists) ? (
+	render: function() {
+		var emailNode = (this.props.exists) ? (
 
-        <div>
-          <p>Is this your preferred email?</p>
-          <p id="user_email">{this.props.email}</p>
-          <button className="btn btn-sm" onClick={this.props._toChangeEmail}>Change my email (optional)</button>
-        </div>
-      ) : (
-        <div className="email-field col-md-12">
-          <div className="col-md-3"><span>Email: </span></div>
-          <div className="col-md-9"><input type="text" onChange={this.props._onEmailInput} /></div>
-        </div>
-      );
-    return emailNode;
-  }
+			<div>
+			<p>Is this your preferred email?</p>
+			<p id="user_email">{this.props.email}</p>
+			<button className="btn btn-sm" onClick={this.props._toChangeEmail}>Change my email (optional)</button>
+			</div>
+		) : (
+		<div className="email-field col-md-12">
+		<div className="col-md-3"><span>Email: </span></div>
+		<div className="col-md-9"><input type="text" onChange={this.props._onEmailInput} /></div>
+		</div>
+		);
+		return emailNode;
+	}
 });
 
 var UserStat = React.createClass({
-  getInitialState: function() {
-    return {
-      email: '',
-      nNumber: '',
-      changeEmail: false
-    }
-  },
+	getInitialState: function() {
+		return {
+			email: '',
+			nNumber: '',
+			changeEmail: false
+		}
+	},
 
-  _toChangeEmail: function() { this.setState({ changeEmail: true });},
+	_toChangeEmail: function() { this.setState({ changeEmail: true });},
 
-  _onEmailInput: function(e) { this.setState({ email: e.target.value.substring(0, 140) }); },
+	_onEmailInput: function(e) { this.setState({ email: e.target.value.substring(0, 140) }); },
 
-  _onNNumberInput: function(e) { this.setState({ nNumber: e.target.value.substring(0, 140) }); },
+	_onNNumberInput: function(e) { this.setState({ nNumber: e.target.value.substring(0, 140) }); },
 
-  render: function() {
-    var emailNode = (this.props.emailExists && (!this.state.changeEmail)) ? <EmailNode exists={true} _onEmailInput={this._onEmailInput} _toChangeEmail={this._toChangeEmail} email={this.props.email} /> : <EmailNode exists={false} _onEmailInput={this._onEmailInput} />;
+	render: function() {
+		var emailNode = (this.props.emailExists && (!this.state.changeEmail)) ? <EmailNode exists={true} _onEmailInput={this._onEmailInput} _toChangeEmail={this._toChangeEmail} email={this.props.email} /> : <EmailNode exists={false} _onEmailInput={this._onEmailInput} />;
 
-    var nNumberNode = (!this.props.nNumberExists) ? (
-      <div className="nNumber-field col-md-12">
-        <div className="col-md-4"><span>N-Number (if NYU student): </span></div>
-        <div className="col-md-5"><input defaultValue="N" type="text" onChange={this._onNNumberInput} /></div>
-      </div>
-    ): null;
+		var nNumberNode = (!this.props.nNumberExists) ? (
+			<div className="nNumber-field col-md-12">
+			<div className="col-md-4"><span>N-Number (if NYU student): </span></div>
+				<div className="col-md-5"><input defaultValue="N" type="text" onChange={this._onNNumberInput} /></div>
+			</div>
+		): null;
 
-    var submitBtn = ((!this.props.nNumberExists) || (!this.props.emailExists) || this.state.changeEmail) ? (
-      <div className="col-md-offset-6">
-        <button onClick={this.props._onUserStatSubmit.bind(null, this.state.email, this.state.nNumber)} className="btn btn-md">Done</button>
-      </div>
-    ): null;
+		var submitBtn = ((!this.props.nNumberExists) || (!this.props.emailExists) || this.state.changeEmail) ? (
+			<div className="col-md-offset-6">
+			<button onClick={this.props._onUserStatSubmit.bind(null, this.state.email, this.state.nNumber)} className="btn btn-md">Done</button>
+			</div>
+		): null;
 
-    var comment = ((!this.props.nNumberExists)||(!this.props.emailExists)) ? (
-      <p className="user-stat-comment">Oops. It looks like you are missing some info in your RSVP.</p>
-    ): (this.state.changeEmail) ? <p className="user-stat-comment">Fill in your new email.</p> : null;
+		var comment = ((!this.props.nNumberExists)||(!this.props.emailExists)) ? (
+			<p className="user-stat-comment">Oops. It looks like you are missing some info in your RSVP.</p>
+		): (this.state.changeEmail) ? <p className="user-stat-comment">Fill in your new email.</p> : null;
 
-    return (
-      <div className="user-stat col-md-8 email-section">
-       <div id="user-stat-close" onClick={this.props._onCloseWindow}>Close</div>
-        {comment}
-        {emailNode}
-        {nNumberNode}
-        {submitBtn}
-      </div>
-    )
-  }
+		return (
+			<div className="user-stat col-md-8 email-section">
+			<div id="user-stat-close" onClick={this.props._onCloseWindow}>Close</div>
+			{comment}
+			{emailNode}
+			{nNumberNode}
+			{submitBtn}
+			</div>
+		)
+	}
 });
 
 var DropDownMenu = React.createClass({
-  getInitialState: function() {
-    return {
-      selectedEvents: {},
-    };
-  },
+	getInitialState: function() {
+		return {
+			selectedEvents: {},
+		};
+	},
 
-  _getRSVP: function() {
-    var selected = this.state.selectedEvents;
-    var len = Object.keys(selected).length;
-    this.props.eventIds.map(function(id, i) {
-      if (selected[id]) { 
-        $.ajax({
-          type: "GET",
-          acccepts: 'application/vnd.api+json, application/*, */*',
-          ContentType: 'application/vnd.api+json; ext=bulk',
-          url: "https://api.tnyu.org/v2/events/" + id + "/rsvp",
-          async: false,
-          dataType: "jsonp",
-          success: function(data) { console.log(data.status); },
-        });
-      }
-    });
-    if (len > 0) this.props._onRsvpCompleted();
-  },
+	_getRSVP: function() {
+		var selected = this.state.selectedEvents;
+		var len = Object.keys(selected).length;
+		this.props.eventIds.map(function(id, i) {
+			if (selected[id]) { 
+				$.ajax({
+					type: "GET",
+					acccepts: 'application/vnd.api+json, application/*, */*',
+					ContentType: 'application/vnd.api+json; ext=bulk',
+					url: "https://api.tnyu.org/v2/events/" + id + "/rsvp",
+					async: false,
+					dataType: "jsonp",
+					success: function(data) { console.log(data.status); },
+				});
+			}
+		});
+		if (len > 0) this.props._onRsvpCompleted();
+	},
 
-  _toggleCheckbox: function(i) {
-    var id = this.props.eventIds[i];
-    var selected = this.state.selectedEvents;
+	_toggleCheckbox: function(i) {
+		var id = this.props.eventIds[i];
+		var selected = this.state.selectedEvents;
 
-    selected[id] = (id in selected) ? (selected[id] === true) ? false: true : true;
+		selected[id] = (id in selected) ? (selected[id] === true) ? false: true : true;
 
-    this.setState({ selectedEvents: selected });
-  },
+		this.setState({ selectedEvents: selected });
+	},
 
-  _getTime: function(i) {
-    var date = this.props.eventStartDates[i].substring(0, 10);
-    var time = this.props.eventStartDates[i].substring(11, 16);
-    var det = parseInt(time.substring(0, 2));
-    var timeStr = (det < 12) ? "AM": "PM";
+	_getTime: function(i) {
+		var date = this.props.eventStartDates[i].substring(0, 10);
+		var time = this.props.eventStartDates[i].substring(11, 16);
+		var det = parseInt(time.substring(0, 2));
+		var timeStr = (det < 12) ? "AM": "PM";
 
-	// convert UST to EST
-	time = (parseInt(time.substring(0, 2)) - 5).toString() + time.substring(2, 5);
+		// convert UST to EST
+		time = (parseInt(time.substring(0, 2)) - 5).toString() + time.substring(2, 5);
 
-    return { date: date, time: time, timeStr: timeStr };
-  },
+		return { date: date, time: time, timeStr: timeStr };
+	},
 
-  render: function() {
-    var itemNodes = this.props.eventTitles.map( (title, i) => {
-      var dateObj = this._getTime(i);
-	  console.log(dateObj);
+	render: function() {
+		var itemNodes = this.props.eventTitles.map( (title, i) => {
+			var dateObj = this._getTime(i);
+			var isFull = (this.props.venueCaps[i] * 3 <= this.props.totalRsvps[i] + 1) ? true : false;
+			var checkbox = (!isFull) ? (<input type="checkbox" key={i} onChange={this._toggleCheckbox.bind(this, i)} />) : (<span>Event FULL</span>);
 
-      return (
-        <li key={i} className="list-group-item row">
-          <div className="col-md-2 when">
-            <div className="date"><span>{ dateObj.date }</span></div>
-          </div>
-          <div className="col-md-7 event-title"><span> { title }</span></div>
-          <div><input type="checkbox" key={i} onChange={this._toggleCheckbox.bind(this, i)} /></div>
-        </li>
-      );
-    });
+			return (
+				<li key={i} className="list-group-item row">
+				<div className="col-md-2 when">
+				<div className="date"><span>{ dateObj.date }</span></div>
+				</div>
+				<div className="col-md-7 event-title"><span> { title }</span></div>
+				<div>{checkbox}</div>
+				</li>
+			);
+		});
 
-    return(
-      <div>
-        <div className="col-md-8 events">
-                <h2>UPCOMING EVENTS</h2>
-          <div className="list-group panel">
-          {itemNodes}
-          </div>
-            <button className="btn" onClick={this._getRSVP}>RSVP</button>
-        </div>
-      </div>
-    )
-  }
+		return(
+			<div>
+			<div className="col-md-8 events">
+			<h2>UPCOMING EVENTS</h2>
+			<div className="list-group panel">
+			{itemNodes}
+			</div>
+			<button className="btn" onClick={this._getRSVP}>RSVP</button>
+			</div>
+			</div>
+		)
+	}
 });
 
 
 var AppHandler = React.createClass({
-  getInitialState: function() {
-    return {
-      loggedIn: false,
-      userId: '',
-      nNumberExists: false,
-      nNumber: '',
-      emailExists: false,
-      email: '',
-      eventTitles: [],
-      eventIds: [],
-      eventStartDates: [],
-      rawJson: [],
-      rsvpComplete: false,
-      finishUserStatSubmit: false
-    };
-  },
+	getInitialState: function() {
+		return {
+			API_VERSION: 'v2',
+			loggedIn: false,
+			userId: '',
+			nNumberExists: false,
+			nNumber: '',
+			emailExists: false,
+			email: '',
+			venueIds: [],
+			venueNames: [],
+			venueAddresses: [],
+			venueCaps: [],
+			eventTitles: [],
+			eventIds: [],
+			eventStartDates: [],
+			rawJson: [],
+			rsvpComplete: false,
+			finishUserStatSubmit: false,
+			totalRsvps: []
+		};
+	},
 
-  componentWillMount: function() {
-    $.getJSON('https://api.tnyu.org/v2/people/me')
-    .done( (user) => {
-      // user is logged in, check for nNumber and email existence
-      var nNumberExists = ('nNumber' in user.data.attributes) ? true: false;
-      var emailExists = false;
-      var email = '';
-      if ('email' in user.data.attributes.contact) {
-        emailExists = true;
-        email = user.data.attributes.contact.email;
-      }
+	componentWillMount: function() {
+		$.getJSON('https://api.tnyu.org/v2/people/me')
+		.done( (user) => {
+			// user is logged in, check for nNumber and email existence
+			var nNumberExists = ('nNumber' in user.data.attributes) ? true: false;
+			var emailExists = false;
+			var email = '';
+			if ('email' in user.data.attributes.contact) {
+				emailExists = true;
+				email = user.data.attributes.contact.email;
+			}
 
-      this.setState({
-        loggedIn: true,
-        userId: user.data.id,
-        nNumberExists: nNumberExists,
-        emailExists: emailExists,
-        email: email
-      });
+			this.setState({
+				loggedIn: true,
+				userId: user.data.id,
+				nNumberExists: nNumberExists,
+				emailExists: emailExists,
+				email: email
+			});
 
-      // get events
-      $.getJSON('https://api.tnyu.org/v2/events/next-10-publicly?page%5Blimit%5D=10&sort=%2bstartDateTime')
-      .done( (json) => {
+			// get events
+			$.getJSON('https://api.tnyu.org/' + this.state.API_VERSION + '/events/next-10-publicly?page%5Blimit%5D=10&sort=%2bstartDateTime')
+			.done( (json) => {
 
-        var eventIds = json.data.map(function(event) { return event.id; });
-        var eventTitles = json.data.map(function(event) { return event.attributes.title; });
-        var eventStartDates = json.data.map(function(event) { return event.attributes.startDateTime; });
+				var eventIds = json.data.map(function(event) { return event.id; });
+				var eventTitles = json.data.map(function(event) { return event.attributes.title; });
+				var eventStartDates = json.data.map(function(event) { return event.attributes.startDateTime; });
+				var venueIds = json.data.map(function(event) { return event.links.venue.linkage.id; });
+				var rsvps = json.data.map(function(event) { return event.links.rsvps.linkage.length; });
 
-        this.setState({
-          eventTitles: eventTitles,
-          eventIds: eventIds,
-          eventStartDates: eventStartDates,
-          rawJson: json.data
-        });
-      });
-    })
-  },
+				this.setState({
+					venueIds: venueIds,
+					eventTitles: eventTitles,
+					eventIds: eventIds,
+					eventStartDates: eventStartDates,
+					rawJson: json.data,
+					totalRsvps: rsvps
+				});
+			}).then( () => {
+				var venueNames = this.state.venueNames, venueAddresses = this.state.venueAddresses, venueCaps = this.state.venueCaps;
+				this.state.venueIds.map( (venueId) => {
+					$.getJSON('https://api.tnyu.org/v3/venues/' + venueId.toString()).done((json) => {
+						venueNames.push(json.data.attributes.name);
+						venueAddresses.push(json.data.attributes.address);
+						venueCaps.push(json.data.attributes.seats);
+					}).then(() => {
+						if (venueCaps.length == this.state.eventIds.length) {
+							this.setState({
+								venueNames: venueNames,
+								venueAddresses: venueAddresses,
+								venueCaps: venueCaps
+							});
+						}
+					});
+				});
+			});
+		})
+	},
 
-  _loginWithFacebook: function() {
-    var url = 'https://api.tnyu.org/v2/auth/facebook?success=' + window.location;
-    window.location.href = url;
-  },
+	_loginWithFacebook: function() {
+		var url = 'https://api.tnyu.org/v2/auth/facebook?success=' + window.location;
+		window.location.href = url;
+	},
 
-  _onRsvpCompleted: function() {
-    this.setState({ rsvpComplete: true });
-  },
+	_onRsvpCompleted: function() {
+		this.setState({ rsvpComplete: true });
+	},
 
-  _onFinishUserStat: function() { this.setState({ finishUserStatSubmit: true }); },
+	_onFinishUserStat: function() { this.setState({ finishUserStatSubmit: true }); },
 
-  _onUserStatSubmit: function(email, nNumber) {
-    var id = this.state.userId;
-    var data = { 
-      "data": {
-        "type": "people",
-        "id": id,
-        "attributes": {
-          "contact": {
-          }
-        }
-      }
-    }
+	_onUserStatSubmit: function(email, nNumber) {
+		var id = this.state.userId;
+		var data = { 
+			"data": {
+				"type": "people",
+				"id": id,
+				"attributes": {
+					"contact": {
+					}
+				}
+			}
+		}
 
-    if (email || nNumber) {
-      if (email) data.data.attributes.contact["email"] = email;
-      if (nNumber) data.data.attributes["nNumber"] = nNumber;
+		if (email || nNumber) {
+			if (email) data.data.attributes.contact["email"] = email;
+			if (nNumber) data.data.attributes["nNumber"] = nNumber;
 
-      $.ajax({
-        type: 'PATCH',
-        acccepts: 'application/vnd.api+json, application/*, */*',
-        contentType: 'application/vnd.api+json; ext=bulk',
-        url: 'https://api.tnyu.org/v2/people/me',
-        crossDomain: true,
-        dataType: 'json',
-        data: JSON.stringify(data),
-      });
-    }
-    this._onFinishUserStat();
-  },
+			$.ajax({
+				type: 'PATCH',
+				acccepts: 'application/vnd.api+json, application/*, */*',
+				contentType: 'application/vnd.api+json; ext=bulk',
+				url: 'https://api.tnyu.org/v2/people/me',
+				crossDomain: true,
+				dataType: 'json',
+				data: JSON.stringify(data),
+			});
+		}
+		this._onFinishUserStat();
+	},
 
-  render: function() {
-    var loginNode = (
-      <div className="fb-login">
-      <button className="btn btn-primary btn-lg text-center" onClick={this._loginWithFacebook}>Login with Facebook</button>
-      </div>
-    );
-    
-    var userStatNode = (!this.state.finishUserStatSubmit) ? <UserStat _onUserStatSubmit={this._onUserStatSubmit} emailExists={this.state.emailExists} email={this.state.email} nNumberExists={this.state.nNumberExists} _onCloseWindow={this._onFinishUserStat} /> : null;
+	render: function() {
+		var loginNode = (
+			<div className="fb-login">
+			<button className="btn btn-primary btn-lg text-center" onClick={this._loginWithFacebook}>Login with Facebook</button>
+			</div>
+		);
+
+		var userStatNode = (!this.state.finishUserStatSubmit) ? <UserStat _onUserStatSubmit={this._onUserStatSubmit} emailExists={this.state.emailExists} email={this.state.email} nNumberExists={this.state.nNumberExists} _onCloseWindow={this._onFinishUserStat} /> : null;
 
 
-    var dropDownNode = (
-      <div>
-        {userStatNode}
-        <DropDownMenu eventTitles={this.state.eventTitles} eventIds={this.state.eventIds} eventStartDates={this.state.eventStartDates} rawJson={this.state.rawJson} _onRsvpCompleted={this._onRsvpCompleted} />
-      </div>
-    );
+		var dropDownNode = (
+			<div>
+			{userStatNode}
+			<DropDownMenu eventTitles={this.state.eventTitles} eventIds={this.state.eventIds} eventStartDates={this.state.eventStartDates} rawJson={this.state.rawJson} _onRsvpCompleted={this._onRsvpCompleted} venueAddr={this.state.venueAddresses} venueCaps={this.state.venueCaps} venueNames={this.state.venueNames} totalRsvps={this.state.totalRsvps}/>
+			</div>
+		);
 
-    // different DISPLAY nodes for different state
-    var rsvpDoneNode = (
-      <h1 className="rsvpDoneText">RSVP completed. Remember to check-in at the event! Thanks!</h1>
-    )
+		// different DISPLAY nodes for different state
+		var rsvpDoneNode = (
+			<h1 className="rsvpDoneText">RSVP completed. Remember to check-in at the event! Thanks!</h1>
+		)
 
-    var renderNode = (this.state.rsvpComplete) ? rsvpDoneNode: (this.state.loggedIn) ? dropDownNode : loginNode;
+		var renderNode = (this.state.rsvpComplete) ? rsvpDoneNode: (this.state.loggedIn) ? dropDownNode : loginNode;
 
-    return (
-      <div className="main">
-        <header>
-          <a href="http://techatnyu.org/"><img src="images/techatnyu.png" alt="tech@nyu logo" className="logo"/>
-          </a>
-          <div>
-            <h3 className="title">Tech@NYU Event RSVP Form</h3>
-            <p className="description">The largest student-run tech organization in NYC</p>
-          </div>
-       </header>
-        <div className="form">
-        {renderNode}
-        </div>
-      </div>
-    );
-  }
+		return (
+			<div className="main">
+			<header>
+			<a href="http://techatnyu.org/"><img src="images/techatnyu.png" alt="tech@nyu logo" className="logo"/>
+			</a>
+			<div>
+			<h3 className="title">Tech@NYU Event RSVP Form</h3>
+			<p className="description">The largest student-run tech organization in NYC</p>
+			</div>
+			</header>
+			<div className="form">
+			{renderNode}
+			</div>
+			</div>
+		);
+	}
 });
 
 React.render(<AppHandler />, document.getElementById('app'));
