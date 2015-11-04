@@ -1,11 +1,10 @@
 var EmailNode = React.createClass({
 	render: function() {
 		var emailNode = (this.props.exists) ? (
-
 			<div>
-			<p>Is this your preferred email?</p>
-			<p id="user_email">{this.props.email}</p>
-			<button className="btn btn-sm" onClick={this.props._toChangeEmail}>Change my email (optional)</button>
+				<p>Is this your preferred email?</p>
+				<p id="user_email">{this.props.email}</p>
+				<button className="btn btn-sm" onClick={this.props._toChangeEmail}>Change my email (optional)</button>
 			</div>
 		) : (
 		<div className="email-field col-md-12">
@@ -68,6 +67,7 @@ var DropDownMenu = React.createClass({
 	getInitialState: function() {
 		return {
 			selectedEvents: {},
+			defaultVenueSize: 200
 		};
 	},
 
@@ -111,10 +111,15 @@ var DropDownMenu = React.createClass({
 		return { date: date, time: time, timeStr: timeStr };
 	},
 
+	_isEventFull: function(i) {
+		if (this.props.venueCaps[i]) return (this.props.venueCaps[i] * 3 <= this.props.totalRsvps[i]) ? true : false;
+		return (this.state.defaultVenueSize <= this.props.totalRsvps[i]) ? true : false;
+	},
+
 	render: function() {
 		var itemNodes = this.props.eventTitles.map( (title, i) => {
 			var dateObj = this._getTime(i);
-			var isFull = (this.props.venueCaps[i] * 3 <= this.props.totalRsvps[i] + 1) ? true : false;
+			var isFull = this._isEventFull(i);
 			var checkbox = (!isFull) ? (<input type="checkbox" key={i} onChange={this._toggleCheckbox.bind(this, i)} />) : (<span>Event FULL</span>);
 
 			return (
@@ -163,7 +168,8 @@ var AppHandler = React.createClass({
 			rawJson: [],
 			rsvpComplete: false,
 			finishUserStatSubmit: false,
-			totalRsvps: []
+			totalRsvps: [],
+			facebookUrls: []
 		};
 	},
 
@@ -194,7 +200,7 @@ var AppHandler = React.createClass({
 				var eventIds = json.data.map(function(event) { return event.id; });
 				var eventTitles = json.data.map(function(event) { return event.attributes.title; });
 				var eventStartDates = json.data.map(function(event) { return event.attributes.startDateTime; });
-				var venueIds = json.data.map(function(event) { return event.links.venue.linkage.id; });
+				var venueIds = json.data.map(function(event) { return event.links.venue.linkage.id || undefined; });
 				var rsvps = json.data.map(function(event) { return event.links.rsvps.linkage.length; });
 
 				this.setState({
@@ -203,23 +209,21 @@ var AppHandler = React.createClass({
 					eventIds: eventIds,
 					eventStartDates: eventStartDates,
 					rawJson: json.data,
-					totalRsvps: rsvps
+					totalRsvps: rsvps,
 				});
 			}).then( () => {
 				var venueNames = this.state.venueNames, venueAddresses = this.state.venueAddresses, venueCaps = this.state.venueCaps;
 				this.state.venueIds.map( (venueId) => {
 					$.getJSON('https://api.tnyu.org/v3/venues/' + venueId.toString()).done((json) => {
-						venueNames.push(json.data.attributes.name);
-						venueAddresses.push(json.data.attributes.address);
-						venueCaps.push(json.data.attributes.seats);
+						venueNames.push(json.data.attributes.name || undefined);
+						venueAddresses.push(json.data.attributes.address || undefined);
+						venueCaps.push(json.data.attributes.seats || undefined);
 					}).then(() => {
-						if (venueCaps.length == this.state.eventIds.length) {
-							this.setState({
-								venueNames: venueNames,
-								venueAddresses: venueAddresses,
-								venueCaps: venueCaps
-							});
-						}
+						this.setState({
+							venueNames: venueNames,
+							venueAddresses: venueAddresses,
+							venueCaps: venueCaps
+						});
 					});
 				});
 			});
