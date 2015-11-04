@@ -2,9 +2,9 @@ var EmailNode = React.createClass({
 	render: function() {
 		var emailNode = (this.props.exists) ? (
 			<div>
-				<p>Is this your preferred email?</p>
-				<p id="user_email">{this.props.email}</p>
-				<button className="btn btn-sm" onClick={this.props._toChangeEmail}>Change my email (optional)</button>
+			<p>Is this your preferred email?</p>
+			<p id="user_email">{this.props.email}</p>
+			<button className="btn btn-sm" onClick={this.props._toChangeEmail}>Change my email (optional)</button>
 			</div>
 		) : (
 		<div className="email-field col-md-12">
@@ -80,7 +80,7 @@ var DropDownMenu = React.createClass({
 					type: "GET",
 					acccepts: 'application/vnd.api+json, application/*, */*',
 					ContentType: 'application/vnd.api+json; ext=bulk',
-					url: "https://api.tnyu.org/v2/events/" + id + "/rsvp",
+					url: "https://api.tnyu.org/v3/events/" + id + "/rsvp",
 					async: false,
 					dataType: "jsonp",
 					success: function(data) { console.log(data.status); },
@@ -151,7 +151,7 @@ var DropDownMenu = React.createClass({
 var AppHandler = React.createClass({
 	getInitialState: function() {
 		return {
-			API_VERSION: 'v2',
+			API_VERSION: 'v3',
 			loggedIn: false,
 			userId: '',
 			nNumberExists: false,
@@ -194,15 +194,23 @@ var AppHandler = React.createClass({
 			});
 
 			// get events
-			$.getJSON('https://api.tnyu.org/' + this.state.API_VERSION + '/events/next-10-publicly?page%5Blimit%5D=10&sort=%2bstartDateTime')
+			$.getJSON('https://api.tnyu.org/' + this.state.API_VERSION + '/events/upcoming-publicly?page%5Blimit%5D=10&sort=startDateTime')
 			.done( (json) => {
+				var eventIds = [], eventTitles = [], eventStartDates = [],  venueIds = [], rsvps = [];
+				json.data.map( (event) => {
+					var alreadyRsvpd = false
+					event.relationships.rsvps.data.map( (person) => {
+						alreadyRsvpd = (person.id === this.state.userId) ? true: false;
+					});
+					if (!alreadyRsvpd) {
+						eventIds.push(event.id);
+						eventTitles.push(event.attributes.title);
+						eventStartDates.push(event.attributes.startDateTime);
+						venueIds.push(event.relationships.venue.data.id || undefined);
+						rsvps.push(event.relationships.rsvps.data.length);
+					}
 
-				var eventIds = json.data.map(function(event) { return event.id; });
-				var eventTitles = json.data.map(function(event) { return event.attributes.title; });
-				var eventStartDates = json.data.map(function(event) { return event.attributes.startDateTime; });
-				var venueIds = json.data.map(function(event) { return event.links.venue.linkage.id || undefined; });
-				var rsvps = json.data.map(function(event) { return event.links.rsvps.linkage.length; });
-
+				});
 				this.setState({
 					venueIds: venueIds,
 					eventTitles: eventTitles,
@@ -248,8 +256,7 @@ var AppHandler = React.createClass({
 				"type": "people",
 				"id": id,
 				"attributes": {
-					"contact": {
-					}
+					"contact": {}
 				}
 			}
 		}
