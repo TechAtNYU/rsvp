@@ -120,7 +120,8 @@ var DropDownMenu = React.createClass({
 		var itemNodes = this.props.eventTitles.map( (title, i) => {
 			var dateObj = this._getTime(i);
 			var isFull = this._isEventFull(i);
-			var checkbox = (!isFull) ? (<input type="checkbox" key={i} onChange={this._toggleCheckbox.bind(this, i)} />) : (<span>Event FULL</span>);
+			var isRsvpd = this.props.rsvpdEvents[i];
+			var checkbox = (isFull || isRsvpd) ? (isRsvpd) ? (<span>RSVP'd</span>) : (<span>Event FULL</span>) : (<input type="checkbox" key={i} onChange={this._toggleCheckbox.bind(this, i)} />);
 
 			return (
 				<li key={i} className="list-group-item row">
@@ -166,6 +167,7 @@ var AppHandler = React.createClass({
 			eventIds: [],
 			eventStartDates: [],
 			rawJson: [],
+			rsvpdEvents: [],
 			rsvpComplete: false,
 			finishUserStatSubmit: false,
 			totalRsvps: [],
@@ -196,21 +198,22 @@ var AppHandler = React.createClass({
 			// get events
 			$.getJSON('https://api.tnyu.org/' + this.state.API_VERSION + '/events/upcoming-publicly?page%5Blimit%5D=10&sort=startDateTime')
 			.done( (json) => {
-				var eventIds = [], eventTitles = [], eventStartDates = [],  venueIds = [], rsvps = [];
+				var eventIds = [], eventTitles = [], eventStartDates = [],  venueIds = [], rsvps = [], rsvpdEvents = [];
 				json.data.map( (event) => {
 					var alreadyRsvpd = false
 					event.relationships.rsvps.data.map( (person) => {
 						alreadyRsvpd = (person.id === this.state.userId) ? true: false;
 					});
-					if (!alreadyRsvpd) {
-						eventIds.push(event.id);
-						eventTitles.push(event.attributes.title);
-						eventStartDates.push(event.attributes.startDateTime);
-						venueIds.push(event.relationships.venue.data.id || undefined);
-						rsvps.push(event.relationships.rsvps.data.length);
-					}
+
+					rsvpdEvents.push(alreadyRsvpd);
+					eventIds.push(event.id);
+					eventTitles.push(event.attributes.title);
+					eventStartDates.push(event.attributes.startDateTime);
+					venueIds.push(event.relationships.venue.data.id || undefined);
+					rsvps.push(event.relationships.rsvps.data.length);
 
 				});
+
 				this.setState({
 					venueIds: venueIds,
 					eventTitles: eventTitles,
@@ -218,6 +221,7 @@ var AppHandler = React.createClass({
 					eventStartDates: eventStartDates,
 					rawJson: json.data,
 					totalRsvps: rsvps,
+					rsvpdEvents: rsvpdEvents
 				});
 			}).then( () => {
 				var venueNames = this.state.venueNames, venueAddresses = this.state.venueAddresses, venueCaps = this.state.venueCaps;
@@ -291,7 +295,7 @@ var AppHandler = React.createClass({
 		var dropDownNode = (
 			<div>
 			{userStatNode}
-			<DropDownMenu eventTitles={this.state.eventTitles} eventIds={this.state.eventIds} eventStartDates={this.state.eventStartDates} rawJson={this.state.rawJson} _onRsvpCompleted={this._onRsvpCompleted} venueAddr={this.state.venueAddresses} venueCaps={this.state.venueCaps} venueNames={this.state.venueNames} totalRsvps={this.state.totalRsvps}/>
+			<DropDownMenu eventTitles={this.state.eventTitles} eventIds={this.state.eventIds} eventStartDates={this.state.eventStartDates} rawJson={this.state.rawJson} _onRsvpCompleted={this._onRsvpCompleted} venueAddr={this.state.venueAddresses} venueCaps={this.state.venueCaps} venueNames={this.state.venueNames} totalRsvps={this.state.totalRsvps} rsvpdEvents={this.state.rsvpdEvents}/>
 			</div>
 		);
 
