@@ -1,3 +1,5 @@
+var React = require('react');
+var ReactDOM = require('react-dom');
 var EmailNode = React.createClass({
 	render: function() {
 		var emailNode = (this.props.exists) ? (
@@ -324,4 +326,4 @@ var AppHandler = React.createClass({
 	}
 });
 
-React.render(<AppHandler />, document.getElementById('app'));
+ReactDOM.render(<AppHandler />, document.getElementById('app'));

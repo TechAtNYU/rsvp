@@ -1,0 +1,27 @@
+{
+  "name": "rsvp",
+  "version": "1.0.0",
+  "description": "RSVP to one of our events",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TechAtNYU/rsvp.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TechAtNYU/rsvp/issues"
+  },
+  "homepage": "https://github.com/TechAtNYU/rsvp#readme",
+  "devDependencies": {
+    "babel-core": "^6.1.2",
+    "babel-preset-react": "^6.1.2",
+    "babelify": "^7.2.0",
+    "browserify": "^12.0.1",
+    "react": "^0.14.2",
+    "react-dom": "^0.14.2"
+  }
+}
