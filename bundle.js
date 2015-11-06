@@ -1,8 +1,10 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+'use strict';
+
 var React = require('react');
 var ReactDOM = require('react-dom');
 var EmailNode = React.createClass({
-	render: function () {
+	render: function render() {
 		var emailNode = this.props.exists ? React.createElement(
 			'div',
 			null,
@@ -44,7 +46,7 @@ var EmailNode = React.createClass({
 });
 
 var UserStat = React.createClass({
-	getInitialState: function () {
+	getInitialState: function getInitialState() {
 		return {
 			email: '',
 			nNumber: '',
@@ -52,19 +54,19 @@ var UserStat = React.createClass({
 		};
 	},
 
-	_toChangeEmail: function () {
+	_toChangeEmail: function _toChangeEmail() {
 		this.setState({ changeEmail: true });
 	},
 
-	_onEmailInput: function (e) {
+	_onEmailInput: function _onEmailInput(e) {
 		this.setState({ email: e.target.value.substring(0, 140) });
 	},
 
-	_onNNumberInput: function (e) {
+	_onNNumberInput: function _onNNumberInput(e) {
 		this.setState({ nNumber: e.target.value.substring(0, 140) });
 	},
 
-	render: function () {
+	render: function render() {
 		var emailNode = this.props.emailExists && !this.state.changeEmail ? React.createElement(EmailNode, { exists: true, _onEmailInput: this._onEmailInput, _toChangeEmail: this._toChangeEmail, email: this.props.email }) : React.createElement(EmailNode, { exists: false, _onEmailInput: this._onEmailInput });
 
 		var nNumberNode = !this.props.nNumberExists ? React.createElement(
@@ -123,14 +125,14 @@ var UserStat = React.createClass({
 });
 
 var DropDownMenu = React.createClass({
-	getInitialState: function () {
+	getInitialState: function getInitialState() {
 		return {
 			selectedEvents: {},
 			defaultVenueSize: 200
 		};
 	},
 
-	_getRSVP: function () {
+	_getRSVP: function _getRSVP() {
 		var selected = this.state.selectedEvents;
 		var len = Object.keys(selected).length;
 		this.props.eventIds.map(function (id, i) {
@@ -142,7 +144,7 @@ var DropDownMenu = React.createClass({
 					url: "https://api.tnyu.org/v3/events/" + id + "/rsvp",
 					async: false,
 					dataType: "jsonp",
-					success: function (data) {
+					success: function success(data) {
 						console.log(data.status);
 					}
 				});
@@ -151,7 +153,7 @@ var DropDownMenu = React.createClass({
 		if (len > 0) this.props._onRsvpCompleted();
 	},
 
-	_toggleCheckbox: function (i) {
+	_toggleCheckbox: function _toggleCheckbox(i) {
 		var id = this.props.eventIds[i];
 		var selected = this.state.selectedEvents;
 
@@ -160,7 +162,7 @@ var DropDownMenu = React.createClass({
 		this.setState({ selectedEvents: selected });
 	},
 
-	_getTime: function (i) {
+	_getTime: function _getTime(i) {
 		var date = this.props.eventStartDates[i].substring(0, 10);
 		var time = this.props.eventStartDates[i].substring(11, 16);
 		var det = parseInt(time.substring(0, 2));
@@ -172,16 +174,18 @@ var DropDownMenu = React.createClass({
 		return { date: date, time: time, timeStr: timeStr };
 	},
 
-	_isEventFull: function (i) {
+	_isEventFull: function _isEventFull(i) {
 		if (this.props.venueCaps[i]) return this.props.venueCaps[i] * 3 <= this.props.totalRsvps[i] ? true : false;
 		return this.state.defaultVenueSize <= this.props.totalRsvps[i] ? true : false;
 	},
 
-	render: function () {
-		var itemNodes = this.props.eventTitles.map((title, i) => {
-			var dateObj = this._getTime(i);
-			var isFull = this._isEventFull(i);
-			var isRsvpd = this.props.rsvpdEvents[i];
+	render: function render() {
+		var _this = this;
+
+		var itemNodes = this.props.eventTitles.map(function (title, i) {
+			var dateObj = _this._getTime(i);
+			var isFull = _this._isEventFull(i);
+			var isRsvpd = _this.props.rsvpdEvents[i];
 			var checkbox = isFull || isRsvpd ? isRsvpd ? React.createElement(
 				'span',
 				null,
@@ -190,7 +194,7 @@ var DropDownMenu = React.createClass({
 				'span',
 				null,
 				'Event FULL'
-			) : React.createElement('input', { type: 'checkbox', key: i, onChange: this._toggleCheckbox.bind(this, i) });
+			) : React.createElement('input', { type: 'checkbox', key: i, onChange: _this._toggleCheckbox.bind(_this, i) });
 
 			return React.createElement(
 				'li',
@@ -253,7 +257,7 @@ var DropDownMenu = React.createClass({
 });
 
 var AppHandler = React.createClass({
-	getInitialState: function () {
+	getInitialState: function getInitialState() {
 		return {
 			API_VERSION: 'v3',
 			loggedIn: false,
@@ -278,8 +282,10 @@ var AppHandler = React.createClass({
 		};
 	},
 
-	componentWillMount: function () {
-		$.getJSON('https://api.tnyu.org/v2/people/me').done(user => {
+	componentWillMount: function componentWillMount() {
+		var _this2 = this;
+
+		$.getJSON('https://api.tnyu.org/v2/people/me').done(function (user) {
 			// user is logged in, check for nNumber and email existence
 			var nNumberExists = 'nNumber' in user.data.attributes ? true : false;
 			var emailExists = false;
@@ -289,7 +295,7 @@ var AppHandler = React.createClass({
 				email = user.data.attributes.contact.email;
 			}
 
-			this.setState({
+			_this2.setState({
 				loggedIn: true,
 				userId: user.data.id,
 				nNumberExists: nNumberExists,
@@ -298,17 +304,17 @@ var AppHandler = React.createClass({
 			});
 
 			// get events
-			$.getJSON('https://api.tnyu.org/' + this.state.API_VERSION + '/events/upcoming-publicly?page%5Blimit%5D=10&sort=startDateTime').done(json => {
+			$.getJSON('https://api.tnyu.org/' + _this2.state.API_VERSION + '/events/upcoming-publicly?page%5Blimit%5D=10&sort=startDateTime').done(function (json) {
 				var eventIds = [],
 				    eventTitles = [],
 				    eventStartDates = [],
 				    venueIds = [],
 				    rsvps = [],
 				    rsvpdEvents = [];
-				json.data.map(event => {
+				json.data.map(function (event) {
 					var alreadyRsvpd = false;
-					event.relationships.rsvps.data.map(person => {
-						alreadyRsvpd = person.id === this.state.userId ? true : false;
+					event.relationships.rsvps.data.map(function (person) {
+						alreadyRsvpd = person.id === _this2.state.userId ? true : false;
 					});
 
 					rsvpdEvents.push(alreadyRsvpd);
@@ -319,7 +325,7 @@ var AppHandler = React.createClass({
 					rsvps.push(event.relationships.rsvps.data.length);
 				});
 
-				this.setState({
+				_this2.setState({
 					venueIds: venueIds,
 					eventTitles: eventTitles,
 					eventIds: eventIds,
@@ -328,17 +334,17 @@ var AppHandler = React.createClass({
 					totalRsvps: rsvps,
 					rsvpdEvents: rsvpdEvents
 				});
-			}).then(() => {
-				var venueNames = this.state.venueNames,
-				    venueAddresses = this.state.venueAddresses,
-				    venueCaps = this.state.venueCaps;
-				this.state.venueIds.map(venueId => {
-					$.getJSON('https://api.tnyu.org/v3/venues/' + venueId.toString()).done(json => {
+			}).then(function () {
+				var venueNames = _this2.state.venueNames,
+				    venueAddresses = _this2.state.venueAddresses,
+				    venueCaps = _this2.state.venueCaps;
+				_this2.state.venueIds.map(function (venueId) {
+					$.getJSON('https://api.tnyu.org/v3/venues/' + venueId.toString()).done(function (json) {
 						venueNames.push(json.data.attributes.name || undefined);
 						venueAddresses.push(json.data.attributes.address || undefined);
 						venueCaps.push(json.data.attributes.seats || undefined);
-					}).then(() => {
-						this.setState({
+					}).then(function () {
+						_this2.setState({
 							venueNames: venueNames,
 							venueAddresses: venueAddresses,
 							venueCaps: venueCaps
@@ -349,20 +355,20 @@ var AppHandler = React.createClass({
 		});
 	},
 
-	_loginWithFacebook: function () {
+	_loginWithFacebook: function _loginWithFacebook() {
 		var url = 'https://api.tnyu.org/v2/auth/facebook?success=' + window.location;
 		window.location.href = url;
 	},
 
-	_onRsvpCompleted: function () {
+	_onRsvpCompleted: function _onRsvpCompleted() {
 		this.setState({ rsvpComplete: true });
 	},
 
-	_onFinishUserStat: function () {
+	_onFinishUserStat: function _onFinishUserStat() {
 		this.setState({ finishUserStatSubmit: true });
 	},
 
-	_onUserStatSubmit: function (email, nNumber) {
+	_onUserStatSubmit: function _onUserStatSubmit(email, nNumber) {
 		var id = this.state.userId;
 		var data = {
 			"data": {
@@ -391,7 +397,7 @@ var AppHandler = React.createClass({
 		this._onFinishUserStat();
 	},
 
-	render: function () {
+	render: function render() {
 		var loginNode = React.createElement(
 			'div',
 			{ className: 'fb-login' },
