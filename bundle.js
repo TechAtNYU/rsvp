@@ -128,7 +128,8 @@ var DropDownMenu = React.createClass({
 	getInitialState: function getInitialState() {
 		return {
 			selectedEvents: {},
-			defaultVenueSize: 200
+			defaultVenueSize: 200,
+			API_VERSION: 'v3'
 		};
 	},
 
@@ -138,15 +139,12 @@ var DropDownMenu = React.createClass({
 		this.props.eventIds.map(function (id, i) {
 			if (selected[id]) {
 				$.ajax({
-					type: "GET",
+					type: 'GET',
 					acccepts: 'application/vnd.api+json, application/*, */*',
 					ContentType: 'application/vnd.api+json; ext=bulk',
-					url: "https://api.tnyu.org/v3/events/" + id + "/rsvp",
+					url: 'https://api.tnyu.org/' + this.state.API_VERSION + '/events/' + id + '/rsvp',
 					async: false,
-					dataType: "jsonp",
-					success: function success(data) {
-						console.log(data.status);
-					}
+					dataType: 'jsonp'
 				});
 			}
 		});
@@ -166,7 +164,7 @@ var DropDownMenu = React.createClass({
 		var date = this.props.eventStartDates[i].substring(0, 10);
 		var time = this.props.eventStartDates[i].substring(11, 16);
 		var det = parseInt(time.substring(0, 2));
-		var timeStr = det < 12 ? "AM" : "PM";
+		var timeStr = det < 12 ? 'AM' : 'PM';
 
 		// convert UST to EST
 		time = (parseInt(time.substring(0, 2)) - 5).toString() + time.substring(2, 5);
@@ -285,7 +283,7 @@ var AppHandler = React.createClass({
 	componentWillMount: function componentWillMount() {
 		var _this2 = this;
 
-		$.getJSON('https://api.tnyu.org/v2/people/me').done(function (user) {
+		$.getJSON('https://api.tnyu.org/' + this.state.API_VERSION + '/people/me').done(function (user) {
 			// user is logged in, check for nNumber and email existence
 			var nNumberExists = 'nNumber' in user.data.attributes ? true : false;
 			var emailExists = false;
@@ -312,9 +310,8 @@ var AppHandler = React.createClass({
 				    rsvps = [],
 				    rsvpdEvents = [];
 				json.data.map(function (event) {
-					var alreadyRsvpd = false;
-					event.relationships.rsvps.data.map(function (person) {
-						alreadyRsvpd = person.id === _this2.state.userId ? true : false;
+					var alreadyRsvpd = event.relationships.rsvps.data.some(function (person) {
+						return person.id.toString() === _this2.state.userId.toString();
 					});
 
 					rsvpdEvents.push(alreadyRsvpd);
@@ -339,7 +336,7 @@ var AppHandler = React.createClass({
 				    venueAddresses = _this2.state.venueAddresses,
 				    venueCaps = _this2.state.venueCaps;
 				_this2.state.venueIds.map(function (venueId) {
-					$.getJSON('https://api.tnyu.org/v3/venues/' + venueId.toString()).done(function (json) {
+					$.getJSON('https://api.tnyu.org/' + _this2.state.API_VERSION + '/venues/' + venueId.toString()).done(function (json) {
 						venueNames.push(json.data.attributes.name || undefined);
 						venueAddresses.push(json.data.attributes.address || undefined);
 						venueCaps.push(json.data.attributes.seats || undefined);
@@ -356,7 +353,7 @@ var AppHandler = React.createClass({
 	},
 
 	_loginWithFacebook: function _loginWithFacebook() {
-		var url = 'https://api.tnyu.org/v2/auth/facebook?success=' + window.location;
+		var url = 'https://api.tnyu.org/v3/auth/facebook?success=' + window.location;
 		window.location.href = url;
 	},
 
@@ -371,24 +368,24 @@ var AppHandler = React.createClass({
 	_onUserStatSubmit: function _onUserStatSubmit(email, nNumber) {
 		var id = this.state.userId;
 		var data = {
-			"data": {
-				"type": "people",
-				"id": id,
-				"attributes": {
-					"contact": {}
+			'data': {
+				'type': 'people',
+				'id': id,
+				'attributes': {
+					'contact': {}
 				}
 			}
 		};
 
 		if (email || nNumber) {
-			if (email) data.data.attributes.contact["email"] = email;
-			if (nNumber) data.data.attributes["nNumber"] = nNumber;
+			if (email) data.data.attributes.contact['email'] = email;
+			if (nNumber) data.data.attributes['nNumber'] = nNumber;
 
 			$.ajax({
 				type: 'PATCH',
 				acccepts: 'application/vnd.api+json, application/*, */*',
 				contentType: 'application/vnd.api+json; ext=bulk',
-				url: 'https://api.tnyu.org/v2/people/me',
+				url: 'https://api.tnyu.org/' + this.state.API_VERSION + '/people/me',
 				crossDomain: true,
 				dataType: 'json',
 				data: JSON.stringify(data)

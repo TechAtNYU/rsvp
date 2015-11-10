@@ -5,13 +5,13 @@ var EmailNode = React.createClass({
 		var emailNode = (this.props.exists) ? (
 			<div>
 			<p>Is this your preferred email?</p>
-			<p id="user_email">{this.props.email}</p>
-			<button className="btn btn-sm" onClick={this.props._toChangeEmail}>Change my email (optional)</button>
+			<p id='user_email'>{this.props.email}</p>
+			<button className='btn btn-sm' onClick={this.props._toChangeEmail}>Change my email (optional)</button>
 			</div>
 		) : (
-		<div className="email-field col-md-12">
-		<div className="col-md-3"><span>Email: </span></div>
-		<div className="col-md-9"><input type="text" onChange={this.props._onEmailInput} /></div>
+		<div className='email-field col-md-12'>
+		<div className='col-md-3'><span>Email: </span></div>
+		<div className='col-md-9'><input type='text' onChange={this.props._onEmailInput} /></div>
 		</div>
 		);
 		return emailNode;
@@ -37,25 +37,25 @@ var UserStat = React.createClass({
 		var emailNode = (this.props.emailExists && (!this.state.changeEmail)) ? <EmailNode exists={true} _onEmailInput={this._onEmailInput} _toChangeEmail={this._toChangeEmail} email={this.props.email} /> : <EmailNode exists={false} _onEmailInput={this._onEmailInput} />;
 
 		var nNumberNode = (!this.props.nNumberExists) ? (
-			<div className="nNumber-field col-md-12">
-			<div className="col-md-4"><span>N-Number (if NYU student): </span></div>
-				<div className="col-md-5"><input defaultValue="N" type="text" onChange={this._onNNumberInput} /></div>
+			<div className='nNumber-field col-md-12'>
+			<div className='col-md-4'><span>N-Number (if NYU student): </span></div>
+				<div className='col-md-5'><input defaultValue='N' type='text' onChange={this._onNNumberInput} /></div>
 			</div>
 		): null;
 
 		var submitBtn = ((!this.props.nNumberExists) || (!this.props.emailExists) || this.state.changeEmail) ? (
-			<div className="col-md-offset-6">
-			<button onClick={this.props._onUserStatSubmit.bind(null, this.state.email, this.state.nNumber)} className="btn btn-md">Done</button>
+			<div className='col-md-offset-6'>
+			<button onClick={this.props._onUserStatSubmit.bind(null, this.state.email, this.state.nNumber)} className='btn btn-md'>Done</button>
 			</div>
 		): null;
 
 		var comment = ((!this.props.nNumberExists)||(!this.props.emailExists)) ? (
-			<p className="user-stat-comment">Oops. It looks like you are missing some info in your RSVP.</p>
-		): (this.state.changeEmail) ? <p className="user-stat-comment">Fill in your new email.</p> : null;
+			<p className='user-stat-comment'>Oops. It looks like you are missing some info in your RSVP.</p>
+		): (this.state.changeEmail) ? <p className='user-stat-comment'>Fill in your new email.</p> : null;
 
 		return (
-			<div className="user-stat col-md-8 email-section">
-			<div id="user-stat-close" onClick={this.props._onCloseWindow}>Close</div>
+			<div className='user-stat col-md-8 email-section'>
+			<div id='user-stat-close' onClick={this.props._onCloseWindow}>Close</div>
 			{comment}
 			{emailNode}
 			{nNumberNode}
@@ -69,7 +69,8 @@ var DropDownMenu = React.createClass({
 	getInitialState: function() {
 		return {
 			selectedEvents: {},
-			defaultVenueSize: 200
+			defaultVenueSize: 200,
+			API_VERSION: 'v3'
 		};
 	},
 
@@ -79,13 +80,12 @@ var DropDownMenu = React.createClass({
 		this.props.eventIds.map(function(id, i) {
 			if (selected[id]) { 
 				$.ajax({
-					type: "GET",
+					type: 'GET',
 					acccepts: 'application/vnd.api+json, application/*, */*',
 					ContentType: 'application/vnd.api+json; ext=bulk',
-					url: "https://api.tnyu.org/v3/events/" + id + "/rsvp",
+					url: 'https://api.tnyu.org/' + this.state.API_VERSION + '/events/' + id + '/rsvp',
 					async: false,
-					dataType: "jsonp",
-					success: function(data) { console.log(data.status); },
+					dataType: 'jsonp'
 				});
 			}
 		});
@@ -105,7 +105,7 @@ var DropDownMenu = React.createClass({
 		var date = this.props.eventStartDates[i].substring(0, 10);
 		var time = this.props.eventStartDates[i].substring(11, 16);
 		var det = parseInt(time.substring(0, 2));
-		var timeStr = (det < 12) ? "AM": "PM";
+		var timeStr = (det < 12) ? 'AM': 'PM';
 
 		// convert UST to EST
 		time = (parseInt(time.substring(0, 2)) - 5).toString() + time.substring(2, 5);
@@ -123,14 +123,14 @@ var DropDownMenu = React.createClass({
 			var dateObj = this._getTime(i);
 			var isFull = this._isEventFull(i);
 			var isRsvpd = this.props.rsvpdEvents[i];
-			var checkbox = (isFull || isRsvpd) ? (isRsvpd) ? (<span>RSVP'd</span>) : (<span>Event FULL</span>) : (<input type="checkbox" key={i} onChange={this._toggleCheckbox.bind(this, i)} />);
+			var checkbox = (isFull || isRsvpd) ? (isRsvpd) ? (<span>RSVP'd</span>) : (<span>Event FULL</span>) : (<input type='checkbox' key={i} onChange={this._toggleCheckbox.bind(this, i)} />);
 
 			return (
-				<li key={i} className="list-group-item row">
-				<div className="col-md-2 when">
-				<div className="date"><span>{ dateObj.date }</span></div>
+				<li key={i} className='list-group-item row'>
+				<div className='col-md-2 when'>
+				<div className='date'><span>{ dateObj.date }</span></div>
 				</div>
-				<div className="col-md-7 event-title"><span> { title }</span></div>
+				<div className='col-md-7 event-title'><span> { title }</span></div>
 				<div>{checkbox}</div>
 				</li>
 			);
@@ -138,12 +138,12 @@ var DropDownMenu = React.createClass({
 
 		return(
 			<div>
-			<div className="col-md-8 events">
+			<div className='col-md-8 events'>
 			<h2>UPCOMING EVENTS</h2>
-			<div className="list-group panel">
+			<div className='list-group panel'>
 			{itemNodes}
 			</div>
-			<button className="btn" onClick={this._getRSVP}>RSVP</button>
+			<button className='btn' onClick={this._getRSVP}>RSVP</button>
 			</div>
 			</div>
 		)
@@ -178,7 +178,7 @@ var AppHandler = React.createClass({
 	},
 
 	componentWillMount: function() {
-		$.getJSON('https://api.tnyu.org/v2/people/me')
+		$.getJSON('https://api.tnyu.org/' + this.state.API_VERSION + '/people/me')
 		.done( (user) => {
 			// user is logged in, check for nNumber and email existence
 			var nNumberExists = ('nNumber' in user.data.attributes) ? true: false;
@@ -202,9 +202,8 @@ var AppHandler = React.createClass({
 			.done( (json) => {
 				var eventIds = [], eventTitles = [], eventStartDates = [],  venueIds = [], rsvps = [], rsvpdEvents = [];
 				json.data.map( (event) => {
-					var alreadyRsvpd = false
-					event.relationships.rsvps.data.map( (person) => {
-						alreadyRsvpd = (person.id === this.state.userId) ? true: false;
+					var alreadyRsvpd = event.relationships.rsvps.data.some( (person) => {
+						return person.id.toString() === this.state.userId.toString();
 					});
 
 					rsvpdEvents.push(alreadyRsvpd);
@@ -213,7 +212,6 @@ var AppHandler = React.createClass({
 					eventStartDates.push(event.attributes.startDateTime);
 					venueIds.push(event.relationships.venue.data.id || undefined);
 					rsvps.push(event.relationships.rsvps.data.length);
-
 				});
 
 				this.setState({
@@ -228,7 +226,7 @@ var AppHandler = React.createClass({
 			}).then( () => {
 				var venueNames = this.state.venueNames, venueAddresses = this.state.venueAddresses, venueCaps = this.state.venueCaps;
 				this.state.venueIds.map( (venueId) => {
-					$.getJSON('https://api.tnyu.org/v3/venues/' + venueId.toString()).done((json) => {
+					$.getJSON('https://api.tnyu.org/' + this.state.API_VERSION + '/venues/' + venueId.toString()).done((json) => {
 						venueNames.push(json.data.attributes.name || undefined);
 						venueAddresses.push(json.data.attributes.address || undefined);
 						venueCaps.push(json.data.attributes.seats || undefined);
@@ -245,7 +243,7 @@ var AppHandler = React.createClass({
 	},
 
 	_loginWithFacebook: function() {
-		var url = 'https://api.tnyu.org/v2/auth/facebook?success=' + window.location;
+		var url = 'https://api.tnyu.org/v3/auth/facebook?success=' + window.location;
 		window.location.href = url;
 	},
 
@@ -258,24 +256,24 @@ var AppHandler = React.createClass({
 	_onUserStatSubmit: function(email, nNumber) {
 		var id = this.state.userId;
 		var data = { 
-			"data": {
-				"type": "people",
-				"id": id,
-				"attributes": {
-					"contact": {}
+			'data': {
+				'type': 'people',
+				'id': id,
+				'attributes': {
+					'contact': {}
 				}
 			}
 		}
 
 		if (email || nNumber) {
-			if (email) data.data.attributes.contact["email"] = email;
-			if (nNumber) data.data.attributes["nNumber"] = nNumber;
+			if (email) data.data.attributes.contact['email'] = email;
+			if (nNumber) data.data.attributes['nNumber'] = nNumber;
 
 			$.ajax({
 				type: 'PATCH',
 				acccepts: 'application/vnd.api+json, application/*, */*',
 				contentType: 'application/vnd.api+json; ext=bulk',
-				url: 'https://api.tnyu.org/v2/people/me',
+				url: 'https://api.tnyu.org/' + this.state.API_VERSION + '/people/me',
 				crossDomain: true,
 				dataType: 'json',
 				data: JSON.stringify(data),
@@ -286,8 +284,8 @@ var AppHandler = React.createClass({
 
 	render: function() {
 		var loginNode = (
-			<div className="fb-login">
-			<button className="btn btn-primary btn-lg text-center" onClick={this._loginWithFacebook}>Login with Facebook</button>
+			<div className='fb-login'>
+			<button className='btn btn-primary btn-lg text-center' onClick={this._loginWithFacebook}>Login with Facebook</button>
 			</div>
 		);
 
@@ -303,22 +301,22 @@ var AppHandler = React.createClass({
 
 		// different DISPLAY nodes for different state
 		var rsvpDoneNode = (
-			<h1 className="rsvpDoneText">RSVP completed. Remember to check-in at the event! Thanks!</h1>
+			<h1 className='rsvpDoneText'>RSVP completed. Remember to check-in at the event! Thanks!</h1>
 		)
 
 		var renderNode = (this.state.rsvpComplete) ? rsvpDoneNode: (this.state.loggedIn) ? dropDownNode : loginNode;
 
 		return (
-			<div className="main">
+			<div className='main'>
 			<header>
-			<a href="http://techatnyu.org/"><img src="images/techatnyu.png" alt="tech@nyu logo" className="logo"/>
+			<a href='http://techatnyu.org/'><img src='images/techatnyu.png' alt='tech@nyu logo' className='logo'/>
 			</a>
 			<div>
-			<h3 className="title">Tech@NYU Event RSVP Form</h3>
-			<p className="description">The largest student-run tech organization in NYC</p>
+			<h3 className='title'>Tech@NYU Event RSVP Form</h3>
+			<p className='description'>The largest student-run tech organization in NYC</p>
 			</div>
 			</header>
-			<div className="form">
+			<div className='form'>
 			{renderNode}
 			</div>
 			</div>
