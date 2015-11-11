@@ -4,10 +4,12 @@ body {
   background-color: #EEEEEE;
 }
 input[type=checkbox] {
-  margin-top: 20px;
-  margin-left: 25px;
+  float: right;
   width: 30px;
   height: 20px;
+  right: 2%;
+  position: absolute;
+  margin-top: 20px;
 }
 
 header { 
@@ -71,9 +73,6 @@ header p.description, .title {
   float: left;
   margin-left: 2%;
 }
-.rsvpDoneText{
-  margin-left: 2%;
-}
 .heading {
   font-size: 32px;
   font-weight: bold;
@@ -90,13 +89,17 @@ header p.description, .title {
   text-align: center;
   background-color: #d7552d;
   padding: 10px;
-  width: 20%;
+  max-width: 120px;
+  float: left;
+}
+.time {
+  display: none;
 }
 .event-title {
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 60%;
+  float: left;
+  width: 75%;
+  margin-left: 5%;
+  margin-top: 2%;
 }
 .email-field {
   padding: 3px;
@@ -149,6 +152,24 @@ header p.description, .title {
 .event-list-item:hover {
   background-color: rgb(230,230,250);
 }
+
+
+@media (max-width: 850px) {
+    .events {
+      width: 100%;
+      float: center;
+    }
+    .email-section {
+      width: 100%;
+      position: absolute;
+    }
+    .event-title {
+      position: relative;
+      margin-top: 10px;
+      width: 60%;
+    }
+}
+
 
 
 
