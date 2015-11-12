@@ -7,6 +7,6 @@ To start (cross-domain needs to run on localhost:3000):
 To build:
 ```
 npm install --save react react-dom babelify babel-preset-react babel-preset-es2015
-browserify -t [ babelify --presets [ react es2015 ] ] main.js -o bundle.js
+npm run-script build
 ```
 

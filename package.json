@@ -4,7 +4,8 @@
   "description": "RSVP to one of our events",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+	"build": "browserify -t [ babelify --presets [ react es2015 ] ] main.js -o bundle.js"
   },
   "repository": {
     "type": "git",

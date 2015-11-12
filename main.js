@@ -46,6 +46,7 @@ var UserStat = React.createClass({
 		var submitBtn = ((!this.props.nNumberExists) || (!this.props.emailExists) || this.state.changeEmail) ? (
 			<div className='col-md-offset-6'>
 			<button onClick={this.props._onUserStatSubmit.bind(null, this.state.email, this.state.nNumber)} className='btn btn-md'>Done</button>
+			<br />
 			</div>
 		): null;
 
@@ -77,12 +78,12 @@ var DropDownMenu = React.createClass({
 	_getRSVP: function() {
 		var selected = this.state.selectedEvents;
 		var len = Object.keys(selected).length;
-		this.props.eventIds.map(function(id, i) {
+		this.props.eventIds.map((id, i) => {
 			if (selected[id]) { 
 				$.ajax({
 					type: 'GET',
-					acccepts: 'application/vnd.api+json, application/*, */*',
-					ContentType: 'application/vnd.api+json; ext=bulk',
+					acccepts: 'application/vnd.api+json',
+					ContentType: 'application/vnd.api+json',
 					url: 'https://api.tnyu.org/' + this.state.API_VERSION + '/events/' + id + '/rsvp',
 					async: false,
 					dataType: 'jsonp'
@@ -271,8 +272,8 @@ var AppHandler = React.createClass({
 
 			$.ajax({
 				type: 'PATCH',
-				acccepts: 'application/vnd.api+json, application/*, */*',
-				contentType: 'application/vnd.api+json; ext=bulk',
+				acccepts: 'application/vnd.api+json',
+				contentType: 'application/vnd.api+json',
 				url: 'https://api.tnyu.org/' + this.state.API_VERSION + '/people/me',
 				crossDomain: true,
 				dataType: 'json',
