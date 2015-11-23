@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-	"build": "browserify -t [ babelify --presets [ react es2015 ] ] main.js -o bundle.js"
+    "build": "browserify -t [ babelify --presets [ react es2015 ] ] main.js -o bundle.js",
+    "watch": "watchify -t [ babelify --presets [ react es2015 ] ] main.js -o bundle.js -v",
+    "start": "python -m SimpleHTTPServer 3000"
   },
   "repository": {
     "type": "git",
@@ -24,6 +26,12 @@
     "babelify": "^7.2.0",
     "browserify": "^12.0.1",
     "react": "^0.14.2",
-    "react-dom": "^0.14.2"
+    "react-dom": "^0.14.2",
+    "react-select": "^0.9.1",
+    "react-typeahead-component": "^0.9.0",
+    "watchify": "^3.6.1"
+  },
+  "dependencies": {
+    "superagent": "^1.4.0"
   }
 }

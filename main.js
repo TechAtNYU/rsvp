@@ -1,5 +1,9 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
+var Select = require('react-select');
+
+window.API_VERSION = 'v3';
+
 var EmailNode = React.createClass({
 	render: function() {
 		var emailNode = (this.props.exists) ? (
@@ -15,6 +19,95 @@ var EmailNode = React.createClass({
 		</div>
 		);
 		return emailNode;
+	}
+});
+
+var Typeahead = React.createClass({
+	getInitialState: function() {
+		return {
+			inputVal: '',
+			possibleSelections: [],
+			selectedList: [],
+			indexCurrent: 0
+		}
+	},
+	_handleUp: function() {
+		if (this.state.indexCurrent > 0) this.setState({ indexCurrent: this.state.indexCurrent - 1});
+	},
+	_handleDown: function() {
+		if (this.state.indexCurrent + 1 < this.state.possibleSelections.length) this.setState({ indexCurrent: this.state.indexCurrent + 1});
+	},
+	_handleEnter: function() {
+	
+	},
+	_handleInput: function(e) {
+		e.preventDefault();
+		if (e.keyCode === 38) this._handleUp();
+		else if (e.keyCode === 40) this._handleDown();
+		else if (e.keyCode === 13) this._handleEnter();
+		else {
+			var inputVal = e.target.value;
+			this.setState({inputVal: inputVal});
+			this._getPossibleSelections(inputVal);
+		}
+	},
+	_getPossibleSelections: function(inputVal) {
+		var possibleSelections = (inputVal.length > 0) ? this.props.options.filter((option) => {
+			return option.substring(0, inputVal.length) === inputVal;
+		}): [];
+		this.setState({ possibleSelections: possibleSelections });
+	},
+	render: function() {
+		var possibleSelections = [];
+		var dropDown = (this.state.inputVal.length > 0) ? this.state.possibleSelections.map((selection, i) => {
+			var selected =  (i === this.state.indexCurrent) ? 'selected' : '';
+			return (
+				<div className={"possibleSelection" + selected} key={i}>
+					<span>{selection}</span>
+				</div>
+			)
+		}): null;
+
+		return(
+			<div>
+			<input type="text" placeholder="e.g. python" onKeyUp={this._handleInput}></input>
+			<div className="possibleSelectionList">
+			{dropDown}
+			</div>
+			</div>
+		)
+	}
+});
+
+var SkillPanel = React.createClass({
+	getInitialState: function() {
+		return {
+			skillList: [],
+			skillNameList:[]
+		}
+	},
+	componentWillMount: function() {
+		$.getJSON('https://api.tnyu.org/' + window.API_VERSION + '/skills')
+		.then((skillList) => {
+			var skillNameList = [];
+			var transformedSkillList = skillList.data.map((skill) => {
+				skillNameList.push(skill.attributes.name);
+				return {
+					id: skill.id,
+					name: skill.attributes.name,
+					category: skill.attributes.category
+				}
+			});
+			this.setState({ skillList: transformedSkillList, skillNameList: skillNameList});
+		});
+	},
+	render: function() {
+		return (
+			<div>
+			<span>What are your skills? If you are interested, we are collecting people's skillset to do things like, match you up to someone to build a project if you are interested, create better events that match your interests/skills, etc.</span>
+			<Typeahead options={this.state.skillNameList}/>
+			</div>
+		)
 	}
 });
 
@@ -56,11 +149,13 @@ var UserStat = React.createClass({
 
 		return (
 			<div className='user-stat col-md-8 email-section'>
+			<div>
 			<div id='user-stat-close' onClick={this.props._onCloseWindow}>Close</div>
 			{comment}
 			{emailNode}
 			{nNumberNode}
 			{submitBtn}
+			</div>
 			</div>
 		)
 	}
@@ -70,8 +165,7 @@ var DropDownMenu = React.createClass({
 	getInitialState: function() {
 		return {
 			selectedEvents: {},
-			defaultVenueSize: 200,
-			API_VERSION: 'v3'
+			defaultVenueSize: 200
 		};
 	},
 
@@ -84,7 +178,7 @@ var DropDownMenu = React.createClass({
 					type: 'GET',
 					acccepts: 'application/vnd.api+json',
 					ContentType: 'application/vnd.api+json',
-					url: 'https://api.tnyu.org/' + this.state.API_VERSION + '/events/' + id + '/rsvp',
+					url: 'https://api.tnyu.org/' + window.API_VERSION + '/events/' + id + '/rsvp',
 					async: false,
 					dataType: 'jsonp'
 				});
@@ -126,15 +220,15 @@ var DropDownMenu = React.createClass({
 			var isRsvpd = this.props.rsvpdEvents[i];
 			var checkbox = (isFull || isRsvpd) ? (isRsvpd) ? (<span>RSVP'd</span>) : (<span>Event FULL</span>) : (<input type='checkbox' key={i} onChange={this._toggleCheckbox.bind(this, i)} />);
 
-			return (
-				<li key={i} className='list-group-item row'>
-				<div className='col-md-2 when'>
-				<div className='date'><span>{ dateObj.date }</span></div>
-				</div>
-				<div className='col-md-7 event-title'><span> { title }</span></div>
-				<div>{checkbox}</div>
-				</li>
-			);
+					  return (
+						  <li key={i} className='list-group-item row'>
+						  <div className='col-md-2 when'>
+						  <div className='date'><span>{ dateObj.date }</span></div>
+						  </div>
+						  <div className='col-md-7 event-title'><span> { title }</span></div>
+						  <div>{checkbox}</div>
+						  </li>
+					  );
 		});
 
 		return(
@@ -155,7 +249,6 @@ var DropDownMenu = React.createClass({
 var AppHandler = React.createClass({
 	getInitialState: function() {
 		return {
-			API_VERSION: 'v3',
 			loggedIn: false,
 			userId: '',
 			nNumberExists: false,
@@ -179,7 +272,7 @@ var AppHandler = React.createClass({
 	},
 
 	componentWillMount: function() {
-		$.getJSON('https://api.tnyu.org/' + this.state.API_VERSION + '/people/me')
+		$.getJSON('https://api.tnyu.org/' + window.API_VERSION + '/people/me')
 		.done( (user) => {
 			// user is logged in, check for nNumber and email existence
 			var nNumberExists = ('nNumber' in user.data.attributes) ? true: false;
@@ -199,7 +292,7 @@ var AppHandler = React.createClass({
 			});
 
 			// get events
-			$.getJSON('https://api.tnyu.org/' + this.state.API_VERSION + '/events/upcoming-publicly?page%5Blimit%5D=10&sort=startDateTime')
+			$.getJSON('https://api.tnyu.org/' + window.API_VERSION + '/events/upcoming-publicly?page%5Blimit%5D=10&sort=startDateTime')
 			.done( (json) => {
 				var eventIds = [], eventTitles = [], eventStartDates = [],  venueIds = [], rsvps = [], rsvpdEvents = [];
 				json.data.map( (event) => {
@@ -227,7 +320,7 @@ var AppHandler = React.createClass({
 			}).then( () => {
 				var venueNames = this.state.venueNames, venueAddresses = this.state.venueAddresses, venueCaps = this.state.venueCaps;
 				this.state.venueIds.map( (venueId) => {
-					$.getJSON('https://api.tnyu.org/' + this.state.API_VERSION + '/venues/' + venueId.toString()).done((json) => {
+					$.getJSON('https://api.tnyu.org/' + window.API_VERSION + '/venues/' + venueId.toString()).done((json) => {
 						venueNames.push(json.data.attributes.name || undefined);
 						venueAddresses.push(json.data.attributes.address || undefined);
 						venueCaps.push(json.data.attributes.seats || undefined);
@@ -244,7 +337,7 @@ var AppHandler = React.createClass({
 	},
 
 	_loginWithFacebook: function() {
-		var url = 'https://api.tnyu.org/v3/auth/facebook?success=' + window.location;
+		var url = 'https://api.tnyu.org/' + window.API_VERSION + '/auth/facebook?success=' + window.location;
 		window.location.href = url;
 	},
 
@@ -310,8 +403,7 @@ var AppHandler = React.createClass({
 		return (
 			<div className='main'>
 			<header>
-			<a href='http://techatnyu.org/'><img src='images/techatnyu.png' alt='tech@nyu logo' className='logo'/>
-			</a>
+			<a href='http://techatnyu.org/'><img src='images/techatnyu.png' alt='tech@nyu logo' className='logo'/></a>
 			<div>
 			<h3 className='title'>Tech@NYU Event RSVP Form</h3>
 			<p className='description'>The largest student-run tech organization in NYC</p>
