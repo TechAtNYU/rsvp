@@ -94,7 +94,7 @@ header p.description, .title {
 }
 
 .date p {
-    margin: 0;
+  margin: 0;
 }
 
 .event-title {
@@ -103,6 +103,12 @@ header p.description, .title {
   transform: translateY(-50%);
   width: 60%;
 }
+
+.rsvpd {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 .email-field {
   padding: 3px;
 }
