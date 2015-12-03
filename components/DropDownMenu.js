@@ -42,7 +42,9 @@ var DropDownMenu = React.createClass({
 		var timeStr = (det < 12) ? 'AM': 'PM';
 
 		// convert UST to EST
-		time = (parseInt(time.substring(0, 2)) - 5).toString() + time.substring(2, 5);
+		var newTime = parseInt(time.substring(0, 2)) - 5;
+        if (newTime > 12) newTime -= 12;
+        time = newTime.toString() + time.substring(2, 5);
 
 		return { date: date, time: time, timeStr: timeStr };
 	},
@@ -62,7 +64,10 @@ var DropDownMenu = React.createClass({
 					  return (
 						  <li key={i} className='list-group-item row'>
 						  <div className='col-md-2 when'>
-						  <div className='date'><span>{ dateObj.date }</span></div>
+						  <div className='date'>
+                              <p>{dateObj.date}</p>
+                              <p>{dateObj.time + dateObj.timeStr}</p>
+                          </div>
 						  </div>
 						  <div className='col-md-7 event-title'><span> { title }</span></div>
 						  <div>{checkbox}</div>

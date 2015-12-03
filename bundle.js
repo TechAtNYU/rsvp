@@ -45,7 +45,9 @@ var DropDownMenu = React.createClass({
 		var timeStr = det < 12 ? 'AM' : 'PM';
 
 		// convert UST to EST
-		time = (parseInt(time.substring(0, 2)) - 5).toString() + time.substring(2, 5);
+		var newTime = parseInt(time.substring(0, 2)) - 5;
+		if (newTime > 12) newTime -= 12;
+		time = newTime.toString() + time.substring(2, 5);
 
 		return { date: date, time: time, timeStr: timeStr };
 	},
@@ -82,9 +84,14 @@ var DropDownMenu = React.createClass({
 						'div',
 						{ className: 'date' },
 						React.createElement(
-							'span',
+							'p',
 							null,
 							dateObj.date
+						),
+						React.createElement(
+							'p',
+							null,
+							dateObj.time + dateObj.timeStr
 						)
 					)
 				),
