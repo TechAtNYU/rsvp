@@ -107,7 +107,7 @@ var DropDownMenu = React.createClass({
 				),
 				React.createElement(
 					'div',
-					null,
+					{ className: 'col-md-1 rsvpd' },
 					checkbox
 				)
 			);

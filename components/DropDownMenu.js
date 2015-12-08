@@ -70,7 +70,7 @@ var DropDownMenu = React.createClass({
                           </div>
 						  </div>
 						  <div className='col-md-7 event-title'><span> { title }</span></div>
-						  <div>{checkbox}</div>
+						  <div className='col-md-1 rsvpd'>{checkbox}</div>
 						  </li>
 					  );
 		});
