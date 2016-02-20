@@ -2,11 +2,11 @@
   "name": "rsvp",
   "version": "1.0.0",
   "description": "RSVP to one of our events",
-  "main": "index.js",
+  "index": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "browserify -t [ babelify --presets [ react es2015 ] ] main.js -o bundle.js",
-    "watch": "watchify -t [ babelify --presets [ react es2015 ] ] main.js -o bundle.js -v",
+    "build": "browserify -t [ babelify --presets [ react es2015 ] ] index.js -o bundle.js",
+    "watch": "watchify -t [ babelify --presets [ react es2015 ] ] index.js -o bundle.js -v",
     "start": "python -m SimpleHTTPServer 3000"
   },
   "repository": {
@@ -27,11 +27,14 @@
     "browserify": "^12.0.1",
     "react": "^0.14.2",
     "react-dom": "^0.14.2",
+    "react-redux": "^4.4.0",
     "react-select": "^0.9.1",
     "react-typeahead-component": "^0.9.0",
+    "redux": "^3.3.1",
     "watchify": "^3.6.1"
   },
   "dependencies": {
+    "react-redux": "^4.4.0",
     "superagent": "^1.4.0"
   }
 }
