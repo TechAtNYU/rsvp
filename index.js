@@ -1,28 +1,37 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
-import eventApp from './reducers';
+import thunkMiddleware from 'redux-thunk';
+import createLogger from 'redux-logger';
+import { createStore, applyMiddleware } from 'redux';
+import rootReducer from './reducers';
 import App from './components/App';
+import { toggleEvent, requestLogin, receiveLogin, fetchPerson } from './actions';
 
-import { toggleEvent } from './actions';
+const loggerMiddleware = createLogger();
 
-let store = createStore(eventApp);
+let store = createStore(
+	rootReducer,
+	applyMiddleware(
+		thunkMiddleware,
+		loggerMiddleware
+		)
+	);
 // let store = createStore(eventApp, window.STATE_FROM_SERVER);
 
-render(
- <Provider store={store}>
-     <App />
- </Provider>,
- document.getElementById('app')
-)
+// render(
+//  <Provider store={store}>
+//      <App />
+//  </Provider>,
+//  document.getElementById('app')
+// )
 
-// console.log(store.getState());
+console.log(store.getState());
 
-// let unsubscribe = store.subscribe(() =>  console.log(store.getState()));
+let unsubscribe = store.subscribe(() =>  console.log(store.getState()));
 
-// store.dispatch(toggleEvent(0));
-// store.dispatch(toggleEvent(0));
-// store.dispatch(toggleEvent(0));
+store.dispatch(requestLogin());
+store.dispatch(receiveLogin());
+store.dispatch(fetchPerson())
 
-// unsubscribe();
+unsubscribe();
