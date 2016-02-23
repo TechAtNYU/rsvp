@@ -4,12 +4,16 @@
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.FAIL_LOGIN = exports.RECEIVE_LOGIN = exports.REQUEST_LOGIN = exports.TOGGLE_EVENT = undefined;
+exports.FAIL_TO_GET_EVENTS = exports.RECEIVE_EVENTS = exports.REQUEST_EVENTS = exports.FAIL_LOGIN = exports.RECEIVE_LOGIN = exports.REQUEST_LOGIN = exports.TOGGLE_EVENT = undefined;
 exports.toggleEvent = toggleEvent;
 exports.requestLogin = requestLogin;
 exports.receiveLogin = receiveLogin;
 exports.failLogin = failLogin;
 exports.fetchPerson = fetchPerson;
+exports.requestEvents = requestEvents;
+exports.receiveEvents = receiveEvents;
+exports.failToGetEvents = failToGetEvents;
+exports.fetchEvents = fetchEvents;
 
 var _isomorphicFetch = require('isomorphic-fetch');
 
@@ -41,6 +45,16 @@ function failLogin() {
 	return { type: FAIL_LOGIN };
 }
 
+function shouldLoadFb(state) {
+	if (state.didInvalidate) {
+		window.location.href = 'https://api.tnyu.org/v3/auth/facebook?success=' + window.location;
+	} else if (state.isReceiving) {
+		return false;
+	} else {
+		return state.didInvalidate;
+	}
+}
+
 function fetchPerson() {
 	return function (dispatch) {
 		dispatch(requestLogin);
@@ -48,6 +62,36 @@ function fetchPerson() {
 			return dispatch(receiveLogin(response.data));
 		}).fail(function () {
 			return dispatch(failLogin());
+		});
+	};
+}
+
+var REQUEST_EVENTS = exports.REQUEST_EVENTS = 'REQUEST_EVENTS';
+function requestEvents() {
+	return { type: REQUEST_EVENTS };
+}
+
+var RECEIVE_EVENTS = exports.RECEIVE_EVENTS = 'RECEIVE_EVENTS';
+function receiveEvents(json) {
+	return {
+		type: RECEIVE_EVENTS,
+		receivedAt: Date.now(),
+		json: json
+	};
+}
+
+var FAIL_TO_GET_EVENTS = exports.FAIL_TO_GET_EVENTS = 'FAIL_TO_GET_EVENTS';
+function failToGetEvents() {
+	return { type: FAIL_TO_GET_EVENTS };
+}
+
+function fetchEvents() {
+	return function (dispatch) {
+		dispatch(requestEvents);
+		return $.get('https://api.tnyu.org/v3/events/upcoming-publicly?page%5Blimit%5D=10&sort=startDateTime').done(function (response) {
+			return dispatch(receiveEvents(response.data));
+		}).fail(function () {
+			return dispatch(failToGetEvents());
 		});
 	};
 }
@@ -253,7 +297,7 @@ var unsubscribe = store.subscribe(function () {
 
 store.dispatch((0, _actions.requestLogin)());
 store.dispatch((0, _actions.receiveLogin)());
-store.dispatch((0, _actions.fetchPerson)());
+store.dispatch((0, _actions.fetchEvents)());
 
 unsubscribe();
 
@@ -21164,8 +21208,60 @@ var initialState = {
         receivedAt: null,
         didInvalidate: false
     },
-    'events': []
+    'eventActions': {
+        events: [],
+        isReceiving: false,
+        receivedAt: null,
+        didInvalidate: false
+    }
 };
+
+function updateEvent() {
+    var state = arguments.length <= 0 || arguments[0] === undefined ? initialState.eventActions.events : arguments[0];
+    var action = arguments[1];
+
+    switch (action.type) {
+        case _actions.TOGGLE_EVENT:
+            {
+                return [].concat(_toConsumableArray(state.slice(0, action.index)), [Object.assign({}, state[action.index], {
+                    rsvpd: !state[action.index].rsvpd
+                })], _toConsumableArray(state.slice(action.index + 1)));
+            }
+        default:
+            return state;
+    }
+}
+
+function eventActions() {
+    var state = arguments.length <= 0 || arguments[0] === undefined ? initialState.eventActions : arguments[0];
+    var action = arguments[1];
+
+    switch (action.type) {
+        case _actions.REQUEST_EVENTS:
+            {
+                return Object.assign({}, state, {
+                    isReceiving: true
+                });
+            }
+        case _actions.RECEIVE_EVENTS:
+            {
+                return Object.assign({}, state, {
+                    isReceiving: false,
+                    receivedAt: action.receivedAt,
+                    events: action.json
+                });
+            }
+        case _actions.FAIL_TO_GET_EVENTS:
+            {
+                return Object.assign({}, state, {
+                    isReceiving: false,
+                    didInvalidate: true
+                });
+            }
+        default:
+            return state;
+    }
+}
 
 function loginActions() {
     var state = arguments.length <= 0 || arguments[0] === undefined ? initialState.loginActions : arguments[0];
@@ -21199,25 +21295,10 @@ function loginActions() {
     }
 }
 
-function events() {
-    var state = arguments.length <= 0 || arguments[0] === undefined ? initialState.events : arguments[0];
-    var action = arguments[1];
-
-    switch (action.type) {
-        case _actions.TOGGLE_EVENT:
-            {
-                return [].concat(_toConsumableArray(state.slice(0, action.index)), [Object.assign({}, state[action.index], {
-                    rsvpd: !state[action.index].rsvpd
-                })], _toConsumableArray(state.slice(action.index + 1)));
-            }
-        default:
-            return state;
-    }
-}
-
 var rootReducer = (0, _redux.combineReducers)({
-    events: events,
-    loginActions: loginActions
+    loginActions: loginActions,
+    eventActions: eventActions,
+    updateEvent: updateEvent
 });
 
 exports.default = rootReducer;

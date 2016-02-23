@@ -6,7 +6,13 @@ import createLogger from 'redux-logger';
 import { createStore, applyMiddleware } from 'redux';
 import rootReducer from './reducers';
 import App from './components/App';
-import { toggleEvent, requestLogin, receiveLogin, fetchPerson } from './actions';
+import { 
+	toggleEvent, 
+	requestLogin, 
+	receiveLogin, 
+	fetchPerson,
+	fetchEvents
+} from './actions';
 
 const loggerMiddleware = createLogger();
 
@@ -32,6 +38,6 @@ let unsubscribe = store.subscribe(() =>  console.log(store.getState()));
 
 store.dispatch(requestLogin());
 store.dispatch(receiveLogin());
-store.dispatch(fetchPerson())
+store.dispatch(fetchEvents())
 
 unsubscribe();
