@@ -18,7 +18,7 @@ exports.requestVenue = requestVenue;
 exports.receiveVenue = receiveVenue;
 exports.receivedAllVenues = receivedAllVenues;
 exports.failToGetVenue = failToGetVenue;
-exports.doEverything = doEverything;
+exports.fetchVenue = fetchVenue;
 
 var _isomorphicFetch = require('isomorphic-fetch');
 
@@ -145,26 +145,6 @@ function fetchVenue(id, index) {
 			return dispatch(receiveVenue(index, response.data));
 		}).fail(function () {
 			return dispatch(failToGetVenue(index));
-		});
-	};
-}
-
-function fetchVenues() {
-	return function (dispatch, getState) {
-		Promise.all(getState().eventActions.events.map(function (event, i) {
-			return dispatch(fetchVenue(event.relationships.venue.data.id, i));
-		})).then(function () {
-			return dispatch(receivedAllVenues());
-		});
-	};
-}
-
-function doEverything() {
-	return function (dispatch, getState) {
-		return dispatch(fetchEvents()).then(function () {
-			Promise.all(getState().eventActions.events.map(function (event, i) {
-				return dispatch(fetchVenue(event.relationships.venue.data.id, i));
-			}));
 		});
 	};
 }
@@ -366,8 +346,14 @@ var unsubscribe = store.subscribe(function () {
 	return console.log(store.getState());
 });
 
-store.dispatch((0, _actions.doEverything)()).then(function () {
-	return console.log("done");
+store.dispatch((0, _actions.fetchPerson)()).then(function () {
+	return store.dispatch((0, _actions.fetchEvents)()).then(function () {
+		return Promise.all(store.getState().eventActions.events.map(function (event, i) {
+			return store.dispatch((0, _actions.fetchVenue)(event.relationships.venue.data.id, i));
+		})).then(function () {
+			return console.log("HEY");
+		});
+	});
 });
 
 unsubscribe();
@@ -21308,7 +21294,6 @@ function updateEvent() {
                 isReceiving: true
             })], _toConsumableArray(state.slice(action.index + 1)));
         case _actions.RECEIVE_VENUE:
-            console.log("WHAT");
             return [].concat(_toConsumableArray(state.slice(0, action.index)), [Object.assign({}, state[action.index], {
                 isReceiving: false,
                 receivedAt: Date.now(),

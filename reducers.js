@@ -60,7 +60,6 @@ function updateEvent(state=initialState.eventActions.events, action) {
                 ...state.slice(action.index + 1)
             ]
         case RECEIVE_VENUE:
-        console.log("WHAT");
             return [
                 ...state.slice(0, action.index),
                 Object.assign({}, state[action.index], {

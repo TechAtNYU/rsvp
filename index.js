@@ -19,8 +19,8 @@ import {
 	toggleEvent,
 	fetchPerson,
 	fetchEvents,
-	fetchVenues,
-	doEverything
+	fetchVenue,
+	receivedAllVenues
 }
 from './actions';
 
@@ -44,6 +44,12 @@ let store = createStore(
 
 let unsubscribe = store.subscribe(() => console.log(store.getState()));
 
-store.dispatch(doEverything()).then(() => console.log("done"));
+store.dispatch(fetchPerson()).then(() => store.dispatch(fetchEvents())
+	.then(() => 
+		Promise.all(
+			store.getState().eventActions.events.map((event, i) =>
+						store.dispatch(fetchVenue(event.relationships.venue.data.id, i))))
+		.then(() => console.log("HEY"))
+	));
 
 unsubscribe();

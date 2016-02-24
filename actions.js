@@ -109,7 +109,7 @@ export function failToGetVenue(index) {
 	};
 }
 
-function fetchVenue(id, index) {
+export function fetchVenue(id, index) {
 	return (dispatch) => {
 		dispatch(requestVenue);
 		return $.get('https://api.tnyu.org/v3/venues/' + id)
@@ -118,21 +118,3 @@ function fetchVenue(id, index) {
 	}
 }
 
-function fetchVenues() {
-	return (dispatch, getState) => {
-		Promise.all(getState().eventActions.events.map((event, i) =>
-				dispatch(fetchVenue(event.relationships.venue.data.id, i))))
-			.then(() => dispatch(receivedAllVenues()));
-	}
-}
-
-export function doEverything() {
-	return (dispatch, getState) => {
-		return dispatch(fetchEvents())
-			.then(() => {
-				Promise.all(getState().eventActions.events.map((event, i) =>
-						dispatch(fetchVenue(event.relationships.venue.data.id, i))));
-
-			});
-	}
-}
