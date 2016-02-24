@@ -4,7 +4,7 @@
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.FAIL_TO_GET_EVENTS = exports.RECEIVE_EVENTS = exports.REQUEST_EVENTS = exports.FAIL_LOGIN = exports.RECEIVE_LOGIN = exports.REQUEST_LOGIN = exports.TOGGLE_EVENT = undefined;
+exports.FAIL_TO_RECEIVE_VENUE = exports.RECEIVE_ALL_VENUES = exports.RECEIVE_VENUE = exports.REQUEST_VENUE = exports.FAIL_TO_GET_EVENTS = exports.RECEIVE_EVENTS = exports.REQUEST_EVENTS = exports.FAIL_LOGIN = exports.RECEIVE_LOGIN = exports.REQUEST_LOGIN = exports.TOGGLE_EVENT = undefined;
 exports.toggleEvent = toggleEvent;
 exports.requestLogin = requestLogin;
 exports.receiveLogin = receiveLogin;
@@ -14,6 +14,11 @@ exports.requestEvents = requestEvents;
 exports.receiveEvents = receiveEvents;
 exports.failToGetEvents = failToGetEvents;
 exports.fetchEvents = fetchEvents;
+exports.requestVenue = requestVenue;
+exports.receiveVenue = receiveVenue;
+exports.receivedAllVenues = receivedAllVenues;
+exports.failToGetVenue = failToGetVenue;
+exports.doEverything = doEverything;
 
 var _isomorphicFetch = require('isomorphic-fetch');
 
@@ -23,12 +28,17 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var TOGGLE_EVENT = exports.TOGGLE_EVENT = 'TOGGLE_EVENT';
 function toggleEvent(index) {
-	return { type: TOGGLE_EVENT, index: index };
+	return {
+		type: TOGGLE_EVENT,
+		index: index
+	};
 }
 
 var REQUEST_LOGIN = exports.REQUEST_LOGIN = 'REQUEST_LOGIN';
 function requestLogin() {
-	return { type: REQUEST_LOGIN };
+	return {
+		type: REQUEST_LOGIN
+	};
 }
 
 var RECEIVE_LOGIN = exports.RECEIVE_LOGIN = 'RECEIVE_LOGIN';
@@ -42,17 +52,13 @@ function receiveLogin(json) {
 
 var FAIL_LOGIN = exports.FAIL_LOGIN = 'FAIL_LOGIN';
 function failLogin() {
-	return { type: FAIL_LOGIN };
+	return {
+		type: FAIL_LOGIN
+	};
 }
 
-function shouldLoadFb(state) {
-	if (state.didInvalidate) {
-		window.location.href = 'https://api.tnyu.org/v3/auth/facebook?success=' + window.location;
-	} else if (state.isReceiving) {
-		return false;
-	} else {
-		return state.didInvalidate;
-	}
+function shouldFetchFb() {
+	window.location.href = 'https://api.tnyu.org/v3/auth/facebook?success=' + window.location;
 }
 
 function fetchPerson() {
@@ -68,7 +74,9 @@ function fetchPerson() {
 
 var REQUEST_EVENTS = exports.REQUEST_EVENTS = 'REQUEST_EVENTS';
 function requestEvents() {
-	return { type: REQUEST_EVENTS };
+	return {
+		type: REQUEST_EVENTS
+	};
 }
 
 var RECEIVE_EVENTS = exports.RECEIVE_EVENTS = 'RECEIVE_EVENTS';
@@ -82,16 +90,81 @@ function receiveEvents(json) {
 
 var FAIL_TO_GET_EVENTS = exports.FAIL_TO_GET_EVENTS = 'FAIL_TO_GET_EVENTS';
 function failToGetEvents() {
-	return { type: FAIL_TO_GET_EVENTS };
+	return {
+		type: FAIL_TO_GET_EVENTS
+	};
 }
 
 function fetchEvents() {
 	return function (dispatch) {
 		dispatch(requestEvents);
-		return $.get('https://api.tnyu.org/v3/events/upcoming-publicly?page%5Blimit%5D=10&sort=startDateTime').done(function (response) {
+		return $.get('https://api.tnyu.org/v3/events/upcoming-publicly?page%5Blimit%5D=10&sort=startDateTime?').done(function (response) {
 			return dispatch(receiveEvents(response.data));
 		}).fail(function () {
 			return dispatch(failToGetEvents());
+		});
+	};
+}
+
+var REQUEST_VENUE = exports.REQUEST_VENUE = 'REQUEST_VENUE';
+function requestVenue(index) {
+	return {
+		type: REQUEST_VENUE,
+		index: index
+	};
+}
+
+var RECEIVE_VENUE = exports.RECEIVE_VENUE = 'RECEIVE_VENUE';
+function receiveVenue(index, json) {
+	return {
+		type: RECEIVE_VENUE,
+		index: index,
+		json: json
+	};
+}
+
+var RECEIVE_ALL_VENUES = exports.RECEIVE_ALL_VENUES = 'RECEIVE_ALL_VENUES';
+function receivedAllVenues() {
+	return {
+		type: RECEIVE_ALL_VENUES
+	};
+}
+
+var FAIL_TO_RECEIVE_VENUE = exports.FAIL_TO_RECEIVE_VENUE = 'FAIL_TO_RECEIVE_VENUE';
+function failToGetVenue(index) {
+	return {
+		type: FAIL_TO_RECEIVE_VENUE,
+		index: index
+	};
+}
+
+function fetchVenue(id, index) {
+	return function (dispatch) {
+		dispatch(requestVenue);
+		return $.get('https://api.tnyu.org/v3/venues/' + id).done(function (response) {
+			return dispatch(receiveVenue(index, response.data));
+		}).fail(function () {
+			return dispatch(failToGetVenue(index));
+		});
+	};
+}
+
+function fetchVenues() {
+	return function (dispatch, getState) {
+		Promise.all(getState().eventActions.events.map(function (event, i) {
+			return dispatch(fetchVenue(event.relationships.venue.data.id, i));
+		})).then(function () {
+			return dispatch(receivedAllVenues());
+		});
+	};
+}
+
+function doEverything() {
+	return function (dispatch, getState) {
+		return dispatch(fetchEvents()).then(function () {
+			Promise.all(getState().eventActions.events.map(function (event, i) {
+				return dispatch(fetchVenue(event.relationships.venue.data.id, i));
+			}));
 		});
 	};
 }
@@ -289,15 +362,13 @@ var store = (0, _redux.createStore)(_reducers2.default, (0, _redux.applyMiddlewa
 //  document.getElementById('app')
 // )
 
-console.log(store.getState());
-
 var unsubscribe = store.subscribe(function () {
 	return console.log(store.getState());
 });
 
-store.dispatch((0, _actions.requestLogin)());
-store.dispatch((0, _actions.receiveLogin)());
-store.dispatch((0, _actions.fetchEvents)());
+store.dispatch((0, _actions.doEverything)()).then(function () {
+	return console.log("done");
+});
 
 unsubscribe();
 
@@ -21212,6 +21283,13 @@ var initialState = {
         events: [],
         isReceiving: false,
         receivedAt: null,
+        didInvalidate: false,
+        receivedAllCalls: false
+    },
+    'venueActions': {
+        venues: [],
+        isReceiving: false,
+        receivedAt: null,
         didInvalidate: false
     }
 };
@@ -21222,11 +21300,26 @@ function updateEvent() {
 
     switch (action.type) {
         case _actions.TOGGLE_EVENT:
-            {
-                return [].concat(_toConsumableArray(state.slice(0, action.index)), [Object.assign({}, state[action.index], {
-                    rsvpd: !state[action.index].rsvpd
-                })], _toConsumableArray(state.slice(action.index + 1)));
-            }
+            return [].concat(_toConsumableArray(state.slice(0, action.index)), [Object.assign({}, state[action.index], {
+                rsvpd: !state[action.index].rsvpd
+            })], _toConsumableArray(state.slice(action.index + 1)));
+        case _actions.REQUEST_VENUE:
+            return [].concat(_toConsumableArray(state.slice(0, action.index)), [Object.assign({}, state[action.index], {
+                isReceiving: true
+            })], _toConsumableArray(state.slice(action.index + 1)));
+        case _actions.RECEIVE_VENUE:
+            console.log("WHAT");
+            return [].concat(_toConsumableArray(state.slice(0, action.index)), [Object.assign({}, state[action.index], {
+                isReceiving: false,
+                receivedAt: Date.now(),
+                venue: action.json
+            })], _toConsumableArray(state.slice(action.index + 1)));
+        case _actions.FAIL_TO_RECEIVE_VENUE:
+            return [].concat(_toConsumableArray(state.slice(0, action.index)), [Object.assign({}, state[action.index], {
+                isReceiving: false,
+                receivedAt: Date.now(),
+                didInvalidate: true
+            })], _toConsumableArray(state.slice(action.index + 1)));
         default:
             return state;
     }
@@ -21238,26 +21331,37 @@ function eventActions() {
 
     switch (action.type) {
         case _actions.REQUEST_EVENTS:
-            {
-                return Object.assign({}, state, {
-                    isReceiving: true
-                });
-            }
+            return Object.assign({}, state, {
+                isReceiving: true
+            });
         case _actions.RECEIVE_EVENTS:
-            {
-                return Object.assign({}, state, {
-                    isReceiving: false,
-                    receivedAt: action.receivedAt,
-                    events: action.json
-                });
-            }
+            return Object.assign({}, state, {
+                isReceiving: false,
+                receivedAt: action.receivedAt,
+                events: action.json
+            });
+            break;
         case _actions.FAIL_TO_GET_EVENTS:
-            {
-                return Object.assign({}, state, {
-                    isReceiving: false,
-                    didInvalidate: true
-                });
-            }
+            return Object.assign({}, state, {
+                isReceiving: false,
+                didInvalidate: true
+            });
+        case _actions.REQUEST_VENUE:
+            return Object.assign({}, state, {
+                events: updateEvent(state.events, action)
+            });
+        case _actions.RECEIVE_VENUE:
+            return Object.assign({}, state, {
+                events: updateEvent(state.events, action)
+            });
+        case _actions.FAIL_TO_RECEIVE_VENUE:
+            return Object.assign({}, state, {
+                events: updateEvent(state.events, action)
+            });
+        case _actions.RECEIVE_ALL_VENUES:
+            return Object.assign({}, state, {
+                receivedAllCalls: true
+            });
         default:
             return state;
     }
@@ -21269,27 +21373,21 @@ function loginActions() {
 
     switch (action.type) {
         case _actions.REQUEST_LOGIN:
-            {
-                return Object.assign({}, state, {
-                    isReceiving: true
-                });
-            }
+            return Object.assign({}, state, {
+                isReceiving: true
+            });
         case _actions.RECEIVE_LOGIN:
-            {
-                return Object.assign({}, state, {
-                    isReceiving: false,
-                    didLogin: true,
-                    person: action.json,
-                    receivedAt: action.receivedAt
-                });
-            }
+            return Object.assign({}, state, {
+                isReceiving: false,
+                didLogin: true,
+                person: action.json,
+                receivedAt: action.receivedAt
+            });
         case _actions.FAIL_LOGIN:
-            {
-                return Object.assign({}, state, {
-                    isReceiving: false,
-                    didInvalidate: true
-                });
-            }
+            return Object.assign({}, state, {
+                isReceiving: false,
+                didInvalidate: true
+            });
         default:
             return state;
     }
@@ -21297,8 +21395,7 @@ function loginActions() {
 
 var rootReducer = (0, _redux.combineReducers)({
     loginActions: loginActions,
-    eventActions: eventActions,
-    updateEvent: updateEvent
+    eventActions: eventActions
 });
 
 exports.default = rootReducer;

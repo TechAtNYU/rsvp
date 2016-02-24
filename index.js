@@ -1,18 +1,28 @@
 import React from 'react';
-import { render } from 'react-dom';
-import { Provider } from 'react-redux';
+import {
+	render
+}
+from 'react-dom';
+import {
+	Provider
+}
+from 'react-redux';
 import thunkMiddleware from 'redux-thunk';
 import createLogger from 'redux-logger';
-import { createStore, applyMiddleware } from 'redux';
+import {
+	createStore, applyMiddleware
+}
+from 'redux';
 import rootReducer from './reducers';
 import App from './components/App';
-import { 
-	toggleEvent, 
-	requestLogin, 
-	receiveLogin, 
+import {
+	toggleEvent,
 	fetchPerson,
-	fetchEvents
-} from './actions';
+	fetchEvents,
+	fetchVenues,
+	doEverything
+}
+from './actions';
 
 const loggerMiddleware = createLogger();
 
@@ -21,8 +31,8 @@ let store = createStore(
 	applyMiddleware(
 		thunkMiddleware,
 		loggerMiddleware
-		)
-	);
+	)
+);
 // let store = createStore(eventApp, window.STATE_FROM_SERVER);
 
 // render(
@@ -32,12 +42,8 @@ let store = createStore(
 //  document.getElementById('app')
 // )
 
-console.log(store.getState());
+let unsubscribe = store.subscribe(() => console.log(store.getState()));
 
-let unsubscribe = store.subscribe(() =>  console.log(store.getState()));
-
-store.dispatch(requestLogin());
-store.dispatch(receiveLogin());
-store.dispatch(fetchEvents())
+store.dispatch(doEverything()).then(() => console.log("done"));
 
 unsubscribe();
