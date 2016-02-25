@@ -4,7 +4,7 @@
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.FAIL_TO_RECEIVE_VENUE = exports.RECEIVE_ALL_VENUES = exports.RECEIVE_VENUE = exports.REQUEST_VENUE = exports.FAIL_TO_GET_EVENTS = exports.RECEIVE_EVENTS = exports.REQUEST_EVENTS = exports.FAIL_LOGIN = exports.RECEIVE_LOGIN = exports.REQUEST_LOGIN = exports.TOGGLE_EVENT = undefined;
+exports.FAIL_TO_GET_SKILLS = exports.RECEIVE_SKILLS = exports.REQUEST_SKILLS = exports.FAIL_TO_RECEIVE_VENUE = exports.RECEIVE_ALL_VENUES = exports.RECEIVE_VENUE = exports.REQUEST_VENUE = exports.FAIL_TO_GET_EVENTS = exports.RECEIVE_EVENTS = exports.REQUEST_EVENTS = exports.FAIL_LOGIN = exports.RECEIVE_LOGIN = exports.REQUEST_LOGIN = exports.TOGGLE_EVENT = undefined;
 exports.toggleEvent = toggleEvent;
 exports.requestLogin = requestLogin;
 exports.receiveLogin = receiveLogin;
@@ -19,6 +19,7 @@ exports.receiveVenue = receiveVenue;
 exports.receivedAllVenues = receivedAllVenues;
 exports.failToGetVenue = failToGetVenue;
 exports.fetchVenue = fetchVenue;
+exports.fetchSkills = fetchSkills;
 
 var _isomorphicFetch = require('isomorphic-fetch');
 
@@ -145,6 +146,32 @@ function fetchVenue(id, index) {
 			return dispatch(receiveVenue(index, response.data));
 		}).fail(function () {
 			return dispatch(failToGetVenue(index));
+		});
+	};
+}
+
+var REQUEST_SKILLS = exports.REQUEST_SKILLS = 'REQUEST_SKILLS';
+function requestSkills() {
+	return { type: REQUEST_SKILLS };
+}
+
+var RECEIVE_SKILLS = exports.RECEIVE_SKILLS = 'RECEIVE_SKILLS';
+function receiveSkills(json) {
+	return { type: RECEIVE_SKILLS, json: json };
+}
+
+var FAIL_TO_GET_SKILLS = exports.FAIL_TO_GET_SKILLS = 'FAIL_TO_GET_SKILLS';
+function failToGetSkills() {
+	return { type: FAIL_TO_GET_SKILLS };
+}
+
+function fetchSkills() {
+	return function (dispatch) {
+		dispatch(requestSkills);
+		return $.get('https://api.tnyu.org/v3/skills').done(function (response) {
+			return dispatch(receiveSkills(response.data));
+		}).fail(function () {
+			return dispatch(failToGetSkills());
 		});
 	};
 }
@@ -351,7 +378,7 @@ store.dispatch((0, _actions.fetchPerson)()).then(function () {
 		return Promise.all(store.getState().eventActions.events.map(function (event, i) {
 			return store.dispatch((0, _actions.fetchVenue)(event.relationships.venue.data.id, i));
 		})).then(function () {
-			return console.log("HEY");
+			return store.dispatch((0, _actions.fetchSkills)());
 		});
 	});
 });
@@ -21272,8 +21299,8 @@ var initialState = {
         didInvalidate: false,
         receivedAllCalls: false
     },
-    'venueActions': {
-        venues: [],
+    'skillActions': {
+        skills: [],
         isReceiving: false,
         receivedAt: null,
         didInvalidate: false
@@ -21378,9 +21405,35 @@ function loginActions() {
     }
 }
 
+function skillActions() {
+    var state = arguments.length <= 0 || arguments[0] === undefined ? initialState.skillActions : arguments[0];
+    var action = arguments[1];
+
+    switch (action.type) {
+        case _actions.REQUEST_SKILLS:
+            return Object.assign({}, state, {
+                isReceiving: true
+            });
+        case _actions.RECEIVE_SKILLS:
+            return Object.assign({}, state, {
+                isReceiving: false,
+                receivedAt: Date.now(),
+                skills: action.json
+            });
+        case _actions.FAIL_TO_GET_SKILLS:
+            return Object.assign({}, state, {
+                isReceiving: false,
+                didInvalidate: true
+            });
+        default:
+            return state;
+    }
+}
+
 var rootReducer = (0, _redux.combineReducers)({
     loginActions: loginActions,
-    eventActions: eventActions
+    eventActions: eventActions,
+    skillActions: skillActions
 });
 
 exports.default = rootReducer;

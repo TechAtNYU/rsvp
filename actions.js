@@ -118,3 +118,28 @@ export function fetchVenue(id, index) {
 	}
 }
 
+
+export const REQUEST_SKILLS = 'REQUEST_SKILLS';
+function requestSkills() {
+	return { type: REQUEST_SKILLS };
+}
+
+export const RECEIVE_SKILLS = 'RECEIVE_SKILLS';
+function receiveSkills(json) {
+	return { type: RECEIVE_SKILLS, json };
+}
+
+export const FAIL_TO_GET_SKILLS = 'FAIL_TO_GET_SKILLS';
+function failToGetSkills() {
+	return { type: FAIL_TO_GET_SKILLS };
+}
+
+export function fetchSkills() {
+	return (dispatch) => {
+		dispatch(requestSkills);
+		return $.get('https://api.tnyu.org/v3/skills')
+		.done(response => dispatch(receiveSkills(response.data)))
+		.fail(() => dispatch(failToGetSkills()));
+	}
+}
+

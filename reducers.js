@@ -14,7 +14,10 @@ import {
     REQUEST_VENUE,
     RECEIVE_VENUE,
     RECEIVE_ALL_VENUES,
-    FAIL_TO_RECEIVE_VENUE
+    FAIL_TO_RECEIVE_VENUE,
+    REQUEST_SKILLS,
+    RECEIVE_SKILLS,
+    FAIL_TO_GET_SKILLS
 }
 from './actions';
 
@@ -33,8 +36,8 @@ const initialState = {
         didInvalidate: false,
         receivedAllCalls: false
     },
-    'venueActions': {
-        venues: [],
+    'skillActions': {
+        skills: [],
         isReceiving: false,
         receivedAt: null,
         didInvalidate: false
@@ -146,9 +149,32 @@ function loginActions(state = initialState.loginActions, action) {
     }
 }
 
+function skillActions(state=initialState.skillActions, action) {
+    switch (action.type) {
+        case REQUEST_SKILLS:
+            return Object.assign({}, state, {
+                isReceiving: true,
+            });
+        case RECEIVE_SKILLS:
+            return Object.assign({}, state, {
+                isReceiving: false,
+                receivedAt: Date.now(),
+                skills: action.json
+            });
+        case FAIL_TO_GET_SKILLS:
+            return Object.assign({}, state, {
+                isReceiving: false,
+                didInvalidate: true
+            });
+        default:
+            return state;
+    }
+}
+
 const rootReducer = combineReducers({
     loginActions,
-    eventActions
+    eventActions,
+    skillActions
 })
 
 export default rootReducer;

@@ -20,7 +20,8 @@ import {
 	fetchPerson,
 	fetchEvents,
 	fetchVenue,
-	receivedAllVenues
+	receivedAllVenues,
+	fetchSkills
 }
 from './actions';
 
@@ -49,7 +50,7 @@ store.dispatch(fetchPerson()).then(() => store.dispatch(fetchEvents())
 		Promise.all(
 			store.getState().eventActions.events.map((event, i) =>
 						store.dispatch(fetchVenue(event.relationships.venue.data.id, i))))
-		.then(() => console.log("HEY"))
+		.then(() => store.dispatch(fetchSkills()) )
 	));
 
 unsubscribe();
