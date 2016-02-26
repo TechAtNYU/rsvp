@@ -225,11 +225,12 @@ var Event = function Event(_ref) {
     return _react2.default.createElement(
         'li',
         {
-            onClick: onClick,
+            className: 'list-group-item',
             style: {
-                nameDecoration: rsvpd ? 'strikethrough' : 'none'
+                color: rsvpd ? 'red' : 'black'
             } },
-        attributes.title
+        attributes.title,
+        _react2.default.createElement('input', { type: 'checkbox', onClick: onClick })
     );
 };
 
@@ -265,7 +266,7 @@ var EventList = function EventList(_ref) {
 
     return _react2.default.createElement(
         'ul',
-        null,
+        { className: 'list-group' },
         events.map(function (event, i) {
             return _react2.default.createElement(_Event2.default, _extends({
                 key: i
@@ -305,7 +306,6 @@ var _EventList2 = _interopRequireDefault(_EventList);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var mapStateToProps = function mapStateToProps(state) {
-    console.log(state);
     return {
         events: state.eventActions.events
     };
@@ -314,8 +314,7 @@ var mapStateToProps = function mapStateToProps(state) {
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
     return {
         onEventClick: function onEventClick(id) {
-            // dispatch(toggleEvent(id));
-            console.log("CLICKED");
+            dispatch((0, _actions.toggleEvent)(id));
         }
     };
 };
@@ -21331,6 +21330,7 @@ function updateEvent() {
                 isReceiving: false,
                 receivedAt: Date.now(),
                 venue: action.json,
+                venueSize: action.json.attributes.seats ? action.json.attributes.seats : 200,
                 rsvpd: false
             })], _toConsumableArray(state.slice(action.index + 1)));
         case _actions.FAIL_TO_RECEIVE_VENUE:
@@ -21349,6 +21349,10 @@ function eventActions() {
     var action = arguments[1];
 
     switch (action.type) {
+        case _actions.TOGGLE_EVENT:
+            return Object.assign({}, state, {
+                events: updateEvent(state.events, action)
+            });
         case _actions.REQUEST_EVENTS:
             return Object.assign({}, state, {
                 isReceiving: true

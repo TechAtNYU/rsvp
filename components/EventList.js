@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import Event from './Event';
 
 const EventList = ({ events, onEventClick }) => {
-    return <ul>
+    return <ul className='list-group'>
         {events.map((event, i) => 
                    <Event 
                    key={i}

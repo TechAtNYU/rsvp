@@ -3,7 +3,6 @@ import { toggleEvent } from '../actions';
 import EventList from '../components/EventList';
 
 const mapStateToProps = (state) => {
-    console.log(state);
     return {
         events: state.eventActions.events
     };
@@ -12,8 +11,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         onEventClick: (id) => {
-            // dispatch(toggleEvent(id));
-            console.log("CLICKED");
+            dispatch(toggleEvent(id));
         }
     };
 };

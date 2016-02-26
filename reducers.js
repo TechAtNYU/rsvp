@@ -69,6 +69,7 @@ function updateEvent(state=initialState.eventActions.events, action) {
                     isReceiving: false,
                     receivedAt: Date.now(),
                     venue: action.json,
+                    venueSize: action.json.attributes.seats ? action.json.attributes.seats: 200,
                     rsvpd: false
                 }),
                 ...state.slice(action.index + 1)
@@ -90,6 +91,10 @@ function updateEvent(state=initialState.eventActions.events, action) {
 
 function eventActions(state = initialState.eventActions, action) {
     switch (action.type) {
+        case TOGGLE_EVENT: 
+            return Object.assign({}, state, {
+                events: updateEvent(state.events, action)
+            })
         case REQUEST_EVENTS:
             return Object.assign({}, state, {
                 isReceiving: true

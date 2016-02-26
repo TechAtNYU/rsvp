@@ -2,11 +2,12 @@ import React, { PropTypes } from 'react';
 
 const Event = ({ onClick, rsvpd, attributes }) => {
     return <li
-    onClick={onClick}
+    className='list-group-item'
     style={{
-        nameDecoration: rsvpd ? 'strikethrough': 'none'
+        color: rsvpd ? 'red': 'black'
     }}>
     {attributes.title}
+    <input type='checkbox' onClick={onClick} />
     </li>
 }
 
