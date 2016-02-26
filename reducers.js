@@ -68,7 +68,8 @@ function updateEvent(state=initialState.eventActions.events, action) {
                 Object.assign({}, state[action.index], {
                     isReceiving: false,
                     receivedAt: Date.now(),
-                    venue: action.json
+                    venue: action.json,
+                    rsvpd: false
                 }),
                 ...state.slice(action.index + 1)
             ]

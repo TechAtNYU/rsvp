@@ -193,7 +193,8 @@ var _VisibleEventList2 = _interopRequireDefault(_VisibleEventList);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var App = function App() {
+var App = function App(_ref) {
+    var events = _ref.events;
     return _react2.default.createElement(
         'div',
         null,
@@ -219,7 +220,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var Event = function Event(_ref) {
     var onClick = _ref.onClick;
     var rsvpd = _ref.rsvpd;
-    var name = _ref.name;
+    var attributes = _ref.attributes;
 
     return _react2.default.createElement(
         'li',
@@ -228,14 +229,13 @@ var Event = function Event(_ref) {
             style: {
                 nameDecoration: rsvpd ? 'strikethrough' : 'none'
             } },
-        name
+        attributes.title
     );
 };
 
 Event.propTypes = {
     onClick: _react.PropTypes.func.isRequired,
-    rsvpd: _react.PropTypes.bool.isRequired,
-    name: _react.PropTypes.string.isRequired
+    rsvpd: _react.PropTypes.bool.isRequired
 };
 
 exports.default = Event;
@@ -266,12 +266,12 @@ var EventList = function EventList(_ref) {
     return _react2.default.createElement(
         'ul',
         null,
-        events.map(function (event) {
+        events.map(function (event, i) {
             return _react2.default.createElement(_Event2.default, _extends({
-                key: event.id
+                key: i
             }, event, {
                 onClick: function onClick() {
-                    return onEventClick(event.id);
+                    return onEventClick(i);
                 }
             }));
         })
@@ -280,9 +280,7 @@ var EventList = function EventList(_ref) {
 
 EventList.propTypes = {
     events: _react.PropTypes.arrayOf(_react.PropTypes.shape({
-        id: _react.PropTypes.number.isRequired,
-        rsvpd: _react.PropTypes.bool.isRequired,
-        name: _react.PropTypes.string.isRequired
+        id: _react.PropTypes.string.isRequired
     }).isRequired).isRequired,
     onEventClick: _react.PropTypes.func.isRequired
 };
@@ -307,15 +305,17 @@ var _EventList2 = _interopRequireDefault(_EventList);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var mapStateToProps = function mapStateToProps(state) {
+    console.log(state);
     return {
-        events: state.events
+        events: state.eventActions.events
     };
 };
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
     return {
         onEventClick: function onEventClick(id) {
-            dispatch((0, _actions.toggleEvent)(id));
+            // dispatch(toggleEvent(id));
+            console.log("CLICKED");
         }
     };
 };
@@ -378,7 +378,13 @@ store.dispatch((0, _actions.fetchPerson)()).then(function () {
 		return Promise.all(store.getState().eventActions.events.map(function (event, i) {
 			return store.dispatch((0, _actions.fetchVenue)(event.relationships.venue.data.id, i));
 		})).then(function () {
-			return store.dispatch((0, _actions.fetchSkills)());
+			return store.dispatch((0, _actions.fetchSkills)()).then(function () {
+				(0, _reactDom.render)(_react2.default.createElement(
+					_reactRedux.Provider,
+					{ store: store },
+					_react2.default.createElement(_App2.default, null)
+				), document.getElementById('app'));
+			});
 		});
 	});
 });
@@ -21324,7 +21330,8 @@ function updateEvent() {
             return [].concat(_toConsumableArray(state.slice(0, action.index)), [Object.assign({}, state[action.index], {
                 isReceiving: false,
                 receivedAt: Date.now(),
-                venue: action.json
+                venue: action.json,
+                rsvpd: false
             })], _toConsumableArray(state.slice(action.index + 1)));
         case _actions.FAIL_TO_RECEIVE_VENUE:
             return [].concat(_toConsumableArray(state.slice(0, action.index)), [Object.assign({}, state[action.index], {

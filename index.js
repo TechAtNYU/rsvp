@@ -45,12 +45,23 @@ let store = createStore(
 
 let unsubscribe = store.subscribe(() => console.log(store.getState()));
 
-store.dispatch(fetchPerson()).then(() => store.dispatch(fetchEvents())
-	.then(() => 
+store.dispatch(fetchPerson()).then(() => 
+	store.dispatch(fetchEvents())
+	.then(() =>
 		Promise.all(
 			store.getState().eventActions.events.map((event, i) =>
-						store.dispatch(fetchVenue(event.relationships.venue.data.id, i))))
-		.then(() => store.dispatch(fetchSkills()) )
+				store.dispatch(fetchVenue(event.relationships.venue.data.id, i))))
+		.then(() => 
+			store.dispatch(fetchSkills())
+			.then(() => {
+				render(
+					<Provider store={store}>
+					<App />
+					</Provider>,
+					document.getElementById('app')
+					);
+			}))
 	));
+
 
 unsubscribe();

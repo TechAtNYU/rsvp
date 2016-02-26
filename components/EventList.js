@@ -3,11 +3,11 @@ import Event from './Event';
 
 const EventList = ({ events, onEventClick }) => {
     return <ul>
-        {events.map(event => 
+        {events.map((event, i) => 
                    <Event 
-                   key={event.id}
+                   key={i}
                     {...event}
-                    onClick={() => onEventClick(event.id)  }
+                    onClick={() => onEventClick(i)  }
                     />
                    )}
     </ul>
@@ -15,9 +15,7 @@ const EventList = ({ events, onEventClick }) => {
 
 EventList.propTypes = {
     events: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        rsvpd: PropTypes.bool.isRequired,
-        name: PropTypes.string.isRequired
+        id: PropTypes.string.isRequired,
     }).isRequired).isRequired,
     onEventClick: PropTypes.func.isRequired
 }
