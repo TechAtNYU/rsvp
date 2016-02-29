@@ -1,10 +1,10 @@
 import React, { PropTypes } from 'react';
 
-const Event = ({ onClick, rsvpd, attributes }) => {
+const Event = ({ onClick, selected, attributes }) => {
     return <li
     className='list-group-item'
     style={{
-        color: rsvpd ? 'red': 'black'
+        color: selected ? 'red': 'black'
     }}>
     {attributes.title}
     <input type='checkbox' onClick={onClick} />
@@ -13,7 +13,7 @@ const Event = ({ onClick, rsvpd, attributes }) => {
 
 Event.propTypes = {
     onClick: PropTypes.func.isRequired,
-    rsvpd: PropTypes.bool.isRequired
+    selected: PropTypes.bool.isRequired
 }
 
 export default Event

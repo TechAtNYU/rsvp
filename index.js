@@ -34,14 +34,6 @@ let store = createStore(
 		loggerMiddleware
 	)
 );
-// let store = createStore(eventApp, window.STATE_FROM_SERVER);
-
-// render(
-//  <Provider store={store}>
-//      <App />
-//  </Provider>,
-//  document.getElementById('app')
-// )
 
 let unsubscribe = store.subscribe(() => console.log(store.getState()));
 
@@ -53,15 +45,14 @@ store.dispatch(fetchPerson()).then(() =>
 				store.dispatch(fetchVenue(event.relationships.venue.data.id, i))))
 		.then(() => 
 			store.dispatch(fetchSkills())
-			.then(() => {
-				render(
+			.then(() => render(
 					<Provider store={store}>
 					<App />
 					</Provider>,
 					document.getElementById('app')
-					);
-			}))
-	));
+					)
+			))
+	))
 
 
 unsubscribe();

@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { toggleEvent } from '../actions';
+import { toggleEvent, rsvpToEvents } from '../actions';
 import EventList from '../components/EventList';
 
 const mapStateToProps = (state) => {
@@ -10,9 +10,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        onEventClick: (id) => {
-            dispatch(toggleEvent(id));
-        }
+        onEventClick: (id) => dispatch(toggleEvent(id)),
+        onRsvpClick: () => dispatch(rsvpToEvents())
     };
 };
 

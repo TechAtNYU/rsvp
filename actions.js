@@ -52,12 +52,21 @@ export function requestEvents() {
 }
 
 export const RECEIVE_EVENTS = 'RECEIVE_EVENTS';
-export function receiveEvents(json) {
+export function receiveEvents(upcomingEvents, getState) {
+	let personId = getState().loginActions.person.id;
+	let json = checkIfRsvpd(upcomingEvents, personId);
 	return {
 		type: RECEIVE_EVENTS,
 		receivedAt: Date.now(),
 		json
 	}
+}
+
+function checkIfRsvpd(json, personId) {
+	return json.map((event, i) => {
+		if (event.relationships.rsvps.data.filter((person) => person.id === personId).length > 0) event.rsvp = true;
+		return event;
+	});
 }
 
 export const FAIL_TO_GET_EVENTS = 'FAIL_TO_GET_EVENTS';
@@ -68,10 +77,10 @@ export function failToGetEvents() {
 }
 
 export function fetchEvents() {
-	return function(dispatch) {
+	return function(dispatch, getState) {
 		dispatch(requestEvents);
 		return $.get('https://api.tnyu.org/v3/events/upcoming-publicly?page%5Blimit%5D=10&sort=startDateTime?')
-			.done(response => dispatch(receiveEvents(response.data)))
+			.done(response => dispatch(receiveEvents(response.data, getState)))
 			.fail(() => dispatch(failToGetEvents()));
 	}
 }
@@ -140,6 +149,21 @@ export function fetchSkills() {
 		return $.get('https://api.tnyu.org/v3/skills')
 		.done(response => dispatch(receiveSkills(response.data)))
 		.fail(() => dispatch(failToGetSkills()));
+	}
+}
+
+export const RSVPD_TO_EVENT = 'RSVPD_TO_EVENT';
+export function rsvpd(index) {
+	return { type: RSVPD_TO_EVENT, index };
+}
+
+export function rsvpToEvents() {
+	return (dispatch, getState) => {
+		getState().eventActions.events.map((event, i) => {
+			$.get('https://api.tnyu.org/v3/events/' + event.id + '/rsvp')
+			.done(() => dispatch(rsvpd(i)))
+			.fail(() => console.log("RSVP to " + event.attributes.title + " failed. Try again later."));
+		})
 	}
 }
 

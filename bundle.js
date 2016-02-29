@@ -4,7 +4,7 @@
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.FAIL_TO_GET_SKILLS = exports.RECEIVE_SKILLS = exports.REQUEST_SKILLS = exports.FAIL_TO_RECEIVE_VENUE = exports.RECEIVE_ALL_VENUES = exports.RECEIVE_VENUE = exports.REQUEST_VENUE = exports.FAIL_TO_GET_EVENTS = exports.RECEIVE_EVENTS = exports.REQUEST_EVENTS = exports.FAIL_LOGIN = exports.RECEIVE_LOGIN = exports.REQUEST_LOGIN = exports.TOGGLE_EVENT = undefined;
+exports.RSVPD_TO_EVENT = exports.FAIL_TO_GET_SKILLS = exports.RECEIVE_SKILLS = exports.REQUEST_SKILLS = exports.FAIL_TO_RECEIVE_VENUE = exports.RECEIVE_ALL_VENUES = exports.RECEIVE_VENUE = exports.REQUEST_VENUE = exports.FAIL_TO_GET_EVENTS = exports.RECEIVE_EVENTS = exports.REQUEST_EVENTS = exports.FAIL_LOGIN = exports.RECEIVE_LOGIN = exports.REQUEST_LOGIN = exports.TOGGLE_EVENT = undefined;
 exports.toggleEvent = toggleEvent;
 exports.requestLogin = requestLogin;
 exports.receiveLogin = receiveLogin;
@@ -20,6 +20,8 @@ exports.receivedAllVenues = receivedAllVenues;
 exports.failToGetVenue = failToGetVenue;
 exports.fetchVenue = fetchVenue;
 exports.fetchSkills = fetchSkills;
+exports.rsvpd = rsvpd;
+exports.rsvpToEvents = rsvpToEvents;
 
 var _isomorphicFetch = require('isomorphic-fetch');
 
@@ -81,12 +83,23 @@ function requestEvents() {
 }
 
 var RECEIVE_EVENTS = exports.RECEIVE_EVENTS = 'RECEIVE_EVENTS';
-function receiveEvents(json) {
+function receiveEvents(upcomingEvents, getState) {
+	var personId = getState().loginActions.person.id;
+	var json = checkIfRsvpd(upcomingEvents, personId);
 	return {
 		type: RECEIVE_EVENTS,
 		receivedAt: Date.now(),
 		json: json
 	};
+}
+
+function checkIfRsvpd(json, personId) {
+	return json.map(function (event, i) {
+		if (event.relationships.rsvps.data.filter(function (person) {
+			return person.id === personId;
+		}).length > 0) event.rsvp = true;
+		return event;
+	});
 }
 
 var FAIL_TO_GET_EVENTS = exports.FAIL_TO_GET_EVENTS = 'FAIL_TO_GET_EVENTS';
@@ -97,10 +110,10 @@ function failToGetEvents() {
 }
 
 function fetchEvents() {
-	return function (dispatch) {
+	return function (dispatch, getState) {
 		dispatch(requestEvents);
 		return $.get('https://api.tnyu.org/v3/events/upcoming-publicly?page%5Blimit%5D=10&sort=startDateTime?').done(function (response) {
-			return dispatch(receiveEvents(response.data));
+			return dispatch(receiveEvents(response.data, getState));
 		}).fail(function () {
 			return dispatch(failToGetEvents());
 		});
@@ -176,6 +189,23 @@ function fetchSkills() {
 	};
 }
 
+var RSVPD_TO_EVENT = exports.RSVPD_TO_EVENT = 'RSVPD_TO_EVENT';
+function rsvpd(index) {
+	return { type: RSVPD_TO_EVENT, index: index };
+}
+
+function rsvpToEvents() {
+	return function (dispatch, getState) {
+		getState().eventActions.events.map(function (event, i) {
+			$.get('https://api.tnyu.org/v3/events/' + event.id + '/rsvp').done(function () {
+				return dispatch(rsvpd(i));
+			}).fail(function () {
+				return console.log("RSVP to " + event.attributes.title + " failed. Try again later.");
+			});
+		});
+	};
+}
+
 },{"isomorphic-fetch":8}],2:[function(require,module,exports){
 'use strict';
 
@@ -219,7 +249,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var Event = function Event(_ref) {
     var onClick = _ref.onClick;
-    var rsvpd = _ref.rsvpd;
+    var selected = _ref.selected;
     var attributes = _ref.attributes;
 
     return _react2.default.createElement(
@@ -227,7 +257,7 @@ var Event = function Event(_ref) {
         {
             className: 'list-group-item',
             style: {
-                color: rsvpd ? 'red' : 'black'
+                color: selected ? 'red' : 'black'
             } },
         attributes.title,
         _react2.default.createElement('input', { type: 'checkbox', onClick: onClick })
@@ -236,7 +266,7 @@ var Event = function Event(_ref) {
 
 Event.propTypes = {
     onClick: _react.PropTypes.func.isRequired,
-    rsvpd: _react.PropTypes.bool.isRequired
+    selected: _react.PropTypes.bool.isRequired
 };
 
 exports.default = Event;
@@ -263,19 +293,31 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var EventList = function EventList(_ref) {
     var events = _ref.events;
     var onEventClick = _ref.onEventClick;
+    var onRsvpClick = _ref.onRsvpClick;
 
     return _react2.default.createElement(
-        'ul',
-        { className: 'list-group' },
-        events.map(function (event, i) {
-            return _react2.default.createElement(_Event2.default, _extends({
-                key: i
-            }, event, {
-                onClick: function onClick() {
-                    return onEventClick(i);
-                }
-            }));
-        })
+        'div',
+        null,
+        _react2.default.createElement(
+            'ul',
+            { className: 'list-group' },
+            events.map(function (event, i) {
+                return _react2.default.createElement(_Event2.default, _extends({
+                    key: i
+                }, event, {
+                    onClick: function onClick() {
+                        return onEventClick(i);
+                    }
+                }));
+            })
+        ),
+        _react2.default.createElement(
+            'button',
+            { onClick: function onClick() {
+                    return onRsvpClick();
+                } },
+            'RSVP'
+        )
     );
 };
 
@@ -283,7 +325,8 @@ EventList.propTypes = {
     events: _react.PropTypes.arrayOf(_react.PropTypes.shape({
         id: _react.PropTypes.string.isRequired
     }).isRequired).isRequired,
-    onEventClick: _react.PropTypes.func.isRequired
+    onEventClick: _react.PropTypes.func.isRequired,
+    onRsvpClick: _react.PropTypes.func.isRequired
 };
 
 exports.default = EventList;
@@ -314,7 +357,10 @@ var mapStateToProps = function mapStateToProps(state) {
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
     return {
         onEventClick: function onEventClick(id) {
-            dispatch((0, _actions.toggleEvent)(id));
+            return dispatch((0, _actions.toggleEvent)(id));
+        },
+        onRsvpClick: function onRsvpClick() {
+            return dispatch((0, _actions.rsvpToEvents)());
         }
     };
 };
@@ -359,14 +405,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var loggerMiddleware = (0, _reduxLogger2.default)();
 
 var store = (0, _redux.createStore)(_reducers2.default, (0, _redux.applyMiddleware)(_reduxThunk2.default, loggerMiddleware));
-// let store = createStore(eventApp, window.STATE_FROM_SERVER);
-
-// render(
-//  <Provider store={store}>
-//      <App />
-//  </Provider>,
-//  document.getElementById('app')
-// )
 
 var unsubscribe = store.subscribe(function () {
 	return console.log(store.getState());
@@ -378,7 +416,7 @@ store.dispatch((0, _actions.fetchPerson)()).then(function () {
 			return store.dispatch((0, _actions.fetchVenue)(event.relationships.venue.data.id, i));
 		})).then(function () {
 			return store.dispatch((0, _actions.fetchSkills)()).then(function () {
-				(0, _reactDom.render)(_react2.default.createElement(
+				return (0, _reactDom.render)(_react2.default.createElement(
 					_reactRedux.Provider,
 					{ store: store },
 					_react2.default.createElement(_App2.default, null)
@@ -1569,10 +1607,7 @@ function isPlainObject(value) {
       objectToString.call(value) != objectTag || isHostObject(value)) {
     return false;
   }
-  var proto = objectProto;
-  if (typeof value.constructor == 'function') {
-    proto = getPrototypeOf(value);
-  }
+  var proto = getPrototypeOf(value);
   if (proto === null) {
     return true;
   }
@@ -21275,8 +21310,77 @@ arguments[4][19][0].apply(exports,arguments)
 },{"dup":19}],188:[function(require,module,exports){
 arguments[4][20][0].apply(exports,arguments)
 },{"dup":20}],189:[function(require,module,exports){
-arguments[4][21][0].apply(exports,arguments)
-},{"./_isHostObject":187,"./isObjectLike":188,"dup":21}],190:[function(require,module,exports){
+var isHostObject = require('./_isHostObject'),
+    isObjectLike = require('./isObjectLike');
+
+/** `Object#toString` result references. */
+var objectTag = '[object Object]';
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/** Used to resolve the decompiled source of functions. */
+var funcToString = Function.prototype.toString;
+
+/** Used to infer the `Object` constructor. */
+var objectCtorString = funcToString.call(Object);
+
+/**
+ * Used to resolve the [`toStringTag`](http://ecma-international.org/ecma-262/6.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+var objectToString = objectProto.toString;
+
+/** Built-in value references. */
+var getPrototypeOf = Object.getPrototypeOf;
+
+/**
+ * Checks if `value` is a plain object, that is, an object created by the
+ * `Object` constructor or one with a `[[Prototype]]` of `null`.
+ *
+ * @static
+ * @memberOf _
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a plain object, else `false`.
+ * @example
+ *
+ * function Foo() {
+ *   this.a = 1;
+ * }
+ *
+ * _.isPlainObject(new Foo);
+ * // => false
+ *
+ * _.isPlainObject([1, 2, 3]);
+ * // => false
+ *
+ * _.isPlainObject({ 'x': 0, 'y': 0 });
+ * // => true
+ *
+ * _.isPlainObject(Object.create(null));
+ * // => true
+ */
+function isPlainObject(value) {
+  if (!isObjectLike(value) ||
+      objectToString.call(value) != objectTag || isHostObject(value)) {
+    return false;
+  }
+  var proto = objectProto;
+  if (typeof value.constructor == 'function') {
+    proto = getPrototypeOf(value);
+  }
+  if (proto === null) {
+    return true;
+  }
+  var Ctor = proto.constructor;
+  return (typeof Ctor == 'function' &&
+    Ctor instanceof Ctor && funcToString.call(Ctor) == objectCtorString);
+}
+
+module.exports = isPlainObject;
+
+},{"./_isHostObject":187,"./isObjectLike":188}],190:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21319,7 +21423,7 @@ function updateEvent() {
     switch (action.type) {
         case _actions.TOGGLE_EVENT:
             return [].concat(_toConsumableArray(state.slice(0, action.index)), [Object.assign({}, state[action.index], {
-                rsvpd: !state[action.index].rsvpd
+                selected: !state[action.index].selected
             })], _toConsumableArray(state.slice(action.index + 1)));
         case _actions.REQUEST_VENUE:
             return [].concat(_toConsumableArray(state.slice(0, action.index)), [Object.assign({}, state[action.index], {
@@ -21331,13 +21435,18 @@ function updateEvent() {
                 receivedAt: Date.now(),
                 venue: action.json,
                 venueSize: action.json.attributes.seats ? action.json.attributes.seats : 200,
-                rsvpd: false
+                selected: false
             })], _toConsumableArray(state.slice(action.index + 1)));
         case _actions.FAIL_TO_RECEIVE_VENUE:
             return [].concat(_toConsumableArray(state.slice(0, action.index)), [Object.assign({}, state[action.index], {
                 isReceiving: false,
                 receivedAt: Date.now(),
                 didInvalidate: true
+            })], _toConsumableArray(state.slice(action.index + 1)));
+        case _actions.RSVPD_TO_EVENT:
+            return [].concat(_toConsumableArray(state.slice(0, action.index)), [Object.assign({}, state[action.index], {
+                rsvpd: true,
+                selected: false
             })], _toConsumableArray(state.slice(action.index + 1)));
         default:
             return state;
@@ -21384,6 +21493,10 @@ function eventActions() {
         case _actions.RECEIVE_ALL_VENUES:
             return Object.assign({}, state, {
                 receivedAllCalls: true
+            });
+        case _actions.RSVPD_TO_EVENT:
+            return Object.assign({}, state, {
+                events: updateEvent(state.events, action)
             });
         default:
             return state;

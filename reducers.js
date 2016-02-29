@@ -17,7 +17,8 @@ import {
     FAIL_TO_RECEIVE_VENUE,
     REQUEST_SKILLS,
     RECEIVE_SKILLS,
-    FAIL_TO_GET_SKILLS
+    FAIL_TO_GET_SKILLS,
+    RSVPD_TO_EVENT
 }
 from './actions';
 
@@ -50,7 +51,7 @@ function updateEvent(state=initialState.eventActions.events, action) {
             return [
                 ...state.slice(0, action.index),
                 Object.assign({}, state[action.index], {
-                    rsvpd: !state[action.index].rsvpd
+                    selected: !state[action.index].selected
                 }),
                 ...state.slice(action.index + 1)
             ]
@@ -70,7 +71,7 @@ function updateEvent(state=initialState.eventActions.events, action) {
                     receivedAt: Date.now(),
                     venue: action.json,
                     venueSize: action.json.attributes.seats ? action.json.attributes.seats: 200,
-                    rsvpd: false
+                    selected: false
                 }),
                 ...state.slice(action.index + 1)
             ]
@@ -81,6 +82,15 @@ function updateEvent(state=initialState.eventActions.events, action) {
                     isReceiving: false,
                     receivedAt: Date.now(),
                     didInvalidate: true
+                }),
+                ...state.slice(action.index + 1)
+            ]
+        case RSVPD_TO_EVENT:
+            return [
+                ...state.slice(0, action.index),
+                Object.assign({}, state[action.index], {
+                    rsvpd: true,
+                    selected: false
                 }),
                 ...state.slice(action.index + 1)
             ]
@@ -126,6 +136,10 @@ function eventActions(state = initialState.eventActions, action) {
         case RECEIVE_ALL_VENUES:
             return Object.assign({}, state, {
                 receivedAllCalls: true
+            });
+        case RSVPD_TO_EVENT:
+            return Object.assign({}, state, {
+                events: updateEvent(state.events, action)
             });
         default:
             return state;
