@@ -251,6 +251,7 @@ var Event = function Event(_ref) {
     var onClick = _ref.onClick;
     var selected = _ref.selected;
     var attributes = _ref.attributes;
+    var rsvp = _ref.rsvp;
 
     return _react2.default.createElement(
         'li',
@@ -260,13 +261,16 @@ var Event = function Event(_ref) {
                 color: selected ? 'red' : 'black'
             } },
         attributes.title,
-        _react2.default.createElement('input', { type: 'checkbox', onClick: onClick })
+        function (rsvp) {
+            return rsvp ? _react2.default.createElement('input', { type: 'checkbox', onClick: onClick }) : null;
+        }
     );
 };
 
 Event.propTypes = {
     onClick: _react.PropTypes.func.isRequired,
-    selected: _react.PropTypes.bool.isRequired
+    selected: _react.PropTypes.bool.isRequired,
+    rsvp: _react.PropTypes.bool.isRequired
 };
 
 exports.default = Event;
