@@ -1,4 +1,13 @@
-import fetch from 'isomorphic-fetch';
+export function fetchAll() {
+    return (dispatch, getState) => {
+        dispatch(fetchPerson()).then(() => dispatch(fetchEvents())
+            .then(() => Promise.all(
+                getState().eventActions.events.map((event, i) => dispatch(fetchVenue(event.relationships.venue.data.id, i))))
+                .then(() => dispatch(fetchSkills())
+            )
+        ))
+    }
+}
 
 export const TOGGLE_EVENT = 'TOGGLE_EVENT';
 export function toggleEvent(index) {
