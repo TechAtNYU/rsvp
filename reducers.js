@@ -25,8 +25,24 @@ const initialState = {
     }
 };
 
+function setTime(event) {
+    console.log(event);
+    let hour = parseInt(event.attributes.startDateTime.substring(11, 13)) - 5;
+    hour = hour < 0 ? hour + 12 : hour;
+    return Object.assign({}, event, {
+        selected: false,
+        timeObj: {
+            date: event.attributes.startDateTime.substring(0, 10),
+            hour: hour.toString(),
+            minute: event.attributes.startDateTime.substring(14, 16)
+        }
+    });
+}
+
 function updateEvent(state = initialState.eventActions.events, action) {
     switch (action.type) {
+    case RECEIVE_EVENTS:
+        return state.map((event) => setTime(event))
     case TOGGLE_EVENT:
         return [
             ...state.slice(0, action.index),
@@ -69,8 +85,7 @@ function updateEvent(state = initialState.eventActions.events, action) {
         return [
             ...state.slice(0, action.index),
             Object.assign({}, state[action.index], {
-                rsvpd: true,
-                selected: false
+                rsvp: true
             }),
             ...state.slice(action.index + 1)
         ]
@@ -93,7 +108,7 @@ function eventActions(state = initialState.eventActions, action) {
         return Object.assign({}, state, {
             isReceiving: false,
             receivedAt: action.receivedAt,
-            events: action.json
+            events: updateEvent(action.json, action)
         });
         break;
     case FAIL_TO_GET_EVENTS:

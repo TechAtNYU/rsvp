@@ -1,17 +1,6 @@
 import React, { PropTypes } from 'react';
 
-function formatTime(startDateTime) {
-    let hour = parseInt(startDateTime.substring(11, 13)) - 5;
-    hour = hour < 0 ? hour + 12 : hour;
-    return {
-        date: startDateTime.substring(0, 10),
-        hour: hour.toString(),
-        minute: startDateTime.substring(14, 16)
-    }
-}
-
-const Event = ({onClick, selected, attributes, rsvp}) => {
-    let timeObj = formatTime(attributes.startDateTime);
+function Event({onClick, selected, attributes, rsvp, timeObj}) {
     let rsvpField = rsvp ? <span>RSVP'd</span> : <input type='checkbox' onClick={onClick} />;
     return <li
         className='list-group-item row'
