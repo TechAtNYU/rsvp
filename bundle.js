@@ -247,23 +247,63 @@ var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function formatTime(startDateTime) {
+    var hour = parseInt(startDateTime.substring(11, 13)) - 5;
+    hour = hour < 0 ? hour + 12 : hour;
+    return {
+        date: startDateTime.substring(0, 10),
+        hour: hour.toString(),
+        minute: startDateTime.substring(14, 16)
+    };
+}
+
 var Event = function Event(_ref) {
     var onClick = _ref.onClick;
     var selected = _ref.selected;
     var attributes = _ref.attributes;
     var rsvp = _ref.rsvp;
 
+    var timeObj = formatTime(attributes.startDateTime);
+    var rsvpField = rsvp ? _react2.default.createElement(
+        'span',
+        null,
+        'RSVP\'d'
+    ) : _react2.default.createElement('input', { type: 'checkbox', onClick: onClick });
     return _react2.default.createElement(
         'li',
         {
-            className: 'list-group-item',
+            className: 'list-group-item row',
             style: {
                 color: selected ? 'red' : 'black'
             } },
-        attributes.title,
-        function (rsvp) {
-            return rsvp ? _react2.default.createElement('input', { type: 'checkbox', onClick: onClick }) : null;
-        }
+        _react2.default.createElement(
+            'div',
+            { className: 'col-md-3 col-sm-4 when' },
+            _react2.default.createElement(
+                'p',
+                null,
+                timeObj.date
+            ),
+            _react2.default.createElement(
+                'p',
+                null,
+                timeObj.hour + ':' + timeObj.minute
+            )
+        ),
+        _react2.default.createElement(
+            'div',
+            { className: 'col-md-8 col-sm-6' },
+            _react2.default.createElement(
+                'span',
+                null,
+                attributes.title
+            )
+        ),
+        _react2.default.createElement(
+            'div',
+            { className: 'col-md-1 col-sm-2' },
+            rsvpField
+        )
     );
 };
 
@@ -301,7 +341,7 @@ var EventList = function EventList(_ref) {
 
     return _react2.default.createElement(
         'div',
-        null,
+        { className: 'col-md-8' },
         _react2.default.createElement(
             'ul',
             { className: 'list-group' },
