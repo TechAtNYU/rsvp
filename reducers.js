@@ -23,7 +23,7 @@ const initialState = {
         receivedAt: null,
         didInvalidate: false
     }
-};
+}
 
 function setTime(event) {
     console.log(event);
