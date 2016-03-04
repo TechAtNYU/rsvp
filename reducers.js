@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 
-import { TOGGLE_EVENT, REQUEST_LOGIN, RECEIVE_LOGIN, FAIL_LOGIN, REQUEST_EVENTS, RECEIVE_EVENTS, FAIL_TO_GET_EVENTS, REQUEST_VENUE, RECEIVE_VENUE, RECEIVE_ALL_VENUES, FAIL_TO_RECEIVE_VENUE, REQUEST_SKILLS, RECEIVE_SKILLS, FAIL_TO_GET_SKILLS, RSVPD_TO_EVENT } from './actions';
+import { TOGGLE_EVENT, REQUEST_LOGIN, RECEIVE_LOGIN, FAIL_LOGIN, REQUEST_EVENTS, RECEIVE_EVENTS, FAIL_TO_GET_EVENTS, REQUEST_VENUE, RECEIVE_VENUE, RECEIVE_ALL_VENUES, FAIL_TO_RECEIVE_VENUE, REQUEST_SKILLS, RECEIVE_SKILLS, FAIL_TO_GET_SKILLS, RSVPD_TO_EVENT, RSVPS_SENT } from './actions';
 
 const initialState = {
     'loginActions': {
@@ -15,7 +15,8 @@ const initialState = {
         isReceiving: false,
         receivedAt: null,
         didInvalidate: false,
-        receivedAllCalls: false
+        receivedAllCalls: false,
+        rsvpsDone: false
     },
     'skillActions': {
         skills: [],
@@ -136,6 +137,10 @@ function eventActions(state = initialState.eventActions, action) {
         return Object.assign({}, state, {
             events: updateEvent(state.events, action)
         });
+    case RSVPS_SENT:
+        return Object.assign({}, state, {
+            rsvpsDone: true
+        })
     default:
         return state;
     }

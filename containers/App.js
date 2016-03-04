@@ -25,12 +25,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-// const mapDispatchToProps = (dispatch) => {
-//     return {
-//         onEventClick: (id) => dispatch(toggleEvent(id)),
-//         onRsvpClick: () => dispatch(rsvpToEvents())
-//     };
-// };
-
-
 export default connect(mapStateToProps)(App);
