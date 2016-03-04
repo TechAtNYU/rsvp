@@ -434,9 +434,9 @@ var _reactRedux = require('react-redux');
 
 var _actions = require('../actions');
 
-var _VisibleEventList = require('./VisibleEventList');
+var _Home = require('./Home');
 
-var _VisibleEventList2 = _interopRequireDefault(_VisibleEventList);
+var _Home2 = _interopRequireDefault(_Home);
 
 var _Welcome = require('./Welcome');
 
@@ -449,6 +449,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+// import VisibleEventList from './VisibleEventList'
 
 var App = (function (_Component) {
     _inherits(App, _Component);
@@ -462,11 +463,11 @@ var App = (function (_Component) {
     _createClass(App, [{
         key: 'render',
         value: function render() {
+            var loginView = this.props.didLogin ? _react2.default.createElement(_Home2.default, null) : _react2.default.createElement(_Welcome2.default, null);
             return _react2.default.createElement(
                 'div',
                 null,
-                _react2.default.createElement(_Welcome2.default, null),
-                _react2.default.createElement(_VisibleEventList2.default, null)
+                loginView
             );
         }
     }]);
@@ -476,7 +477,8 @@ var App = (function (_Component) {
 
 var mapStateToProps = function mapStateToProps(state) {
     return {
-        loginActions: state.loginActions
+        loginActions: state.loginActions,
+        didLogin: state.loginActions.didLogin
     };
 };
 
@@ -489,7 +491,62 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps)(App);
 
-},{"../actions":1,"./VisibleEventList":8,"./Welcome":9,"react":179,"react-redux":15}],7:[function(require,module,exports){
+},{"../actions":1,"./Home":7,"./Welcome":9,"react":179,"react-redux":15}],7:[function(require,module,exports){
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _reactRedux = require('react-redux');
+
+var _actions = require('../actions');
+
+var _EventList = require('../components/EventList');
+
+var _EventList2 = _interopRequireDefault(_EventList);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Home = (function (_Component) {
+    _inherits(Home, _Component);
+
+    function Home(props) {
+        _classCallCheck(this, Home);
+
+        return _possibleConstructorReturn(this, Object.getPrototypeOf(Home).call(this, props));
+    }
+
+    _createClass(Home, [{
+        key: 'render',
+        value: function render() {
+            return React.createElement(
+                'div',
+                null,
+                React.createElement(VisibleEventList, null)
+            );
+        }
+    }]);
+
+    return Home;
+})(Component);
+
+// const VisibleEventList = connect(
+//     mapStateToProps,
+//     mapDispatchToProps
+// )(Home);
+
+exports.default = Home;
+
+},{"../actions":1,"../components/EventList":3,"react-redux":15}],8:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -551,45 +608,7 @@ var Root = (function (_Component) {
 
 exports.default = Root;
 
-},{"../actions":1,"../configureStore":5,"./App":6,"react":179,"react-redux":15}],8:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _reactRedux = require('react-redux');
-
-var _actions = require('../actions');
-
-var _EventList = require('../components/EventList');
-
-var _EventList2 = _interopRequireDefault(_EventList);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var mapStateToProps = function mapStateToProps(state) {
-    return {
-        events: state.eventActions.events
-    };
-};
-
-var mapDispatchToProps = function mapDispatchToProps(dispatch) {
-    return {
-        onEventClick: function onEventClick(id) {
-            return dispatch((0, _actions.toggleEvent)(id));
-        },
-        onRsvpClick: function onRsvpClick() {
-            return dispatch((0, _actions.rsvpToEvents)());
-        }
-    };
-};
-
-var VisibleEventList = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_EventList2.default);
-
-exports.default = VisibleEventList;
-
-},{"../actions":1,"../components/EventList":3,"react-redux":15}],9:[function(require,module,exports){
+},{"../actions":1,"../configureStore":5,"./App":6,"react":179,"react-redux":15}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -643,7 +662,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 (0, _reactDom.render)(_react2.default.createElement(_Root2.default, null), document.getElementById('app'));
 
-},{"./containers/Root":7,"react":179,"react-dom":12}],11:[function(require,module,exports){
+},{"./containers/Root":8,"react":179,"react-dom":12}],11:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -21232,11 +21251,11 @@ var initialState = {
     }
 };
 
-function setTime(event) {
-    console.log(event);
+function mapAttributesToEvents(event) {
     var hour = parseInt(event.attributes.startDateTime.substring(11, 13)) - 5;
     hour = hour < 0 ? hour + 12 : hour;
     return Object.assign({}, event, {
+        rsvp: false,
         selected: false,
         timeObj: {
             date: event.attributes.startDateTime.substring(0, 10),
@@ -21253,7 +21272,7 @@ function updateEvent() {
     switch (action.type) {
         case _actions.RECEIVE_EVENTS:
             return state.map(function (event) {
-                return setTime(event);
+                return mapAttributesToEvents(event);
             });
         case _actions.TOGGLE_EVENT:
             return [].concat(_toConsumableArray(state.slice(0, action.index)), [Object.assign({}, state[action.index], {

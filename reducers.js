@@ -25,11 +25,11 @@ const initialState = {
     }
 }
 
-function setTime(event) {
-    console.log(event);
+function mapAttributesToEvents(event) {
     let hour = parseInt(event.attributes.startDateTime.substring(11, 13)) - 5;
     hour = hour < 0 ? hour + 12 : hour;
     return Object.assign({}, event, {
+        rsvp: false,
         selected: false,
         timeObj: {
             date: event.attributes.startDateTime.substring(0, 10),
@@ -42,7 +42,7 @@ function setTime(event) {
 function updateEvent(state = initialState.eventActions.events, action) {
     switch (action.type) {
     case RECEIVE_EVENTS:
-        return state.map((event) => setTime(event))
+        return state.map((event) => mapAttributesToEvents(event))
     case TOGGLE_EVENT:
         return [
             ...state.slice(0, action.index),
