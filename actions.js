@@ -177,20 +177,13 @@ export function rsvpd(index) {
     };
 }
 
-export const RSVP_SENT = 'RSVPS_SENT'
-export function rsvpsSent() {
-    return {
-        type: RSVP_SENT
-    }
-}
-
 export function rsvpToEvents() {
     return (dispatch, getState) => {
         getState().eventActions.events.map((event, i) => {
             $.get('https://api.tnyu.org/v3/events/' + event.id + '/rsvp')
                 .done(() => dispatch(rsvpd(i)))
                 .fail(() => console.log('RSVP to ' + event.attributes.title + ' failed. Try again later.'));
-        }).then(() => dispatch(rsvpsSent()));
+        })
     }
 }
 

@@ -1,9 +1,9 @@
 import React , { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { shouldFetchFb } from '../actions'
-// import VisibleEventList from './VisibleEventList'
-import Home from './Home'
+import VisibleEventList from './VisibleEventList'
 import Welcome from './Welcome'
+// import VisibleHome from './VisibleHome'
 
 class App extends Component {
     constructor(props) {
@@ -11,7 +11,7 @@ class App extends Component {
     }
 
     render() {
-        let loginView = (this.props.didLogin) ? <Home /> : <Welcome />
+        let loginView = (this.props.didLogin) ? <VisibleEventList /> : <Welcome />
         return <div>
         {loginView}
 	    </div>

@@ -15,8 +15,7 @@ const initialState = {
         isReceiving: false,
         receivedAt: null,
         didInvalidate: false,
-        receivedAllCalls: false,
-        rsvpsDone: false
+        receivedAllCalls: false
     },
     'skillActions': {
         skills: [],
@@ -30,7 +29,7 @@ function mapAttributesToEvents(event) {
     let hour = parseInt(event.attributes.startDateTime.substring(11, 13)) - 5;
     hour = hour < 0 ? hour + 12 : hour;
     return Object.assign({}, event, {
-        rsvp: false,
+        // rsvp: false,
         selected: false,
         timeObj: {
             date: event.attributes.startDateTime.substring(0, 10),
@@ -137,10 +136,6 @@ function eventActions(state = initialState.eventActions, action) {
         return Object.assign({}, state, {
             events: updateEvent(state.events, action)
         });
-    case RSVPS_SENT:
-        return Object.assign({}, state, {
-            rsvpsDone: true
-        })
     default:
         return state;
     }
