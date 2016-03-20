@@ -42,7 +42,9 @@ var DropDownMenu = React.createClass({
 		var timeStr = (det < 12) ? 'AM': 'PM';
 
 		// convert UST to EST
-		var newTime = parseInt(time.substring(0, 2)) - 5;
+		var newTime = parseInt(time.substring(0, 2)) - 4;
+		// daylight saving change
+		// var newTime = parseInt(time.substring(0, 2)) - 5;
         if (newTime > 12) newTime -= 12;
         time = newTime.toString() + time.substring(2, 5);
 
