@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import { shouldFetchFb } from '../actions'
 import VisibleEventList from './VisibleEventList'
 import Welcome from './Welcome'
-// import VisibleHome from './VisibleHome'
 
 class App extends Component {
     constructor(props) {
@@ -13,7 +12,16 @@ class App extends Component {
     render() {
         let loginView = (this.props.didLogin) ? <VisibleEventList /> : <Welcome />
         return <div>
-        {loginView}
+        <header>
+            <a href='http://techatnyu.org/'><img src='images/techatnyu.png' alt='tech@nyu logo' className='logo'/></a>
+            <div>
+            <h3 className='title'>Tech@NYU Event RSVP Form</h3>
+            <p className='description'>The largest student-run tech organization in NYC</p>
+            </div>
+        </header> 
+            <div className='form'>
+            {loginView}
+            </div>
 	    </div>
     }
 }

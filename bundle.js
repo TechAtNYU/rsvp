@@ -215,7 +215,7 @@ function rsvpd(index) {
 function rsvpToEvents() {
     return function (dispatch, getState) {
         getState().eventActions.events.map(function (event, i) {
-            $.get('https://api.tnyu.org/v3/events/' + event.id + '/rsvp').done(function () {
+            if (event.selected) $.get('https://api.tnyu.org/v3/events/' + event.id + '/rsvp').done(function () {
                 return dispatch(rsvpd(i));
             }).fail(function () {
                 return console.log('RSVP to ' + event.attributes.title + ' failed. Try again later.');
@@ -254,25 +254,29 @@ function Event(_ref) {
         {
             className: 'list-group-item row',
             style: {
-                color: selected ? 'red' : 'black'
+                color: selected ? 'gray' : 'black'
             } },
         _react2.default.createElement(
             'div',
             { className: 'col-md-3 col-sm-4 when' },
             _react2.default.createElement(
-                'p',
-                null,
-                timeObj.date
-            ),
-            _react2.default.createElement(
-                'p',
-                null,
-                timeObj.hour + ':' + timeObj.minute
+                'div',
+                { className: 'data' },
+                _react2.default.createElement(
+                    'p',
+                    null,
+                    timeObj.date
+                ),
+                _react2.default.createElement(
+                    'p',
+                    null,
+                    timeObj.hour + ':' + timeObj.minute
+                )
             )
         ),
         _react2.default.createElement(
             'div',
-            { className: 'col-md-8 col-sm-6' },
+            { className: 'col-md-8 col-sm-6 event-title' },
             _react2.default.createElement(
                 'span',
                 null,
@@ -281,7 +285,7 @@ function Event(_ref) {
         ),
         _react2.default.createElement(
             'div',
-            { className: 'col-md-1 col-sm-2' },
+            { className: 'col-md-1 col-sm-2 rsvpd' },
             rsvpField
         )
     );
@@ -289,10 +293,10 @@ function Event(_ref) {
 
 Event.propTypes = {
     onClick: _react.PropTypes.func.isRequired,
-    selected: _react.PropTypes.bool.isRequired,
-    rsvp: _react.PropTypes.bool.isRequired
+    selected: _react.PropTypes.bool.isRequired
 };
 
+// rsvp: PropTypes.bool.isRequired
 exports.default = Event;
 
 },{"react":179}],3:[function(require,module,exports){
@@ -333,7 +337,7 @@ function EventList(_ref) {
         ),
         _react2.default.createElement(
             'button',
-            { onClick: function onClick() {
+            { className: 'btn', onClick: function onClick() {
                     return onRsvpClick();
                 } },
             'RSVP'
@@ -412,9 +416,12 @@ var _reducers2 = _interopRequireDefault(_reducers);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var loggerMiddleware = (0, _reduxLogger2.default)();
+window.isDev = true;
+
+var middlewares = window.isDev ? (0, _redux.applyMiddleware)(_reduxThunk2.default, loggerMiddleware) : (0, _redux.applyMiddleware)(_reduxThunk2.default);
 
 function configureStore(initialState) {
-    return (0, _redux.createStore)(_reducers2.default, (0, _redux.applyMiddleware)(_reduxThunk2.default, loggerMiddleware));
+    return (0, _redux.createStore)(_reducers2.default, middlewares);
 }
 
 },{"./reducers":192,"redux":187,"redux-logger":180,"redux-thunk":181}],6:[function(require,module,exports){
@@ -450,8 +457,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-// import VisibleHome from './VisibleHome'
-
 var App = (function (_Component) {
     _inherits(App, _Component);
 
@@ -468,7 +473,34 @@ var App = (function (_Component) {
             return _react2.default.createElement(
                 'div',
                 null,
-                loginView
+                _react2.default.createElement(
+                    'header',
+                    null,
+                    _react2.default.createElement(
+                        'a',
+                        { href: 'http://techatnyu.org/' },
+                        _react2.default.createElement('img', { src: 'images/techatnyu.png', alt: 'tech@nyu logo', className: 'logo' })
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        null,
+                        _react2.default.createElement(
+                            'h3',
+                            { className: 'title' },
+                            'Tech@NYU Event RSVP Form'
+                        ),
+                        _react2.default.createElement(
+                            'p',
+                            { className: 'description' },
+                            'The largest student-run tech organization in NYC'
+                        )
+                    )
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'form' },
+                    loginView
+                )
             );
         }
     }]);
@@ -550,9 +582,15 @@ exports.default = Root;
 },{"../actions":1,"../configureStore":5,"./App":6,"react":179,"react-redux":15}],8:[function(require,module,exports){
 'use strict';
 
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = require('react-redux');
 
@@ -563,6 +601,40 @@ var _EventList = require('../components/EventList');
 var _EventList2 = _interopRequireDefault(_EventList);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var VisibleEventList = (function (_Component) {
+    _inherits(VisibleEventList, _Component);
+
+    function VisibleEventList(props) {
+        _classCallCheck(this, VisibleEventList);
+
+        return _possibleConstructorReturn(this, Object.getPrototypeOf(VisibleEventList).call(this, props));
+    }
+
+    _createClass(VisibleEventList, [{
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'div',
+                null,
+                _react2.default.createElement(
+                    'h2',
+                    null,
+                    'UPCOMING EVENTS'
+                ),
+                _react2.default.createElement(_EventList2.default, this.props)
+            );
+        }
+    }]);
+
+    return VisibleEventList;
+})(_react.Component);
 
 var mapStateToProps = function mapStateToProps(state) {
     return {
@@ -581,11 +653,9 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
     };
 };
 
-var VisibleEventList = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_EventList2.default);
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(VisibleEventList);
 
-exports.default = VisibleEventList;
-
-},{"../actions":1,"../components/EventList":3,"react-redux":15}],9:[function(require,module,exports){
+},{"../actions":1,"../components/EventList":3,"react":179,"react-redux":15}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21275,7 +21345,7 @@ function updateEvent() {
             })], _toConsumableArray(state.slice(action.index + 1)));
         case _actions.RSVPD_TO_EVENT:
             return [].concat(_toConsumableArray(state.slice(0, action.index)), [Object.assign({}, state[action.index], {
-                rsvp: true
+                rsvp: state[action.index].selected ? state[action.index].selected : state[action.index].rsvp
             })], _toConsumableArray(state.slice(action.index + 1)));
         default:
             return state;

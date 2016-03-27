@@ -85,7 +85,7 @@ function updateEvent(state = initialState.eventActions.events, action) {
         return [
             ...state.slice(0, action.index),
             Object.assign({}, state[action.index], {
-                rsvp: true
+                rsvp: (state[action.index].selected) ? state[action.index].selected: state[action.index].rsvp
             }),
             ...state.slice(action.index + 1)
         ]
