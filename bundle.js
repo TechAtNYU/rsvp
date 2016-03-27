@@ -21318,13 +21318,17 @@ function mapAttributesToEvents(event) {
     });
 }
 
+function sortDateHelper(a, b) {
+    return new Date(a.attributes.startDateTime) < new Date(b.attributes.startDateTime) ? -1 : 1;
+}
+
 function updateEvent() {
     var state = arguments.length <= 0 || arguments[0] === undefined ? initialState.eventActions.events : arguments[0];
     var action = arguments[1];
 
     switch (action.type) {
         case _actions.RECEIVE_EVENTS:
-            return state.map(function (event) {
+            return action.json.slice().sort(sortDateHelper).map(function (event) {
                 return mapAttributesToEvents(event);
             });
         case _actions.TOGGLE_EVENT:

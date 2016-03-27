@@ -41,10 +41,15 @@ function mapAttributesToEvents(event) {
     });
 }
 
+function sortDateHelper(a, b) {
+   return new Date(a.attributes.startDateTime) < new Date(b.attributes.startDateTime) ? -1 : 1;
+}
+
 function updateEvent(state = initialState.eventActions.events, action) {
     switch (action.type) {
     case RECEIVE_EVENTS:
-        return state.map((event) => mapAttributesToEvents(event))
+        return action.json.slice().sort(sortDateHelper)
+        .map((event) => mapAttributesToEvents(event));
     case TOGGLE_EVENT:
         return [
             ...state.slice(0, action.index),
