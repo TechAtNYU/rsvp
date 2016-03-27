@@ -2,12 +2,14 @@ import React, { PropTypes } from 'react';
 import Event from './Event';
 
 function EventList({events, onEventClick, onRsvpClick}) {
-    return <div className='col-md-8'>
+    return <div className='col-md-10'>
         <ul className='list-group'>
             {events.map((event, i) => <Event key={i} {...event} onClick={() => onEventClick(i)}/>
         )}
         </ul>
-        <button className='btn' onClick={() => onRsvpClick()}>RSVP</button>
+        <div className='pull-right'>
+        <button className='btn rsvp-button' onClick={() => onRsvpClick()}>RSVP</button>
+        </div>
     </div>
 }
 

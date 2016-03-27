@@ -252,16 +252,16 @@ function Event(_ref) {
     return _react2.default.createElement(
         'li',
         {
-            className: 'list-group-item row',
+            className: 'list-group-item list-group-item clearfix',
             style: {
                 color: selected ? 'gray' : 'black'
             } },
         _react2.default.createElement(
             'div',
-            { className: 'col-md-3 col-sm-4 when' },
+            { className: 'col-sm-2 col-xs-12 when' },
             _react2.default.createElement(
                 'div',
-                { className: 'data' },
+                { className: 'date' },
                 _react2.default.createElement(
                     'p',
                     null,
@@ -276,7 +276,7 @@ function Event(_ref) {
         ),
         _react2.default.createElement(
             'div',
-            { className: 'col-md-8 col-sm-6 event-title' },
+            { className: 'col-sm-8 col-xs-9 event-title' },
             _react2.default.createElement(
                 'span',
                 null,
@@ -285,7 +285,7 @@ function Event(_ref) {
         ),
         _react2.default.createElement(
             'div',
-            { className: 'col-md-1 col-sm-2 rsvpd' },
+            { className: 'col-sm-2 col-xs-3 rsvpd' },
             rsvpField
         )
     );
@@ -325,7 +325,7 @@ function EventList(_ref) {
 
     return _react2.default.createElement(
         'div',
-        { className: 'col-md-8' },
+        { className: 'col-md-10' },
         _react2.default.createElement(
             'ul',
             { className: 'list-group' },
@@ -336,11 +336,15 @@ function EventList(_ref) {
             })
         ),
         _react2.default.createElement(
-            'button',
-            { className: 'btn', onClick: function onClick() {
-                    return onRsvpClick();
-                } },
-            'RSVP'
+            'div',
+            { className: 'pull-right' },
+            _react2.default.createElement(
+                'button',
+                { className: 'btn rsvp-button', onClick: function onClick() {
+                        return onRsvpClick();
+                    } },
+                'RSVP'
+            )
         )
     );
 }

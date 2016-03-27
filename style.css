@@ -3,12 +3,6 @@ body {
   color: black;
   background-color: #EEEEEE;
 }
-input[type=checkbox] {
-  margin-top: 20px;
-  margin-left: 25px;
-  width: 30px;
-  height: 20px;
-}
 
 header { 
   margin: 0 auto;
@@ -35,6 +29,12 @@ header p.description, .title {
   padding: 0px 27px;
   margin: 0;
 }
+
+.vcenter{
+    vertical-align: middle;
+}
+
+
 .form {
     top: 50px;
     width: 100%;
@@ -42,6 +42,7 @@ header p.description, .title {
     margin-top: 90px;
     position: absolute;
 }
+
 .title {
   float: right;
   color: black;
@@ -56,6 +57,7 @@ header p.description, .title {
 .fb-login button {
   text-align: center;
 }
+
 .email-section {
   float: right;
   width: 30%;
@@ -63,50 +65,70 @@ header p.description, .title {
   top: 100px;
   height: 250px;
 }
+
 .events, .email-section {
   margin-top: 10px;
 }
+
 .events {
   width: 60%;
   float: left;
   margin-left: 2%;
 }
+
 .rsvpDoneText{
   margin-left: 2%;
 }
+
 .heading {
   font-size: 32px;
   font-weight: bold;
   padding: 5px;
 }
 .list-group-item {
-  height: 100px;
-  font-family: "Inconsolata";
+/*  max-height: 90px;
+  line-height: 90px;
+*/  font-family: "Inconsolata";
   font-size: 20px;
-  padding: 20px;
-}
+  display: flex;
+  justify-content: center;
+/*  padding: 20px;
+*/}
+
 .when {
   font-size: 16px;
   text-align: center;
   background-color: #d7552d;
+  height: 70px;
   padding: 6px;
-  width: 20%;
+  float: left;
+  display: flex;
+  justify-content: center;
+}
+
+.date {
+  align-self: center;
 }
 
 .date p {
-  margin: 0;
+  line-height: 15px;
 }
 
 .event-title {
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 60%;
+  align-self: center;
 }
 
 .rsvpd {
-  top: 50%;
-  transform: translateY(-50%);
+  float: right;
+  align-self: center;
+}
+
+.rsvp-button {
+  margin-top: 20px;
+  margin-right: 40px;
+  margin-bottom: 100px;
+  font-size: 20px;
+  width: 150px
 }
 
 .email-field {
@@ -146,28 +168,4 @@ header p.description, .title {
   font-style: bold;
   font-size: 18px;
   padding: 10px;
-}
-
-.event-list-item {
-  background-color: white;
-  opacity: 1;
-}
-
-.event-list-item span {
-  font-size: 18px;
-}
-
-.event-list-item:hover {
-  background-color: rgb(230,230,250);
-}
-
-.possibleSelection {
-	height: 30px;
-	border: 1px dotted darkgrey;
-	background-color: white;
-	padding: 3px 10px 3px 10px;
-}
-
-.selected {
-	background-color: lightgrey;
 }

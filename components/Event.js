@@ -3,20 +3,20 @@ import React, { PropTypes } from 'react';
 function Event({onClick, selected, attributes, rsvp, timeObj}) {
     let rsvpField = rsvp ? <span>RSVP'd</span> : <input type='checkbox' onClick={onClick} />;
     return <li
-        className='list-group-item row'
+        className='list-group-item list-group-item clearfix'
         style={{
             color: selected ? 'gray' : 'black'
         }}>
-        <div className='col-md-3 col-sm-4 when'>
-            <div className='data'>
+        <div className='col-sm-2 col-xs-12 when'>
+            <div className='date'>
                 <p>{timeObj.date}</p>
                 <p>{timeObj.hour + ':' + timeObj.minute}</p>
             </div> 
         </div>
-        <div className='col-md-8 col-sm-6 event-title'>
+        <div className='col-sm-8 col-xs-9 event-title'>
             <span>{attributes.title}</span>
         </div>
-        <div className='col-md-1 col-sm-2 rsvpd'>
+        <div className='col-sm-2 col-xs-3 rsvpd'>
             {rsvpField}
         </div>
     </li>
