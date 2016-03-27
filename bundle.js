@@ -254,7 +254,7 @@ function Event(_ref) {
         {
             className: 'list-group-item list-group-item clearfix',
             style: {
-                color: selected ? 'gray' : 'black'
+                backgroundColor: selected ? 'lightgray' : 'white'
             } },
         _react2.default.createElement(
             'div',
@@ -270,7 +270,7 @@ function Event(_ref) {
                 _react2.default.createElement(
                     'p',
                     null,
-                    timeObj.hour + ':' + timeObj.minute
+                    timeObj.hour + ':' + timeObj.minute + timeObj.timestring
                 )
             )
         ),
@@ -629,7 +629,7 @@ var VisibleEventList = (function (_Component) {
                 null,
                 _react2.default.createElement(
                     'h2',
-                    null,
+                    { id: 'upcoming' },
                     'UPCOMING EVENTS'
                 ),
                 _react2.default.createElement(_EventList2.default, this.props)
@@ -21303,15 +21303,15 @@ var initialState = {
 };
 
 function mapAttributesToEvents(event) {
-    var hour = parseInt(event.attributes.startDateTime.substring(11, 13)) - 5;
-    hour = hour < 0 ? hour + 12 : hour;
+    // CHANGE IT TO -5 WHEN DAYLIGHT SAVING IS OVER
+    var hour = parseInt(event.attributes.startDateTime.substring(11, 13)) - 4;
     return Object.assign({}, event, {
-        // rsvp: false,
         selected: false,
         timeObj: {
             date: event.attributes.startDateTime.substring(0, 10),
             hour: hour.toString(),
-            minute: event.attributes.startDateTime.substring(14, 16)
+            minute: event.attributes.startDateTime.substring(14, 16),
+            timestring: hour < 12 ? 'AM' : 'PM'
         }
     });
 }

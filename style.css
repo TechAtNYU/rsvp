@@ -58,42 +58,16 @@ header p.description, .title {
   text-align: center;
 }
 
-.email-section {
-  float: right;
-  width: 30%;
-  margin-right: 2%;
-  top: 100px;
-  height: 250px;
+#upcoming {
+  margin-left: 20px;
 }
 
-.events, .email-section {
-  margin-top: 10px;
-}
-
-.events {
-  width: 60%;
-  float: left;
-  margin-left: 2%;
-}
-
-.rsvpDoneText{
-  margin-left: 2%;
-}
-
-.heading {
-  font-size: 32px;
-  font-weight: bold;
-  padding: 5px;
-}
 .list-group-item {
-/*  max-height: 90px;
-  line-height: 90px;
-*/  font-family: "Inconsolata";
+  font-family: "Inconsolata";
   font-size: 20px;
   display: flex;
   justify-content: center;
-/*  padding: 20px;
-*/}
+}
 
 .when {
   font-size: 16px;
@@ -131,41 +105,3 @@ header p.description, .title {
   width: 150px
 }
 
-.email-field {
-  padding: 3px;
-}
-
-.nNumber-field {
-  padding: 3px;
-}
-
-.user-stat span {
-  font-size: 18px;
-}
-
-.user-stat input {
-  border-radius: 5px;
-  width: 100%;
-}
-
-.user-stat-comment {
-  font-size: 16px;
-  padding: 6px;
-}
-
-#user-stat-close {
-  position: absolute;
-  padding: 5px;
-  top: 0px;
-  right: 0px;
-}
-
-#user-stat-close:hover {
-  color: blue;
-}
-
-#user_email {
-  font-style: bold;
-  font-size: 18px;
-  padding: 10px;
-}

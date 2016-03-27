@@ -5,12 +5,12 @@ function Event({onClick, selected, attributes, rsvp, timeObj}) {
     return <li
         className='list-group-item list-group-item clearfix'
         style={{
-            color: selected ? 'gray' : 'black'
+            backgroundColor: selected ? 'lightgray' : 'white'
         }}>
         <div className='col-sm-2 col-xs-12 when'>
             <div className='date'>
                 <p>{timeObj.date}</p>
-                <p>{timeObj.hour + ':' + timeObj.minute}</p>
+                <p>{timeObj.hour + ':' + timeObj.minute + timeObj.timestring}</p>
             </div> 
         </div>
         <div className='col-sm-8 col-xs-9 event-title'>

@@ -26,15 +26,15 @@ const initialState = {
 }
 
 function mapAttributesToEvents(event) {
-    let hour = parseInt(event.attributes.startDateTime.substring(11, 13)) - 5;
-    hour = hour < 0 ? hour + 12 : hour;
+    // CHANGE IT TO -5 WHEN DAYLIGHT SAVING IS OVER
+    const hour = parseInt(event.attributes.startDateTime.substring(11, 13)) - 4;
     return Object.assign({}, event, {
-        // rsvp: false,
         selected: false,
         timeObj: {
             date: event.attributes.startDateTime.substring(0, 10),
             hour: hour.toString(),
-            minute: event.attributes.startDateTime.substring(14, 16)
+            minute: event.attributes.startDateTime.substring(14, 16),
+            timestring: hour < 12 ? 'AM': 'PM'
         }
     });
 }

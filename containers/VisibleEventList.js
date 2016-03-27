@@ -11,7 +11,7 @@ class VisibleEventList extends Component {
     render() {
     	return (
     		<div>
-	            <h2>UPCOMING EVENTS</h2>
+	            <h2 id='upcoming'>UPCOMING EVENTS</h2>
 	            <EventList {...this.props} />
             </div>
     		)
