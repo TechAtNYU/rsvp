@@ -243,12 +243,19 @@ function Event(_ref) {
     var attributes = _ref.attributes;
     var rsvp = _ref.rsvp;
     var timeObj = _ref.timeObj;
+    var relationships = _ref.relationships;
+    var venueSize = _ref.venueSize;
 
     var rsvpField = rsvp ? _react2.default.createElement(
         'span',
         null,
         'RSVP\'d'
-    ) : _react2.default.createElement('input', { type: 'checkbox', onClick: onClick });
+    ) : relationships.rsvps.data.length < venueSize * 2 ? _react2.default.createElement('input', { type: 'checkbox', onClick: onClick }) : _react2.default.createElement(
+        'span',
+        null,
+        'Event FULL'
+    );
+
     return _react2.default.createElement(
         'li',
         {
@@ -420,7 +427,7 @@ var _reducers2 = _interopRequireDefault(_reducers);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var loggerMiddleware = (0, _reduxLogger2.default)();
-window.isDev = true;
+window.isDev = false;
 
 var middlewares = window.isDev ? (0, _redux.applyMiddleware)(_reduxThunk2.default, loggerMiddleware) : (0, _redux.applyMiddleware)(_reduxThunk2.default);
 

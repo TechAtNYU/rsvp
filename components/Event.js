@@ -1,7 +1,10 @@
 import React, { PropTypes } from 'react';
 
-function Event({onClick, selected, attributes, rsvp, timeObj}) {
-    let rsvpField = rsvp ? <span>RSVP'd</span> : <input type='checkbox' onClick={onClick} />;
+function Event({onClick, selected, attributes, rsvp, timeObj, relationships, venueSize}) {
+    const rsvpField = rsvp ? <span>RSVP'd</span> :
+    relationships.rsvps.data.length < venueSize*2 ? <input type='checkbox' onClick={onClick} /> :
+    <span>Event FULL</span>;
+
     return <li
         className='list-group-item list-group-item clearfix'
         style={{
