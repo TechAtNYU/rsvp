@@ -8,7 +8,7 @@ function EventList({events, onEventClick, onRsvpClick}) {
         )}
         </ul>
         <div className='pull-right'>
-        <button className='btn rsvp-button' onClick={() => onRsvpClick()}>RSVP</button>
+        <button className='btn rsvp-button' onClick={onRsvpClick}>RSVP</button>
         </div>
     </div>
 }

@@ -9,6 +9,13 @@ export function fetchAll() {
     }
 }
 
+export const TOGGLE_PROFILE_VIEW = 'TOGGLE_PROFILE_VIEW';
+export function toggleProfile() {
+    return {
+        type: TOGGLE_PROFILE_VIEW
+    }
+}
+
 export const TOGGLE_EVENT = 'TOGGLE_EVENT';
 export function toggleEvent(index) {
     return {

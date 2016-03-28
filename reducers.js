@@ -1,6 +1,24 @@
 import { combineReducers } from 'redux';
 
-import { TOGGLE_EVENT, REQUEST_LOGIN, RECEIVE_LOGIN, FAIL_LOGIN, REQUEST_EVENTS, RECEIVE_EVENTS, FAIL_TO_GET_EVENTS, REQUEST_VENUE, RECEIVE_VENUE, RECEIVE_ALL_VENUES, FAIL_TO_RECEIVE_VENUE, REQUEST_SKILLS, RECEIVE_SKILLS, FAIL_TO_GET_SKILLS, RSVPD_TO_EVENT, RSVPS_SENT } from './actions';
+import {
+    TOGGLE_PROFILE_VIEW,
+    TOGGLE_EVENT,
+    REQUEST_LOGIN,
+    RECEIVE_LOGIN,
+    FAIL_LOGIN,
+    REQUEST_EVENTS,
+    RECEIVE_EVENTS,
+    FAIL_TO_GET_EVENTS,
+    REQUEST_VENUE,
+    RECEIVE_VENUE,
+    RECEIVE_ALL_VENUES, 
+    FAIL_TO_RECEIVE_VENUE,
+    REQUEST_SKILLS,
+    RECEIVE_SKILLS,
+    FAIL_TO_GET_SKILLS,
+    RSVPD_TO_EVENT,
+    RSVPS_SENT,
+} from './actions';
 
 const initialState = {
     'loginActions': {
@@ -22,6 +40,9 @@ const initialState = {
         isReceiving: false,
         receivedAt: null,
         didInvalidate: false
+    },
+    'viewActions': {
+        isProfileView: false
     }
 }
 
@@ -194,10 +215,22 @@ function skillActions(state = initialState.skillActions, action) {
     }
 }
 
+function viewActions(state=initialState.viewActions, action) {
+    switch (action.type) {
+    case TOGGLE_PROFILE_VIEW:
+        return Object.assign({}, state, {
+            isProfileView: !state.isProfileView
+        });
+    default:
+        return state;
+    }
+}
+
 const rootReducer = combineReducers({
     loginActions,
     eventActions,
-    skillActions
+    skillActions,
+    viewActions,
 })
 
 export default rootReducer;

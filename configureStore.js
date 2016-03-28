@@ -4,7 +4,7 @@ import createLogger from 'redux-logger'
 import rootReducer from './reducers'
 
 const loggerMiddleware = createLogger()
-window.isDev = false;
+window.isDev = true;
 
 const middlewares = (window.isDev) ?
         applyMiddleware(thunkMiddleware, loggerMiddleware):

@@ -11,7 +11,6 @@ class VisibleEventList extends Component {
     render() {
     	return (
     		<div>
-	            <h2 id='upcoming'>UPCOMING EVENTS</h2>
 	            { 
 	            	this.props.isReceiving ?
 	            	<h2 className='loading'>...events are loading.</h2>:
@@ -21,17 +20,17 @@ class VisibleEventList extends Component {
     		)
     }
 }
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
     return {
         events: state.eventActions.events,
         isReceiving: state.eventActions.isReceiving,
     }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
     return {
-        onEventClick: (id) => dispatch(toggleEvent(id)),
-        onRsvpClick: () => dispatch(rsvpToEvents())
+        onEventClick: id => dispatch(toggleEvent(id)),
+        onRsvpClick: _ => dispatch(rsvpToEvents())
     }
 }
 
