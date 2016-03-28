@@ -24,6 +24,23 @@ exports.fetchVenue = fetchVenue;
 exports.fetchSkills = fetchSkills;
 exports.rsvpd = rsvpd;
 exports.rsvpToEvents = rsvpToEvents;
+var TOGGLE_PROFILE_VIEW = exports.TOGGLE_PROFILE_VIEW = 'TOGGLE_PROFILE_VIEW';
+var TOGGLE_EVENT = exports.TOGGLE_EVENT = 'TOGGLE_EVENT';
+var REQUEST_LOGIN = exports.REQUEST_LOGIN = 'REQUEST_LOGIN';
+var RECEIVE_LOGIN = exports.RECEIVE_LOGIN = 'RECEIVE_LOGIN';
+var FAIL_LOGIN = exports.FAIL_LOGIN = 'FAIL_LOGIN';
+var REQUEST_EVENTS = exports.REQUEST_EVENTS = 'REQUEST_EVENTS';
+var RECEIVE_EVENTS = exports.RECEIVE_EVENTS = 'RECEIVE_EVENTS';
+var FAIL_TO_GET_EVENTS = exports.FAIL_TO_GET_EVENTS = 'FAIL_TO_GET_EVENTS';
+var REQUEST_VENUE = exports.REQUEST_VENUE = 'REQUEST_VENUE';
+var RECEIVE_VENUE = exports.RECEIVE_VENUE = 'RECEIVE_VENUE';
+var RECEIVE_ALL_VENUES = exports.RECEIVE_ALL_VENUES = 'RECEIVE_ALL_VENUES';
+var FAIL_TO_RECEIVE_VENUE = exports.FAIL_TO_RECEIVE_VENUE = 'FAIL_TO_RECEIVE_VENUE';
+var REQUEST_SKILLS = exports.REQUEST_SKILLS = 'REQUEST_SKILLS';
+var RECEIVE_SKILLS = exports.RECEIVE_SKILLS = 'RECEIVE_SKILLS';
+var FAIL_TO_GET_SKILLS = exports.FAIL_TO_GET_SKILLS = 'FAIL_TO_GET_SKILLS';
+var RSVPD_TO_EVENT = exports.RSVPD_TO_EVENT = 'RSVPD_TO_EVENT';
+
 function fetchAll() {
     return function (dispatch, getState) {
         dispatch(fetchPerson()).then(function () {
@@ -38,14 +55,12 @@ function fetchAll() {
     };
 }
 
-var TOGGLE_PROFILE_VIEW = exports.TOGGLE_PROFILE_VIEW = 'TOGGLE_PROFILE_VIEW';
 function toggleProfile() {
     return {
         type: TOGGLE_PROFILE_VIEW
     };
 }
 
-var TOGGLE_EVENT = exports.TOGGLE_EVENT = 'TOGGLE_EVENT';
 function toggleEvent(index) {
     return {
         type: TOGGLE_EVENT,
@@ -53,14 +68,12 @@ function toggleEvent(index) {
     };
 }
 
-var REQUEST_LOGIN = exports.REQUEST_LOGIN = 'REQUEST_LOGIN';
 function requestLogin() {
     return {
         type: REQUEST_LOGIN
     };
 }
 
-var RECEIVE_LOGIN = exports.RECEIVE_LOGIN = 'RECEIVE_LOGIN';
 function receiveLogin(json) {
     return {
         type: RECEIVE_LOGIN,
@@ -69,7 +82,6 @@ function receiveLogin(json) {
     };
 }
 
-var FAIL_LOGIN = exports.FAIL_LOGIN = 'FAIL_LOGIN';
 function failLogin() {
     return {
         type: FAIL_LOGIN
@@ -91,14 +103,12 @@ function fetchPerson() {
     };
 }
 
-var REQUEST_EVENTS = exports.REQUEST_EVENTS = 'REQUEST_EVENTS';
 function requestEvents() {
     return {
         type: REQUEST_EVENTS
     };
 }
 
-var RECEIVE_EVENTS = exports.RECEIVE_EVENTS = 'RECEIVE_EVENTS';
 function receiveEvents(upcomingEvents, getState) {
     var personId = getState().loginActions.person.id;
     var json = checkIfRsvpd(upcomingEvents, personId);
@@ -118,7 +128,6 @@ function checkIfRsvpd(json, personId) {
     });
 }
 
-var FAIL_TO_GET_EVENTS = exports.FAIL_TO_GET_EVENTS = 'FAIL_TO_GET_EVENTS';
 function failToGetEvents() {
     return {
         type: FAIL_TO_GET_EVENTS
@@ -136,7 +145,6 @@ function fetchEvents() {
     };
 }
 
-var REQUEST_VENUE = exports.REQUEST_VENUE = 'REQUEST_VENUE';
 function requestVenue(index) {
     return {
         type: REQUEST_VENUE,
@@ -144,7 +152,6 @@ function requestVenue(index) {
     };
 }
 
-var RECEIVE_VENUE = exports.RECEIVE_VENUE = 'RECEIVE_VENUE';
 function receiveVenue(index, json) {
     return {
         type: RECEIVE_VENUE,
@@ -153,14 +160,12 @@ function receiveVenue(index, json) {
     };
 }
 
-var RECEIVE_ALL_VENUES = exports.RECEIVE_ALL_VENUES = 'RECEIVE_ALL_VENUES';
 function receivedAllVenues() {
     return {
         type: RECEIVE_ALL_VENUES
     };
 }
 
-var FAIL_TO_RECEIVE_VENUE = exports.FAIL_TO_RECEIVE_VENUE = 'FAIL_TO_RECEIVE_VENUE';
 function failToGetVenue(index) {
     return {
         type: FAIL_TO_RECEIVE_VENUE,
@@ -179,14 +184,12 @@ function fetchVenue(id, index) {
     };
 }
 
-var REQUEST_SKILLS = exports.REQUEST_SKILLS = 'REQUEST_SKILLS';
 function requestSkills() {
     return {
         type: REQUEST_SKILLS
     };
 }
 
-var RECEIVE_SKILLS = exports.RECEIVE_SKILLS = 'RECEIVE_SKILLS';
 function receiveSkills(json) {
     return {
         type: RECEIVE_SKILLS,
@@ -194,7 +197,6 @@ function receiveSkills(json) {
     };
 }
 
-var FAIL_TO_GET_SKILLS = exports.FAIL_TO_GET_SKILLS = 'FAIL_TO_GET_SKILLS';
 function failToGetSkills() {
     return {
         type: FAIL_TO_GET_SKILLS
@@ -212,7 +214,6 @@ function fetchSkills() {
     };
 }
 
-var RSVPD_TO_EVENT = exports.RSVPD_TO_EVENT = 'RSVPD_TO_EVENT';
 function rsvpd(index) {
     return {
         type: RSVPD_TO_EVENT,
@@ -412,7 +413,7 @@ exports.default = NoLogin;
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-				value: true
+	value: true
 });
 
 var _react = require('react');
@@ -421,35 +422,70 @@ var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _objectDestructuringEmpty(obj) { if (obj == null) throw new TypeError("Cannot destructure undefined"); }
+function print(val) {
+	console.log(val);
+}
 
 function Profile(_ref) {
-				_objectDestructuringEmpty(_ref);
+	var attributes = _ref.attributes;
+	var inputHandlers = _ref.inputHandlers;
 
-				return _react2.default.createElement(
-								'form',
-								null,
-								'PROFILE WHAT',
-								_react2.default.createElement(
-												'fieldset',
-												{ className: 'form-group' },
-												_react2.default.createElement(
-																'label',
-																{ 'for': 'nNumber' },
-																'N-Number'
-												),
-												_react2.default.createElement('input', { type: 'nNumber', className: 'form-control', placeholder: 'Please put your N-number here (NYU-only)' })
-								),
-								_react2.default.createElement(
-												'button',
-												{ type: 'submit', className: 'btn' },
-												'SUBMIT'
-								)
-				);
+	return _react2.default.createElement(
+		'form',
+		{ className: 'col-md-10' },
+		_react2.default.createElement(
+			'h2',
+			null,
+			'PROFILE'
+		),
+		_react2.default.createElement(
+			'fieldset',
+			{ className: 'form-group' },
+			_react2.default.createElement(
+				'label',
+				null,
+				'N-Number'
+			),
+			_react2.default.createElement('input', { type: 'nNumber', className: 'form-control',
+				onChange: function onChange(e) {
+					return inputHandlers.handleNNumber(e.target.value);
+				},
+				defaultValue: attributes.nNumber }),
+			_react2.default.createElement(
+				'small',
+				{ className: 'text-muted' },
+				'Please put your N-number here (NYU-only)'
+			)
+		),
+		_react2.default.createElement(
+			'fieldset',
+			{ className: 'form-group' },
+			_react2.default.createElement(
+				'label',
+				null,
+				'Email'
+			),
+			_react2.default.createElement('input', { type: 'email', className: 'form-control',
+				onChange: function onChange(e) {
+					return inputHandlers.handleEmail(e.target.value);
+				},
+				defaultValue: attributes.contact.email }),
+			_react2.default.createElement(
+				'small',
+				{ className: 'text-muted' },
+				'Is this your active email?'
+			)
+		),
+		_react2.default.createElement(
+			'button',
+			{ type: 'submit', className: 'btn' },
+			'SUBMIT'
+		)
+	);
 }
 
 Profile.propTypes = {
-				// nNumber: PropTypes.string.isRequired,
+	// nNumber: PropTypes.string.isRequired,
 };
 
 exports.default = Profile;
@@ -536,13 +572,16 @@ var App = (function (_Component) {
     _createClass(App, [{
         key: 'render',
         value: function render() {
-            var toggleProfileOnClick = this.props.toggleProfileOnClick;
+            var _props = this.props;
+            var toggleProfileOnClick = _props.toggleProfileOnClick;
+            var person = _props.person;
+            var inputHandlers = _props.inputHandlers;
 
             var loginView = this.props.isReceiving ? _react2.default.createElement(
                 'h2',
                 { className: 'loading' },
                 '...Tech@NYU RSVP is loading.'
-            ) : this.props.didLogin ? this.props.isProfileView ? _react2.default.createElement(_Profile2.default, null) : _react2.default.createElement(_VisibleEventList2.default, null) : _react2.default.createElement(_Welcome2.default, null);
+            ) : this.props.didLogin ? this.props.isProfileView ? _react2.default.createElement(_Profile2.default, { attributes: person.attributes, inputHandlers: inputHandlers }) : _react2.default.createElement(_VisibleEventList2.default, null) : _react2.default.createElement(_Welcome2.default, null);
             return _react2.default.createElement(
                 'div',
                 null,
@@ -573,11 +612,6 @@ var App = (function (_Component) {
                     'div',
                     { className: 'form' },
                     _react2.default.createElement(
-                        'h2',
-                        { id: 'upcoming' },
-                        'UPCOMING EVENTS'
-                    ),
-                    _react2.default.createElement(
                         'button',
                         { onClick: toggleProfileOnClick, className: 'btn' },
                         this.props.isProfileView ? 'Event List' : 'Profile'
@@ -593,7 +627,7 @@ var App = (function (_Component) {
 
 var mapStateToProps = function mapStateToProps(state) {
     return {
-        loginActions: state.loginActions,
+        person: state.loginActions.person,
         didLogin: state.loginActions.didLogin,
         isReceiving: state.loginActions.isReceiving,
         isProfileView: state.viewActions.isProfileView
@@ -604,6 +638,14 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
     return {
         toggleProfileOnClick: function toggleProfileOnClick(_) {
             return dispatch((0, _actions.toggleProfile)());
+        },
+        inputHandlers: {
+            handleEmail: function handleEmail(val) {
+                return console.log('EMAIL: ' + val);
+            },
+            handleNNumber: function handleNNumber(val) {
+                return console.log('nNumber: ' + val);
+            }
         }
     };
 };
@@ -716,6 +758,11 @@ var VisibleEventList = (function (_Component) {
             return _react2.default.createElement(
                 'div',
                 null,
+                _react2.default.createElement(
+                    'h2',
+                    { id: 'upcoming' },
+                    'UPCOMING EVENTS'
+                ),
                 this.props.isReceiving ? _react2.default.createElement(
                     'h2',
                     { className: 'loading' },

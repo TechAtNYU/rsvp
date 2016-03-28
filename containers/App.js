@@ -11,9 +11,9 @@ class App extends Component {
     }
 
     render() {
-        const { toggleProfileOnClick } = this.props;
+        const { toggleProfileOnClick, person, inputHandlers } = this.props;
         const loginView = this.props.isReceiving ? <h2 className='loading'>...Tech@NYU RSVP is loading.</h2>:
-        this.props.didLogin ? this.props.isProfileView ? <Profile />: <VisibleEventList />:<Welcome />;
+        this.props.didLogin ? this.props.isProfileView ? <Profile attributes={person.attributes} inputHandlers={inputHandlers} />: <VisibleEventList />:<Welcome />;
         return <div>
         <header>
             <a href='http://techatnyu.org/'><img src='images/techatnyu.png' alt='tech@nyu logo' className='logo'/></a>
@@ -23,7 +23,6 @@ class App extends Component {
             </div>
         </header> 
             <div className='form'>
-            <h2 id='upcoming'>UPCOMING EVENTS</h2>
             <button onClick={toggleProfileOnClick} className='btn'>{this.props.isProfileView ? 'Event List': 'Profile'}</button>
             {loginView}
             </div>
@@ -33,7 +32,7 @@ class App extends Component {
 
 const mapStateToProps = state => {
     return {
-        loginActions: state.loginActions,
+        person: state.loginActions.person,
         didLogin: state.loginActions.didLogin,
         isReceiving: state.loginActions.isReceiving,
         isProfileView: state.viewActions.isProfileView,
@@ -42,7 +41,11 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        toggleProfileOnClick: _ => dispatch(toggleProfile())
+        toggleProfileOnClick: _ => dispatch(toggleProfile()),
+        inputHandlers: {
+           handleEmail: val => console.log('EMAIL: ' + val),
+           handleNNumber: val => console.log('nNumber: ' + val),
+        },
     }
 }
 

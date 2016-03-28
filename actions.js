@@ -1,3 +1,20 @@
+export const TOGGLE_PROFILE_VIEW = 'TOGGLE_PROFILE_VIEW';
+export const TOGGLE_EVENT = 'TOGGLE_EVENT';
+export const REQUEST_LOGIN = 'REQUEST_LOGIN';
+export const RECEIVE_LOGIN = 'RECEIVE_LOGIN';
+export const FAIL_LOGIN = 'FAIL_LOGIN';
+export const REQUEST_EVENTS = 'REQUEST_EVENTS';
+export const RECEIVE_EVENTS = 'RECEIVE_EVENTS';
+export const FAIL_TO_GET_EVENTS = 'FAIL_TO_GET_EVENTS';
+export const REQUEST_VENUE = 'REQUEST_VENUE';
+export const RECEIVE_VENUE = 'RECEIVE_VENUE';
+export const RECEIVE_ALL_VENUES = 'RECEIVE_ALL_VENUES';
+export const FAIL_TO_RECEIVE_VENUE = 'FAIL_TO_RECEIVE_VENUE';
+export const REQUEST_SKILLS = 'REQUEST_SKILLS';
+export const RECEIVE_SKILLS = 'RECEIVE_SKILLS';
+export const FAIL_TO_GET_SKILLS = 'FAIL_TO_GET_SKILLS';
+export const RSVPD_TO_EVENT = 'RSVPD_TO_EVENT';
+
 export function fetchAll() {
     return (dispatch, getState) => {
         dispatch(fetchPerson()).then(() => dispatch(fetchEvents())
@@ -9,14 +26,12 @@ export function fetchAll() {
     }
 }
 
-export const TOGGLE_PROFILE_VIEW = 'TOGGLE_PROFILE_VIEW';
 export function toggleProfile() {
     return {
         type: TOGGLE_PROFILE_VIEW
     }
 }
 
-export const TOGGLE_EVENT = 'TOGGLE_EVENT';
 export function toggleEvent(index) {
     return {
         type: TOGGLE_EVENT,
@@ -24,14 +39,12 @@ export function toggleEvent(index) {
     }
 }
 
-export const REQUEST_LOGIN = 'REQUEST_LOGIN';
 export function requestLogin() {
     return {
         type: REQUEST_LOGIN
     };
 }
 
-export const RECEIVE_LOGIN = 'RECEIVE_LOGIN';
 export function receiveLogin(json) {
     return {
         type: RECEIVE_LOGIN,
@@ -40,7 +53,6 @@ export function receiveLogin(json) {
     };
 }
 
-export const FAIL_LOGIN = 'FAIL_LOGIN';
 export function failLogin() {
     return {
         type: FAIL_LOGIN
@@ -60,14 +72,12 @@ export function fetchPerson() {
     }
 }
 
-export const REQUEST_EVENTS = 'REQUEST_EVENTS';
 export function requestEvents() {
     return {
         type: REQUEST_EVENTS
     };
 }
 
-export const RECEIVE_EVENTS = 'RECEIVE_EVENTS';
 export function receiveEvents(upcomingEvents, getState) {
     let personId = getState().loginActions.person.id;
     let json = checkIfRsvpd(upcomingEvents, personId);
@@ -86,7 +96,6 @@ function checkIfRsvpd(json, personId) {
     });
 }
 
-export const FAIL_TO_GET_EVENTS = 'FAIL_TO_GET_EVENTS';
 export function failToGetEvents() {
     return {
         type: FAIL_TO_GET_EVENTS
@@ -103,7 +112,6 @@ export function fetchEvents() {
 }
 
 
-export const REQUEST_VENUE = 'REQUEST_VENUE';
 export function requestVenue(index) {
     return {
         type: REQUEST_VENUE,
@@ -111,7 +119,6 @@ export function requestVenue(index) {
     };
 }
 
-export const RECEIVE_VENUE = 'RECEIVE_VENUE';
 export function receiveVenue(index, json) {
     return {
         type: RECEIVE_VENUE,
@@ -120,14 +127,12 @@ export function receiveVenue(index, json) {
     }
 }
 
-export const RECEIVE_ALL_VENUES = 'RECEIVE_ALL_VENUES';
 export function receivedAllVenues() {
     return {
         type: RECEIVE_ALL_VENUES
     }
 }
 
-export const FAIL_TO_RECEIVE_VENUE = 'FAIL_TO_RECEIVE_VENUE';
 export function failToGetVenue(index) {
     return {
         type: FAIL_TO_RECEIVE_VENUE,
@@ -145,14 +150,12 @@ export function fetchVenue(id, index) {
 }
 
 
-export const REQUEST_SKILLS = 'REQUEST_SKILLS';
 function requestSkills() {
     return {
         type: REQUEST_SKILLS
     };
 }
 
-export const RECEIVE_SKILLS = 'RECEIVE_SKILLS';
 function receiveSkills(json) {
     return {
         type: RECEIVE_SKILLS,
@@ -160,7 +163,6 @@ function receiveSkills(json) {
     };
 }
 
-export const FAIL_TO_GET_SKILLS = 'FAIL_TO_GET_SKILLS';
 function failToGetSkills() {
     return {
         type: FAIL_TO_GET_SKILLS
@@ -176,7 +178,6 @@ export function fetchSkills() {
     }
 }
 
-export const RSVPD_TO_EVENT = 'RSVPD_TO_EVENT';
 export function rsvpd(index) {
     return {
         type: RSVPD_TO_EVENT,
