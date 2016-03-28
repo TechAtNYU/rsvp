@@ -12,14 +12,19 @@ class VisibleEventList extends Component {
     	return (
     		<div>
 	            <h2 id='upcoming'>UPCOMING EVENTS</h2>
-	            <EventList {...this.props} />
+	            { 
+	            	this.props.isReceiving ?
+	            	<h2 className='loading'>...events are loading.</h2>:
+	            	<EventList {...this.props} />
+	            }
             </div>
     		)
     }
 }
 const mapStateToProps = (state) => {
     return {
-        events: state.eventActions.events
+        events: state.eventActions.events,
+        isReceiving: state.eventActions.isReceiving,
     }
 }
 

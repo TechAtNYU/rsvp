@@ -10,7 +10,8 @@ class App extends Component {
     }
 
     render() {
-        let loginView = (this.props.didLogin) ? <VisibleEventList /> : <Welcome />
+        const loginView = this.props.isReceiving ? <h2 className='loading'>...Tech@NYU RSVP is loading.</h2>:
+        this.props.didLogin ? <VisibleEventList />:<Welcome />;
         return <div>
         <header>
             <a href='http://techatnyu.org/'><img src='images/techatnyu.png' alt='tech@nyu logo' className='logo'/></a>
@@ -29,7 +30,8 @@ class App extends Component {
 const mapStateToProps = (state) => {
     return {
         loginActions: state.loginActions,
-        didLogin: state.loginActions.didLogin
+        didLogin: state.loginActions.didLogin,
+        isReceiving: state.loginActions.isReceiving,
     }
 }
 

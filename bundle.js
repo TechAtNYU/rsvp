@@ -480,7 +480,11 @@ var App = (function (_Component) {
     _createClass(App, [{
         key: 'render',
         value: function render() {
-            var loginView = this.props.didLogin ? _react2.default.createElement(_VisibleEventList2.default, null) : _react2.default.createElement(_Welcome2.default, null);
+            var loginView = this.props.isReceiving ? _react2.default.createElement(
+                'h2',
+                { className: 'loading' },
+                '...Tech@NYU RSVP is loading.'
+            ) : this.props.didLogin ? _react2.default.createElement(_VisibleEventList2.default, null) : _react2.default.createElement(_Welcome2.default, null);
             return _react2.default.createElement(
                 'div',
                 null,
@@ -522,7 +526,8 @@ var App = (function (_Component) {
 var mapStateToProps = function mapStateToProps(state) {
     return {
         loginActions: state.loginActions,
-        didLogin: state.loginActions.didLogin
+        didLogin: state.loginActions.didLogin,
+        isReceiving: state.loginActions.isReceiving
     };
 };
 
@@ -639,7 +644,11 @@ var VisibleEventList = (function (_Component) {
                     { id: 'upcoming' },
                     'UPCOMING EVENTS'
                 ),
-                _react2.default.createElement(_EventList2.default, this.props)
+                this.props.isReceiving ? _react2.default.createElement(
+                    'h2',
+                    { className: 'loading' },
+                    '...events are loading.'
+                ) : _react2.default.createElement(_EventList2.default, this.props)
             );
         }
     }]);
@@ -649,7 +658,8 @@ var VisibleEventList = (function (_Component) {
 
 var mapStateToProps = function mapStateToProps(state) {
     return {
-        events: state.eventActions.events
+        events: state.eventActions.events,
+        isReceiving: state.eventActions.isReceiving
     };
 };
 
@@ -21373,6 +21383,7 @@ function eventActions() {
     var state = arguments.length <= 0 || arguments[0] === undefined ? initialState.eventActions : arguments[0];
     var action = arguments[1];
 
+    Object.freeze(state);
     switch (action.type) {
         case _actions.TOGGLE_EVENT:
             return Object.assign({}, state, {

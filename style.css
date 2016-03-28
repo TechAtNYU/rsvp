@@ -34,6 +34,10 @@ header p.description, .title {
     vertical-align: middle;
 }
 
+.loading {
+  text-align: center;
+}
+
 
 .form {
     top: 50px;

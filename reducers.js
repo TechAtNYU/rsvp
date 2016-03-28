@@ -102,6 +102,7 @@ function updateEvent(state = initialState.eventActions.events, action) {
 }
 
 function eventActions(state = initialState.eventActions, action) {
+    Object.freeze(state);
     switch (action.type) {
     case TOGGLE_EVENT:
         return Object.assign({}, state, {
