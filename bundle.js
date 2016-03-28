@@ -265,7 +265,7 @@ function Event(_ref) {
             } },
         _react2.default.createElement(
             'div',
-            { className: 'col-sm-2 col-xs-12 when' },
+            { className: 'col-sm-2 col-xs-4 when' },
             _react2.default.createElement(
                 'div',
                 { className: 'date' },
@@ -283,7 +283,7 @@ function Event(_ref) {
         ),
         _react2.default.createElement(
             'div',
-            { className: 'col-sm-8 col-xs-9 event-title' },
+            { className: 'col-sm-8 col-xs-5 event-title' },
             _react2.default.createElement(
                 'span',
                 null,

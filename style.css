@@ -38,7 +38,6 @@ header p.description, .title {
   text-align: center;
 }
 
-
 .form {
     top: 50px;
     width: 100%;
@@ -77,15 +76,16 @@ header p.description, .title {
   font-size: 16px;
   text-align: center;
   background-color: #d7552d;
-  height: 70px;
-  padding: 6px;
   float: left;
+/*  max-height: 100px;
+*/  align-self: center;
   display: flex;
   justify-content: center;
 }
 
 .date {
   align-self: center;
+  padding-top: 10px;
 }
 
 .date p {

@@ -10,13 +10,13 @@ function Event({onClick, selected, attributes, rsvp, timeObj, relationships, ven
         style={{
             backgroundColor: selected ? 'lightgray' : 'white'
         }}>
-        <div className='col-sm-2 col-xs-12 when'>
+        <div className='col-sm-2 col-xs-4 when'>
             <div className='date'>
                 <p>{timeObj.date}</p>
                 <p>{timeObj.hour + ':' + timeObj.minute + timeObj.timestring}</p>
             </div> 
         </div>
-        <div className='col-sm-8 col-xs-9 event-title'>
+        <div className='col-sm-8 col-xs-5 event-title'>
             <span>{attributes.title}</span>
         </div>
         <div className='col-sm-2 col-xs-3 rsvpd'>
