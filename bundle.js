@@ -455,7 +455,7 @@ var AppHandler = React.createClass({
 			});
 
 			// get events
-			$.getJSON('https://api.tnyu.org/' + window.API_VERSION + '/events/upcoming-publicly?page%5Blimit%5D=10&sort=startDateTime').done(function (json) {
+			$.getJSON('https://api.tnyu.org/' + window.API_VERSION + '/events/upcoming-publicly?page%5Blimit%5D=15&sort=startDateTime').done(function (json) {
 				var eventIds = [],
 				    eventTitles = [],
 				    eventStartDates = [],

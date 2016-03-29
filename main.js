@@ -51,7 +51,7 @@ var AppHandler = React.createClass({
 			});
 
 			// get events
-			$.getJSON('https://api.tnyu.org/' + window.API_VERSION + '/events/upcoming-publicly?page%5Blimit%5D=10&sort=startDateTime')
+			$.getJSON('https://api.tnyu.org/' + window.API_VERSION + '/events/upcoming-publicly?page%5Blimit%5D=15&sort=startDateTime')
 			.done( (json) => {
 				var eventIds = [], eventTitles = [], eventStartDates = [],  venueIds = [], rsvps = [], rsvpdEvents = [];
 				json.data.map( (event) => {
