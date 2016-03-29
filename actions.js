@@ -72,7 +72,10 @@ export function postPerson() {
                 dataType: 'json',
                 data: JSON.stringify(data),
             })
-        .done( response => dispatch(receiveLogin(response.data)))
+        .done( response => {
+            dispatch(receiveLogin(response.data));
+            dispatch(toggleProfile());
+        })
         .fail( e => console.log(e.responseText));
     }
 }

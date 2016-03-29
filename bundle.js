@@ -104,7 +104,8 @@ function postPerson() {
             dataType: 'json',
             data: JSON.stringify(data)
         }).done(function (response) {
-            return dispatch(receiveLogin(response.data));
+            dispatch(receiveLogin(response.data));
+            dispatch(toggleProfile());
         }).fail(function (e) {
             return console.log(e.responseText);
         });
