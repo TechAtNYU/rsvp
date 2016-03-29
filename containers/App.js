@@ -1,6 +1,10 @@
 import React , { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { toggleProfile } from '../actions'
+import {
+    toggleProfile,
+    updateEmail,
+    updateNNumber,
+} from '../actions'
 import VisibleEventList from './VisibleEventList'
 import Profile from '../components/Profile'
 import Welcome from './Welcome'
@@ -43,8 +47,8 @@ const mapDispatchToProps = dispatch => {
     return {
         toggleProfileOnClick: _ => dispatch(toggleProfile()),
         inputHandlers: {
-           handleEmail: val => console.log('EMAIL: ' + val),
-           handleNNumber: val => console.log('nNumber: ' + val),
+           handleEmail: email => dispatch(updateEmail(email)),
+           handleNNumber: nNumber => dispatch(updateNNumber(nNumber)),
         },
     }
 }

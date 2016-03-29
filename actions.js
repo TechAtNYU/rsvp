@@ -14,6 +14,8 @@ export const REQUEST_SKILLS = 'REQUEST_SKILLS';
 export const RECEIVE_SKILLS = 'RECEIVE_SKILLS';
 export const FAIL_TO_GET_SKILLS = 'FAIL_TO_GET_SKILLS';
 export const RSVPD_TO_EVENT = 'RSVPD_TO_EVENT';
+export const UPDATE_EMAIL = 'UPDATE_EMAIL';
+export const UPDATE_NNUMBER = 'UPDATE_NNUMBER';
 
 export function fetchAll() {
     return (dispatch, getState) => {
@@ -23,6 +25,20 @@ export function fetchAll() {
                 .then(() => dispatch(fetchSkills())
             )
         ))
+    }
+}
+
+export function updateEmail(email) {
+    return {
+        type: UPDATE_EMAIL,
+        email
+    }
+}
+
+export function updateNNumber(nNumber) {
+    return {
+        type: UPDATE_NNUMBER,
+        nNumber
     }
 }
 

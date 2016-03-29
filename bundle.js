@@ -5,6 +5,8 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 exports.fetchAll = fetchAll;
+exports.updateEmail = updateEmail;
+exports.updateNNumber = updateNNumber;
 exports.toggleProfile = toggleProfile;
 exports.toggleEvent = toggleEvent;
 exports.requestLogin = requestLogin;
@@ -40,6 +42,8 @@ var REQUEST_SKILLS = exports.REQUEST_SKILLS = 'REQUEST_SKILLS';
 var RECEIVE_SKILLS = exports.RECEIVE_SKILLS = 'RECEIVE_SKILLS';
 var FAIL_TO_GET_SKILLS = exports.FAIL_TO_GET_SKILLS = 'FAIL_TO_GET_SKILLS';
 var RSVPD_TO_EVENT = exports.RSVPD_TO_EVENT = 'RSVPD_TO_EVENT';
+var UPDATE_EMAIL = exports.UPDATE_EMAIL = 'UPDATE_EMAIL';
+var UPDATE_NNUMBER = exports.UPDATE_NNUMBER = 'UPDATE_NNUMBER';
 
 function fetchAll() {
     return function (dispatch, getState) {
@@ -52,6 +56,20 @@ function fetchAll() {
                 });
             });
         });
+    };
+}
+
+function updateEmail(email) {
+    return {
+        type: UPDATE_EMAIL,
+        email: email
+    };
+}
+
+function updateNNumber(nNumber) {
+    return {
+        type: UPDATE_NNUMBER,
+        nNumber: nNumber
     };
 }
 
@@ -640,11 +658,11 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
             return dispatch((0, _actions.toggleProfile)());
         },
         inputHandlers: {
-            handleEmail: function handleEmail(val) {
-                return console.log('EMAIL: ' + val);
+            handleEmail: function handleEmail(email) {
+                return dispatch((0, _actions.updateEmail)(email));
             },
-            handleNNumber: function handleNNumber(val) {
-                return console.log('nNumber: ' + val);
+            handleNNumber: function handleNNumber(nNumber) {
+                return dispatch((0, _actions.updateNNumber)(nNumber));
             }
         }
     };
@@ -21572,6 +21590,24 @@ function loginActions() {
             return Object.assign({}, state, {
                 isReceiving: false,
                 didInvalidate: true
+            });
+        case _actions.UPDATE_NNUMBER:
+            return Object.assign({}, state, {
+                person: Object.assign({}, state.person, {
+                    attributes: Object.assign({}, state.person.attributes, {
+                        nNumber: action.nNumber
+                    })
+                })
+            });
+        case _actions.UPDATE_EMAIL:
+            return Object.assign({}, state, {
+                person: Object.assign({}, state.person, {
+                    attributes: Object.assign({}, state.person.attributes, {
+                        contact: Object.assign({}, state.person.attributes.contact, {
+                            email: action.email
+                        })
+                    })
+                })
             });
         default:
             return state;

@@ -18,6 +18,8 @@ import {
     FAIL_TO_GET_SKILLS,
     RSVPD_TO_EVENT,
     RSVPS_SENT,
+    UPDATE_NNUMBER,
+    UPDATE_EMAIL,
 } from './actions';
 
 const initialState = {
@@ -188,6 +190,24 @@ function loginActions(state = initialState.loginActions, action) {
             isReceiving: false,
             didInvalidate: true
         });
+    case UPDATE_NNUMBER:
+        return Object.assign({}, state, {
+            person: Object.assign({}, state.person, {
+                attributes: Object.assign({}, state.person.attributes, {
+                   nNumber: action.nNumber
+                })
+            })
+        })
+    case UPDATE_EMAIL:
+        return Object.assign({}, state, {
+            person: Object.assign({}, state.person, {
+                attributes: Object.assign({}, state.person.attributes, {
+                   contact: Object.assign({}, state.person.attributes.contact, {
+                    email: action.email
+                   })
+                })
+            })
+        })
     default:
         return state;
     }
