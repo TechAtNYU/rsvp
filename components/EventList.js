@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import Event from './Event';
 
 function EventList({events, onEventClick, onRsvpClick}) {
-    return <div className='col-md-10'>
+    return <div>
         <ul className='list-group'>
             {events.map((event, i) => <Event key={i} {...event} onClick={() => onEventClick(i)}/>
         )}

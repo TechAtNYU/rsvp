@@ -398,7 +398,7 @@ function EventList(_ref) {
 
     return _react2.default.createElement(
         'div',
-        { className: 'col-md-10' },
+        null,
         _react2.default.createElement(
             'ul',
             { className: 'list-group' },
@@ -485,7 +485,7 @@ function Profile(_ref) {
 
 	return _react2.default.createElement(
 		'div',
-		{ className: 'col-md-10' },
+		null,
 		_react2.default.createElement(
 			'h2',
 			null,
@@ -666,11 +666,19 @@ var App = (function (_Component) {
                     'div',
                     { className: 'form' },
                     _react2.default.createElement(
-                        'button',
-                        { onClick: toggleProfileOnClick, className: 'btn' },
-                        this.props.isProfileView ? 'Event List' : 'Profile'
-                    ),
-                    loginView
+                        'div',
+                        { className: 'col-md-10 col-md-offset-1' },
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'pull-right' },
+                            _react2.default.createElement(
+                                'button',
+                                { onClick: toggleProfileOnClick, className: 'btn' },
+                                this.props.isProfileView ? 'Event List' : 'Profile'
+                            )
+                        ),
+                        loginView
+                    )
                 )
             );
         }

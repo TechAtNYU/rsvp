@@ -28,8 +28,12 @@ class App extends Component {
             </div>
         </header> 
             <div className='form'>
-            <button onClick={toggleProfileOnClick} className='btn'>{this.props.isProfileView ? 'Event List': 'Profile'}</button>
-            {loginView}
+                <div className='col-md-10 col-md-offset-1'>
+                <div className='pull-right'>
+                    <button onClick={toggleProfileOnClick} className='btn'>{this.props.isProfileView ? 'Event List': 'Profile'}</button>
+                </div>
+                {loginView}
+                </div>
             </div>
 	    </div>
     }

@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 
 function Profile({attributes, inputHandlers}) {
-    return <div className='col-md-10'>
+    return <div>
 	    <h2>PROFILE</h2>
 	    <div className='form-group'>
 		    <label>N-Number</label>
