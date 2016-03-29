@@ -159,7 +159,7 @@ export function failToGetEvents() {
 export function fetchEvents() {
     return function(dispatch, getState) {
         dispatch(requestEvents);
-        return $.get('https://api.tnyu.org/' + window.API_VERSION + '/events/upcoming-publicly?page%5Blimit%5D=10&sort=startDateTime?')
+        return $.get('https://api.tnyu.org/' + window.API_VERSION + '/events/upcoming-publicly?page%5Blimit%5D=15&sort=startDateTime?')
             .done(response => dispatch(receiveEvents(response.data, getState)))
             .fail(() => dispatch(failToGetEvents()));
     }

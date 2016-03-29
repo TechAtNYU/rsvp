@@ -69,6 +69,10 @@ function sortDateHelper(a, b) {
    return new Date(a.attributes.startDateTime) < new Date(b.attributes.startDateTime) ? -1 : 1;
 }
 
+function sortStringHelper(a, b) {
+    return a.attributes.name < b.attributes.name ? -1: 1;
+}
+
 function updateEvent(state = initialState.eventActions.events, action) {
     Object.freeze(state);
     switch (action.type) {
@@ -228,10 +232,11 @@ function skillActions(state = initialState.skillActions, action) {
             isReceiving: true,
         });
     case RECEIVE_SKILLS:
+    console.log(action.json.map(obj => obj.attributes.name));
         return Object.assign({}, state, {
             isReceiving: false,
             receivedAt: Date.now(),
-            skills: action.json
+            skills: action.json.slice().sort(sortStringHelper)
         });
     case FAIL_TO_GET_SKILLS:
         return Object.assign({}, state, {

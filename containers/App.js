@@ -8,6 +8,7 @@ import {
 } from '../actions'
 import VisibleEventList from './VisibleEventList'
 import Profile from '../components/Profile'
+import Typeahead from '../components/Typeahead'
 import Welcome from './Welcome'
 
 class App extends Component {
@@ -28,10 +29,11 @@ class App extends Component {
             </div>
         </header> 
             <div className='form'>
+                <Typeahead />
                 <div className='col-md-10 col-md-offset-1'>
-                <div className='pull-right'>
+                { this.props.didLogin? <div className='pull-right'>
                     <button onClick={toggleProfileOnClick} className='btn'>{this.props.isProfileView ? 'Event List': 'Profile'}</button>
-                </div>
+                </div> : null }
                 {loginView}
                 </div>
             </div>
