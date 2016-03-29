@@ -5,6 +5,7 @@ import rootReducer from './reducers'
 
 const loggerMiddleware = createLogger()
 window.isDev = true;
+window.API_VERSION = 'v3';
 
 const middlewares = (window.isDev) ?
         applyMiddleware(thunkMiddleware, loggerMiddleware):

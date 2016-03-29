@@ -16,6 +16,7 @@ export const FAIL_TO_GET_SKILLS = 'FAIL_TO_GET_SKILLS';
 export const RSVPD_TO_EVENT = 'RSVPD_TO_EVENT';
 export const UPDATE_EMAIL = 'UPDATE_EMAIL';
 export const UPDATE_NNUMBER = 'UPDATE_NNUMBER';
+export const SEND_PERSON = 'SEND_PERSON';
 
 export function fetchAll() {
     return (dispatch, getState) => {
@@ -39,6 +40,40 @@ export function updateNNumber(nNumber) {
     return {
         type: UPDATE_NNUMBER,
         nNumber
+    }
+}
+
+function sendPerson() {
+    return {
+        type: SEND_PERSON
+    }
+}
+
+export function postPerson() {
+    return (dispatch, getState) => {
+        dispatch(sendPerson());
+        const person = Object.assign({}, getState().loginActions.person, {
+            type: 'people',
+            id: getState().loginActions.person.id,
+            attributes: {
+                nNumber: getState().loginActions.person.attributes.nNumber,
+                contact: getState().loginActions.person.attributes.contact,
+            }
+        });
+        const data = {
+            data: person,
+        };
+        $.ajax({
+                type: 'PATCH',
+                acccepts: 'application/vnd.api+json',
+                contentType: 'application/vnd.api+json',
+                url: 'https://api.tnyu.org/' + window.API_VERSION + '/people/me',
+                crossDomain: true,
+                dataType: 'json',
+                data: JSON.stringify(data),
+            })
+        .done( response => dispatch(receiveLogin(response.data)))
+        .fail( e => console.log(e.responseText));
     }
 }
 
@@ -76,13 +111,13 @@ export function failLogin() {
 }
 
 export function shouldFetchFb() {
-    window.location.href = 'https://api.tnyu.org/v3/auth/facebook?success=' + window.location;
+    window.location.href = 'https://api.tnyu.org/' + window.API_VERSION + '/auth/facebook?success=' + window.location;
 }
 
 export function fetchPerson() {
     return (dispatch) => {
         dispatch(requestLogin);
-        return $.get('https://api.tnyu.org/v3/people/me')
+        return $.get('https://api.tnyu.org/' + window.API_VERSION + '/people/me')
             .done(response => dispatch(receiveLogin(response.data)))
             .fail(() => dispatch(failLogin()));
     }
@@ -121,7 +156,7 @@ export function failToGetEvents() {
 export function fetchEvents() {
     return function(dispatch, getState) {
         dispatch(requestEvents);
-        return $.get('https://api.tnyu.org/v3/events/upcoming-publicly?page%5Blimit%5D=10&sort=startDateTime?')
+        return $.get('https://api.tnyu.org/' + window.API_VERSION + '/events/upcoming-publicly?page%5Blimit%5D=10&sort=startDateTime?')
             .done(response => dispatch(receiveEvents(response.data, getState)))
             .fail(() => dispatch(failToGetEvents()));
     }
@@ -159,7 +194,7 @@ export function failToGetVenue(index) {
 export function fetchVenue(id, index) {
     return (dispatch) => {
         dispatch(requestVenue);
-        return $.get('https://api.tnyu.org/v3/venues/' + id)
+        return $.get('https://api.tnyu.org/' + window.API_VERSION + '/venues/' + id)
             .done(response => dispatch(receiveVenue(index, response.data)))
             .fail(() => dispatch(failToGetVenue(index)));
     }
@@ -188,7 +223,7 @@ function failToGetSkills() {
 export function fetchSkills() {
     return (dispatch) => {
         dispatch(requestSkills);
-        return $.get('https://api.tnyu.org/v3/skills')
+        return $.get('https://api.tnyu.org/' + window.API_VERSION + '/skills')
             .done(response => dispatch(receiveSkills(response.data)))
             .fail(() => dispatch(failToGetSkills()));
     }
@@ -204,7 +239,7 @@ export function rsvpd(index) {
 export function rsvpToEvents() {
     return (dispatch, getState) => {
         getState().eventActions.events.map((event, i) => {
-            if (event.selected) $.get('https://api.tnyu.org/v3/events/' + event.id + '/rsvp')
+            if (event.selected) $.get('https://api.tnyu.org/' + window.API_VERSION + '/events/' + event.id + '/rsvp')
                 .done(() => dispatch(rsvpd(i)))
                 .fail(() => console.log('RSVP to ' + event.attributes.title + ' failed. Try again later.'));
         })

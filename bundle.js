@@ -7,6 +7,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.fetchAll = fetchAll;
 exports.updateEmail = updateEmail;
 exports.updateNNumber = updateNNumber;
+exports.postPerson = postPerson;
 exports.toggleProfile = toggleProfile;
 exports.toggleEvent = toggleEvent;
 exports.requestLogin = requestLogin;
@@ -44,6 +45,7 @@ var FAIL_TO_GET_SKILLS = exports.FAIL_TO_GET_SKILLS = 'FAIL_TO_GET_SKILLS';
 var RSVPD_TO_EVENT = exports.RSVPD_TO_EVENT = 'RSVPD_TO_EVENT';
 var UPDATE_EMAIL = exports.UPDATE_EMAIL = 'UPDATE_EMAIL';
 var UPDATE_NNUMBER = exports.UPDATE_NNUMBER = 'UPDATE_NNUMBER';
+var SEND_PERSON = exports.SEND_PERSON = 'SEND_PERSON';
 
 function fetchAll() {
     return function (dispatch, getState) {
@@ -70,6 +72,42 @@ function updateNNumber(nNumber) {
     return {
         type: UPDATE_NNUMBER,
         nNumber: nNumber
+    };
+}
+
+function sendPerson() {
+    return {
+        type: SEND_PERSON
+    };
+}
+
+function postPerson() {
+    return function (dispatch, getState) {
+        dispatch(sendPerson());
+        var person = Object.assign({}, getState().loginActions.person, {
+            type: 'people',
+            id: getState().loginActions.person.id,
+            attributes: {
+                nNumber: getState().loginActions.person.attributes.nNumber,
+                contact: getState().loginActions.person.attributes.contact
+            }
+        });
+        var data = {
+            data: person
+        };
+        $.ajax({
+            type: 'PATCH',
+            acccepts: 'application/vnd.api+json',
+            contentType: 'application/vnd.api+json',
+            url: 'https://api.tnyu.org/' + window.API_VERSION + '/people/me',
+            crossDomain: true,
+            dataType: 'json',
+            data: JSON.stringify(data)
+        }).done(function (response) {
+            return dispatch(receiveLogin(response.data));
+        }).fail(function (e) {
+            return console.log(e.responseText);
+        });
     };
 }
 
@@ -107,13 +145,13 @@ function failLogin() {
 }
 
 function shouldFetchFb() {
-    window.location.href = 'https://api.tnyu.org/v3/auth/facebook?success=' + window.location;
+    window.location.href = 'https://api.tnyu.org/' + window.API_VERSION + '/auth/facebook?success=' + window.location;
 }
 
 function fetchPerson() {
     return function (dispatch) {
         dispatch(requestLogin);
-        return $.get('https://api.tnyu.org/v3/people/me').done(function (response) {
+        return $.get('https://api.tnyu.org/' + window.API_VERSION + '/people/me').done(function (response) {
             return dispatch(receiveLogin(response.data));
         }).fail(function () {
             return dispatch(failLogin());
@@ -155,7 +193,7 @@ function failToGetEvents() {
 function fetchEvents() {
     return function (dispatch, getState) {
         dispatch(requestEvents);
-        return $.get('https://api.tnyu.org/v3/events/upcoming-publicly?page%5Blimit%5D=10&sort=startDateTime?').done(function (response) {
+        return $.get('https://api.tnyu.org/' + window.API_VERSION + '/events/upcoming-publicly?page%5Blimit%5D=10&sort=startDateTime?').done(function (response) {
             return dispatch(receiveEvents(response.data, getState));
         }).fail(function () {
             return dispatch(failToGetEvents());
@@ -194,7 +232,7 @@ function failToGetVenue(index) {
 function fetchVenue(id, index) {
     return function (dispatch) {
         dispatch(requestVenue);
-        return $.get('https://api.tnyu.org/v3/venues/' + id).done(function (response) {
+        return $.get('https://api.tnyu.org/' + window.API_VERSION + '/venues/' + id).done(function (response) {
             return dispatch(receiveVenue(index, response.data));
         }).fail(function () {
             return dispatch(failToGetVenue(index));
@@ -224,7 +262,7 @@ function failToGetSkills() {
 function fetchSkills() {
     return function (dispatch) {
         dispatch(requestSkills);
-        return $.get('https://api.tnyu.org/v3/skills').done(function (response) {
+        return $.get('https://api.tnyu.org/' + window.API_VERSION + '/skills').done(function (response) {
             return dispatch(receiveSkills(response.data));
         }).fail(function () {
             return dispatch(failToGetSkills());
@@ -242,7 +280,7 @@ function rsvpd(index) {
 function rsvpToEvents() {
     return function (dispatch, getState) {
         getState().eventActions.events.map(function (event, i) {
-            if (event.selected) $.get('https://api.tnyu.org/v3/events/' + event.id + '/rsvp').done(function () {
+            if (event.selected) $.get('https://api.tnyu.org/' + window.API_VERSION + '/events/' + event.id + '/rsvp').done(function () {
                 return dispatch(rsvpd(i));
             }).fail(function () {
                 return console.log('RSVP to ' + event.attributes.title + ' failed. Try again later.');
@@ -440,16 +478,12 @@ var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function print(val) {
-	console.log(val);
-}
-
 function Profile(_ref) {
 	var attributes = _ref.attributes;
 	var inputHandlers = _ref.inputHandlers;
 
 	return _react2.default.createElement(
-		'form',
+		'div',
 		{ className: 'col-md-10' },
 		_react2.default.createElement(
 			'h2',
@@ -457,14 +491,14 @@ function Profile(_ref) {
 			'PROFILE'
 		),
 		_react2.default.createElement(
-			'fieldset',
+			'div',
 			{ className: 'form-group' },
 			_react2.default.createElement(
 				'label',
 				null,
 				'N-Number'
 			),
-			_react2.default.createElement('input', { type: 'nNumber', className: 'form-control',
+			_react2.default.createElement('input', { type: 'text', className: 'form-control',
 				onChange: function onChange(e) {
 					return inputHandlers.handleNNumber(e.target.value);
 				},
@@ -476,14 +510,14 @@ function Profile(_ref) {
 			)
 		),
 		_react2.default.createElement(
-			'fieldset',
+			'div',
 			{ className: 'form-group' },
 			_react2.default.createElement(
 				'label',
 				null,
 				'Email'
 			),
-			_react2.default.createElement('input', { type: 'email', className: 'form-control',
+			_react2.default.createElement('input', { type: 'text', className: 'form-control',
 				onChange: function onChange(e) {
 					return inputHandlers.handleEmail(e.target.value);
 				},
@@ -496,7 +530,7 @@ function Profile(_ref) {
 		),
 		_react2.default.createElement(
 			'button',
-			{ type: 'submit', className: 'btn' },
+			{ onClick: inputHandlers.handleSubmit, className: 'btn' },
 			'SUBMIT'
 		)
 	);
@@ -534,6 +568,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var loggerMiddleware = (0, _reduxLogger2.default)();
 window.isDev = true;
+window.API_VERSION = 'v3';
 
 var middlewares = window.isDev ? (0, _redux.applyMiddleware)(_reduxThunk2.default, loggerMiddleware) : (0, _redux.applyMiddleware)(_reduxThunk2.default);
 
@@ -663,6 +698,9 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
             },
             handleNNumber: function handleNNumber(nNumber) {
                 return dispatch((0, _actions.updateNNumber)(nNumber));
+            },
+            handleSubmit: function handleSubmit(_) {
+                return dispatch((0, _actions.postPerson)());
             }
         }
     };
@@ -21483,6 +21521,7 @@ function updateEvent() {
     var state = arguments.length <= 0 || arguments[0] === undefined ? initialState.eventActions.events : arguments[0];
     var action = arguments[1];
 
+    Object.freeze(state);
     switch (action.type) {
         case _actions.RECEIVE_EVENTS:
             return action.json.slice().sort(sortDateHelper).map(function (event) {
@@ -21574,6 +21613,7 @@ function loginActions() {
     var state = arguments.length <= 0 || arguments[0] === undefined ? initialState.loginActions : arguments[0];
     var action = arguments[1];
 
+    Object.freeze(state);
     switch (action.type) {
         case _actions.REQUEST_LOGIN:
             return Object.assign({}, state, {
@@ -21590,6 +21630,10 @@ function loginActions() {
             return Object.assign({}, state, {
                 isReceiving: false,
                 didInvalidate: true
+            });
+        case _actions.SEND_PERSON:
+            return Object.assign({}, state, {
+                isReceiving: true
             });
         case _actions.UPDATE_NNUMBER:
             return Object.assign({}, state, {
@@ -21618,6 +21662,7 @@ function skillActions() {
     var state = arguments.length <= 0 || arguments[0] === undefined ? initialState.skillActions : arguments[0];
     var action = arguments[1];
 
+    Object.freeze(state);
     switch (action.type) {
         case _actions.REQUEST_SKILLS:
             return Object.assign({}, state, {
@@ -21643,6 +21688,7 @@ function viewActions() {
     var state = arguments.length <= 0 || arguments[0] === undefined ? initialState.viewActions : arguments[0];
     var action = arguments[1];
 
+    Object.freeze(state);
     switch (action.type) {
         case _actions.TOGGLE_PROFILE_VIEW:
             return Object.assign({}, state, {

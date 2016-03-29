@@ -20,6 +20,7 @@ import {
     RSVPS_SENT,
     UPDATE_NNUMBER,
     UPDATE_EMAIL,
+    SEND_PERSON,
 } from './actions';
 
 const initialState = {
@@ -69,6 +70,7 @@ function sortDateHelper(a, b) {
 }
 
 function updateEvent(state = initialState.eventActions.events, action) {
+    Object.freeze(state);
     switch (action.type) {
     case RECEIVE_EVENTS:
         return action.json.slice().sort(sortDateHelper)
@@ -173,6 +175,7 @@ function eventActions(state = initialState.eventActions, action) {
 }
 
 function loginActions(state = initialState.loginActions, action) {
+    Object.freeze(state);
     switch (action.type) {
     case REQUEST_LOGIN:
         return Object.assign({}, state, {
@@ -190,6 +193,10 @@ function loginActions(state = initialState.loginActions, action) {
             isReceiving: false,
             didInvalidate: true
         });
+    case SEND_PERSON:
+        return Object.assign({}, state, {
+            isReceiving: true
+        })
     case UPDATE_NNUMBER:
         return Object.assign({}, state, {
             person: Object.assign({}, state.person, {
@@ -214,6 +221,7 @@ function loginActions(state = initialState.loginActions, action) {
 }
 
 function skillActions(state = initialState.skillActions, action) {
+    Object.freeze(state);
     switch (action.type) {
     case REQUEST_SKILLS:
         return Object.assign({}, state, {
@@ -236,6 +244,7 @@ function skillActions(state = initialState.skillActions, action) {
 }
 
 function viewActions(state=initialState.viewActions, action) {
+    Object.freeze(state);
     switch (action.type) {
     case TOGGLE_PROFILE_VIEW:
         return Object.assign({}, state, {

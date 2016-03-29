@@ -4,6 +4,7 @@ import {
     toggleProfile,
     updateEmail,
     updateNNumber,
+    postPerson,
 } from '../actions'
 import VisibleEventList from './VisibleEventList'
 import Profile from '../components/Profile'
@@ -49,6 +50,7 @@ const mapDispatchToProps = dispatch => {
         inputHandlers: {
            handleEmail: email => dispatch(updateEmail(email)),
            handleNNumber: nNumber => dispatch(updateNNumber(nNumber)),
+           handleSubmit: _ => dispatch(postPerson()),
         },
     }
 }
