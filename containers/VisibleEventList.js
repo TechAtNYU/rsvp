@@ -12,6 +12,9 @@ class VisibleEventList extends Component {
     	return (
     		<div>
                 <h2 id='upcoming'>UPCOMING EVENTS</h2>
+                <div className='row' id='nNumber-notice'>
+                <small className='text-muted pull-left'>Filling out your N-number on Profile can make the checkin process smoother (NYU-only)</small>
+                </div>
 	            { 
 	            	this.props.isReceiving ?
 	            	<h2 className='loading'>...events are loading.</h2>:

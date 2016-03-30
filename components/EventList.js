@@ -7,9 +7,12 @@ function EventList({events, onEventClick, onRsvpClick}) {
             {events.map((event, i) => <Event key={i} {...event} onClick={() => onEventClick(i)}/>
         )}
         </ul>
-        <div className='pull-right'>
-        <button className='btn rsvp-button' onClick={onRsvpClick}>RSVP</button>
+        <div className='rsvp-button-container'>
+            <div className='row'>
+            <button className='btn rsvp-button pull-right' onClick={onRsvpClick}>RSVP</button>
+            </div>
         </div>
+
     </div>
 }
 

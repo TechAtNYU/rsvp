@@ -3,7 +3,6 @@ const list = ['interaction design', 'graphic design', 'design thinking', 'illust
 
 function inpHandle(val) {
 	const filtered = list.filter(name => name.slice(0, val.length) === val);
-	console.log(filtered);
 }
 
 function Typeahead({}) {

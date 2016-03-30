@@ -52,14 +52,15 @@ function sendPerson() {
 export function postPerson() {
     return (dispatch, getState) => {
         dispatch(sendPerson());
+        const nNumber = getState().loginActions.person.attributes.nNumber;
         const person = Object.assign({}, getState().loginActions.person, {
             type: 'people',
             id: getState().loginActions.person.id,
             attributes: {
-                nNumber: getState().loginActions.person.attributes.nNumber,
-                contact: getState().loginActions.person.attributes.contact,
+                contact: getState().loginActions.person.attributes.contact
             }
         });
+        if (nNumber.length > 0) person.attributes.nNumber = nNumber;
         const data = {
             data: person,
         };

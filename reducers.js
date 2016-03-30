@@ -232,7 +232,7 @@ function skillActions(state = initialState.skillActions, action) {
             isReceiving: true,
         });
     case RECEIVE_SKILLS:
-    console.log(action.json.map(obj => obj.attributes.name));
+    // console.log(action.json.map(obj => obj.attributes.name));
         return Object.assign({}, state, {
             isReceiving: false,
             receivedAt: Date.now(),
