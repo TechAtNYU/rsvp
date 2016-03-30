@@ -7,6 +7,11 @@ test:
     - echo "No tests are needed"
 
 deployment:
+  staging:
+    branch: develop
+    commands:
+      - rm -rf $HOME/$CIRCLE_PROJECT_REPONAME/.git
+      - turbolift -u $RAXUSER -a $RAXAPIKEY --os-rax-auth $RAXREGION upload -s $HOME/$CIRCLE_PROJECT_REPONAME -c $STAGECONTAINER;
   production:
     branch: master
     commands:
