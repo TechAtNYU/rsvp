@@ -60,7 +60,7 @@ export function postPerson() {
                 contact: getState().loginActions.person.attributes.contact
             }
         });
-        if (nNumber.length > 0) person.attributes.nNumber = nNumber;
+        if (nNumber) if (nNumber.length > 0) person.attributes.nNumber = nNumber;
         const data = {
             data: person,
         };
