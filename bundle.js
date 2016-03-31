@@ -596,6 +596,7 @@ function Typeahead(_ref) {
 	var filterHandler = _ref.filterHandler;
 
 	var width = '200px';
+	if (skills.length === filtered.length) filtered = [];
 	return _react2.default.createElement(
 		'div',
 		null,
@@ -605,10 +606,10 @@ function Typeahead(_ref) {
 		filtered.length > 0 ? _react2.default.createElement(
 			'div',
 			null,
-			filtered.map(function (el) {
+			filtered.map(function (el, i) {
 				return _react2.default.createElement(
 					'div',
-					{ width: width },
+					{ key: i, width: width },
 					el.attributes.name
 				);
 			})
@@ -648,7 +649,7 @@ var _reducers2 = _interopRequireDefault(_reducers);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var loggerMiddleware = (0, _reduxLogger2.default)();
-window.isDev = true;
+window.isDev = false;
 window.API_VERSION = 'v3';
 
 var middlewares = window.isDev ? (0, _redux.applyMiddleware)(_reduxThunk2.default, loggerMiddleware) : (0, _redux.applyMiddleware)(_reduxThunk2.default);

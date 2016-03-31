@@ -4,7 +4,7 @@ import createLogger from 'redux-logger'
 import rootReducer from './reducers'
 
 const loggerMiddleware = createLogger()
-window.isDev = true;
+window.isDev = false;
 window.API_VERSION = 'v3';
 
 const middlewares = (window.isDev) ?
