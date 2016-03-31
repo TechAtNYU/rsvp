@@ -1,21 +1,24 @@
 import React, { PropTypes } from 'react';
-const list = ['interaction design', 'graphic design', 'design thinking', 'illustration', 'design research', 'game design', 'fashion design', 'ruby', 'processing', 'javascript', 'wordpress', 'mongo', 'sql', 'node', 'html/css', 'rails', 'unity', 'angular', 'java', 'python', 'php', 'management', 'marketing', 'statistics', 'machine learning/ai', 'fundraising', 'data visualization', 'product management', 'social media marketing', 'product design', 'game art', 'r', 'd3', 'iOS', 'android', 'objective c', 'scala', 'swift', 'computer vision', 'data journalism', 'due diligence', 'event planning', 'functional programming', 'c#'];
 
-function inpHandle(val) {
-	const filtered = list.filter(name => name.slice(0, val.length) === val);
-}
-
-function Typeahead({}) {
+function Typeahead({ skills, filtered, filterHandler }) {
+	const width = '200px';
     return (
     	<div>
-		    <span>TYPEAHEAD</span>
-		    <input onChange={e => inpHandle(e.target.value)} type='text'></input>
+		    <input width={width} onChange={e => filterHandler(e.target.value)} type='text'></input>
+		    { filtered.length > 0 ? (
+		    	<div>
+		    	{filtered.map(el =>
+		    		<div width={width}>{el.attributes.name}</div>
+		    		)}
+		    	</div>
+		    	): null}
 		</div>
 	)
 }
 
 Typeahead.propTypes = {
-    // nNumber: PropTypes.string.isRequired,
+	skills: PropTypes.array.isRequired,
+	filtered: PropTypes.array.isRequired,
 }
 
 export default Typeahead

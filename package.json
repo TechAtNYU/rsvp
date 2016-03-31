@@ -35,6 +35,7 @@
     "watchify": "^3.6.1"
   },
   "dependencies": {
+    "fuzzy": "^0.1.1",
     "isomorphic-fetch": "^2.2.1",
     "react-redux": "^4.4.0",
     "superagent": "^1.4.0"

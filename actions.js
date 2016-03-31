@@ -1,3 +1,4 @@
+import fuzzy from 'fuzzy';
 export const TOGGLE_PROFILE_VIEW = 'TOGGLE_PROFILE_VIEW';
 export const TOGGLE_EVENT = 'TOGGLE_EVENT';
 export const REQUEST_LOGIN = 'REQUEST_LOGIN';
@@ -17,6 +18,7 @@ export const RSVPD_TO_EVENT = 'RSVPD_TO_EVENT';
 export const UPDATE_EMAIL = 'UPDATE_EMAIL';
 export const UPDATE_NNUMBER = 'UPDATE_NNUMBER';
 export const SEND_PERSON = 'SEND_PERSON';
+export const FILTER_SKILLS = 'FILTER_SKILLS';
 
 export function fetchAll() {
     return (dispatch, getState) => {
@@ -78,6 +80,21 @@ export function postPerson() {
             dispatch(toggleProfile());
         })
         .fail( e => console.log(e.responseText));
+    }
+}
+
+function updateFilteredSkills(filtered) {
+    return {
+        type: FILTER_SKILLS,
+        filtered
+    }
+}
+
+export function filterSkills(word) {
+    return (dispatch, getState) => {
+        const options = { extract: el => el.attributes.name };
+        const results = fuzzy.filter(word, getState().skillActions.skills, options).map( el => el.string);
+        dispatch(updateFilteredSkills(results));
     }
 }
 

@@ -5,10 +5,12 @@ import {
     updateEmail,
     updateNNumber,
     postPerson,
+    filterSkills,
 } from '../actions'
 import VisibleEventList from './VisibleEventList'
 import Profile from '../components/Profile'
 import Welcome from './Welcome'
+import Typeahead from '../components/Typeahead'
 
 class App extends Component {
     constructor(props) {
@@ -16,7 +18,7 @@ class App extends Component {
     }
 
     render() {
-        const { toggleProfileOnClick, person, inputHandlers } = this.props;
+        const { toggleProfileOnClick, person, inputHandlers, skills, filtered} = this.props;
         const loginView = this.props.isReceiving ? <h2 className='loading'>...Tech@NYU RSVP is loading.</h2>:
         this.props.didLogin ? this.props.isProfileView ? <Profile attributes={person.attributes} inputHandlers={inputHandlers} />: <VisibleEventList />:<Welcome />;
         return <div>
@@ -29,6 +31,7 @@ class App extends Component {
         </header> 
             <div className='form'>
                 <div className='col-md-10 col-md-offset-1'>
+                <Typeahead skills={skills} filtered={filtered} filterHandler={inputHandlers.handleFilteredSkills} />
                 { this.props.didLogin? <div className='pull-right'>
                     <button onClick={toggleProfileOnClick} className='btn'>{this.props.isProfileView ? 'Event List': 'Profile'}</button>
                 </div> : null }
@@ -45,6 +48,8 @@ const mapStateToProps = state => {
         didLogin: state.loginActions.didLogin,
         isReceiving: state.loginActions.isReceiving,
         isProfileView: state.viewActions.isProfileView,
+        skills: state.skillActions.skills,
+        filtered: state.skillActions.filtered,
     }
 }
 
@@ -55,6 +60,7 @@ const mapDispatchToProps = dispatch => {
            handleEmail: email => dispatch(updateEmail(email)),
            handleNNumber: nNumber => dispatch(updateNNumber(nNumber)),
            handleSubmit: _ => dispatch(postPerson()),
+           handleFilteredSkills: query => dispatch(filterSkills(query)),
         },
     }
 }

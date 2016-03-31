@@ -21,6 +21,7 @@ import {
     UPDATE_NNUMBER,
     UPDATE_EMAIL,
     SEND_PERSON,
+    FILTER_SKILLS,
 } from './actions';
 
 const initialState = {
@@ -40,6 +41,7 @@ const initialState = {
     },
     'skillActions': {
         skills: [],
+        filtered: [],
         isReceiving: false,
         receivedAt: null,
         didInvalidate: false
@@ -242,6 +244,10 @@ function skillActions(state = initialState.skillActions, action) {
         return Object.assign({}, state, {
             isReceiving: false,
             didInvalidate: true
+        });
+    case FILTER_SKILLS:
+        return Object.assign({}, state, {
+            filtered: action.filtered.map(el => state.skills.find(skill => skill.attributes.name === el))
         });
     default:
         return state;
