@@ -6,8 +6,7 @@ var React = require('react');
 var DropDownMenu = React.createClass({
 	getInitialState: function getInitialState() {
 		return {
-			selectedEvents: {},
-			defaultVenueSize: 200
+			selectedEvents: {}
 		};
 	},
 
@@ -54,27 +53,28 @@ var DropDownMenu = React.createClass({
 		return { date: date, time: time, timeStr: timeStr };
 	},
 
-	_isEventFull: function _isEventFull(i) {
-		if (this.props.venueCaps[i]) return this.props.venueCaps[i] * 3 <= this.props.totalRsvps[i] ? true : false;
-		return this.state.defaultVenueSize <= this.props.totalRsvps[i] ? true : false;
-	},
-
 	render: function render() {
 		var _this = this;
 
+		var today = new Date();
 		var itemNodes = this.props.eventTitles.map(function (title, i) {
 			var dateObj = _this._getTime(i);
-			var isFull = _this._isEventFull(i);
+			var isFull = _this.props.venueCaps[i] * 2 < _this.props.totalRsvps[i];
 			var isRsvpd = _this.props.rsvpdEvents[i];
-			var checkbox = isFull || isRsvpd ? isRsvpd ? React.createElement(
-				'span',
-				null,
-				'RSVP\'d'
-			) : React.createElement(
+			// var isPastRsvpDeadline = new Date(this.props.rawJson[i].attributes.rsvpDeadline) < today;
+			var checkbox = React.createElement('input', { type: 'checkbox', key: i, onChange: _this._toggleCheckbox.bind(_this, i) });
+
+			// if (isPastRsvpDeadline) checkbox = <span>Event CLOSED</span>;
+			if (isFull) checkbox = React.createElement(
 				'span',
 				null,
 				'Event FULL'
-			) : React.createElement('input', { type: 'checkbox', key: i, onChange: _this._toggleCheckbox.bind(_this, i) });
+			);
+			if (isRsvpd) checkbox = React.createElement(
+				'span',
+				null,
+				'RSVP\'d'
+			);
 
 			return React.createElement(
 				'li',
@@ -418,6 +418,7 @@ var AppHandler = React.createClass({
 			emailExists: false,
 			email: '',
 			venueIds: [],
+			DEFAULT_VENUE_SIZE: 200,
 			venueNames: [],
 			venueAddresses: [],
 			venueCaps: [],
@@ -492,7 +493,7 @@ var AppHandler = React.createClass({
 					$.getJSON('https://api.tnyu.org/' + window.API_VERSION + '/venues/' + venueId.toString()).done(function (json) {
 						venueNames.push(json.data.attributes.name || undefined);
 						venueAddresses.push(json.data.attributes.address || undefined);
-						venueCaps.push(json.data.attributes.seats || undefined);
+						if (Number.isInteger(json.data.attributes.seats)) venueCaps.push(json.data.attributes.seats);else venueCaps.push(_this.state.DEFAULT_VENUE_SIZE);
 					}).then(function () {
 						_this.setState({
 							venueNames: venueNames,

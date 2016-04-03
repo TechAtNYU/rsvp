@@ -4,7 +4,6 @@ var DropDownMenu = React.createClass({
 	getInitialState: function() {
 		return {
 			selectedEvents: {},
-			defaultVenueSize: 200
 		};
 	},
 
@@ -51,17 +50,18 @@ var DropDownMenu = React.createClass({
 		return { date: date, time: time, timeStr: timeStr };
 	},
 
-	_isEventFull: function(i) {
-		if (this.props.venueCaps[i]) return (this.props.venueCaps[i] * 3 <= this.props.totalRsvps[i]) ? true : false;
-		return (this.state.defaultVenueSize <= this.props.totalRsvps[i]) ? true : false;
-	},
-
 	render: function() {
+		const today = new Date();
 		var itemNodes = this.props.eventTitles.map( (title, i) => {
 			var dateObj = this._getTime(i);
-			var isFull = this._isEventFull(i);
+			var isFull = this.props.venueCaps[i] * 2 < this.props.totalRsvps[i];
 			var isRsvpd = this.props.rsvpdEvents[i];
-			var checkbox = (isFull || isRsvpd) ? (isRsvpd) ? (<span>RSVP'd</span>) : (<span>Event FULL</span>) : (<input type='checkbox' key={i} onChange={this._toggleCheckbox.bind(this, i)} />);
+			// var isPastRsvpDeadline = new Date(this.props.rawJson[i].attributes.rsvpDeadline) < today;
+			var checkbox = <input type='checkbox' key={i} onChange={this._toggleCheckbox.bind(this, i)} />;
+
+			// if (isPastRsvpDeadline) checkbox = <span>Event CLOSED</span>;
+			if (isFull) checkbox = <span>Event FULL</span>;
+			if (isRsvpd) checkbox = <span>RSVP'd</span>;	
 
 					  return (
 						  <li key={i} className='list-group-item row'>

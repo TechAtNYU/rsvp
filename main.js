@@ -15,6 +15,7 @@ var AppHandler = React.createClass({
 			emailExists: false,
 			email: '',
 			venueIds: [],
+			DEFAULT_VENUE_SIZE: 200,
 			venueNames: [],
 			venueAddresses: [],
 			venueCaps: [],
@@ -82,7 +83,9 @@ var AppHandler = React.createClass({
 					$.getJSON('https://api.tnyu.org/' + window.API_VERSION + '/venues/' + venueId.toString()).done((json) => {
 						venueNames.push(json.data.attributes.name || undefined);
 						venueAddresses.push(json.data.attributes.address || undefined);
-						venueCaps.push(json.data.attributes.seats || undefined);
+						if (Number.isInteger(json.data.attributes.seats))
+							venueCaps.push(json.data.attributes.seats);
+						else venueCaps.push(this.state.DEFAULT_VENUE_SIZE);
 					}).then(() => {
 						this.setState({
 							venueNames: venueNames,
