@@ -4,12 +4,13 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.FILTER_SKILLS = exports.SEND_PERSON = exports.UPDATE_NNUMBER = exports.UPDATE_EMAIL = exports.RSVPD_TO_EVENT = exports.FAIL_TO_GET_SKILLS = exports.RECEIVE_SKILLS = exports.REQUEST_SKILLS = exports.FAIL_TO_RECEIVE_VENUE = exports.RECEIVE_ALL_VENUES = exports.RECEIVE_VENUE = exports.REQUEST_VENUE = exports.FAIL_TO_GET_EVENTS = exports.RECEIVE_EVENTS = exports.REQUEST_EVENTS = exports.FAIL_LOGIN = exports.RECEIVE_LOGIN = exports.REQUEST_LOGIN = exports.TOGGLE_EVENT = exports.TOGGLE_PROFILE_VIEW = undefined;
+exports.SELECT_SKILL_FIELD = exports.SKILL_ROLLOVER = exports.FILTER_SKILLS = exports.SEND_PERSON = exports.UPDATE_NNUMBER = exports.UPDATE_EMAIL = exports.RSVPD_TO_EVENT = exports.FAIL_TO_GET_SKILLS = exports.RECEIVE_SKILLS = exports.REQUEST_SKILLS = exports.FAIL_TO_RECEIVE_VENUE = exports.RECEIVE_ALL_VENUES = exports.RECEIVE_VENUE = exports.REQUEST_VENUE = exports.FAIL_TO_GET_EVENTS = exports.RECEIVE_EVENTS = exports.REQUEST_EVENTS = exports.FAIL_LOGIN = exports.RECEIVE_LOGIN = exports.REQUEST_LOGIN = exports.TOGGLE_EVENT = exports.TOGGLE_PROFILE_VIEW = undefined;
 exports.fetchAll = fetchAll;
 exports.updateEmail = updateEmail;
 exports.updateNNumber = updateNNumber;
 exports.postPerson = postPerson;
 exports.filterSkills = filterSkills;
+exports.updateActiveTypeaheadField = updateActiveTypeaheadField;
 exports.toggleProfile = toggleProfile;
 exports.toggleEvent = toggleEvent;
 exports.requestLogin = requestLogin;
@@ -56,6 +57,8 @@ var UPDATE_EMAIL = exports.UPDATE_EMAIL = 'UPDATE_EMAIL';
 var UPDATE_NNUMBER = exports.UPDATE_NNUMBER = 'UPDATE_NNUMBER';
 var SEND_PERSON = exports.SEND_PERSON = 'SEND_PERSON';
 var FILTER_SKILLS = exports.FILTER_SKILLS = 'FILTER_SKILLS';
+var SKILL_ROLLOVER = exports.SKILL_ROLLOVER = 'SKILL_ROLLOVER';
+var SELECT_SKILL_FIELD = exports.SELECT_SKILL_FIELD = 'SELECT_SKILL_FIELD';
 
 function fetchAll() {
     return function (dispatch, getState) {
@@ -130,6 +133,10 @@ function updateFilteredSkills(filtered) {
     };
 }
 
+/*
+Using `fuzzy` wordfilter to do fuzzy string matching on skill typeahead.
+returns filtered names only
+*/
 function filterSkills(word) {
     return function (dispatch, getState) {
         var options = { extract: function extract(el) {
@@ -139,6 +146,28 @@ function filterSkills(word) {
             return el.string;
         });
         dispatch(updateFilteredSkills(results));
+    };
+}
+
+function selectTypeaheadField() {
+    return {
+        type: SELECT_SKILL_FIELD
+    };
+}
+
+function moveTypeaheadPointer(move) {
+    return {
+        type: SKILL_ROLLOVER,
+        move: move
+    };
+}
+
+function updateActiveTypeaheadField(keyCode) {
+    // up 38, down 40, left 37, right 39, enter 13
+    return function (dispatch) {
+        if (keyCode === 38) dispatch(moveTypeaheadPointer(-1));
+        if (keyCode === 40) dispatch(moveTypeaheadPointer(1));
+        if (keyCode === 13) dispatch(selectTypeaheadField());
     };
 }
 
@@ -591,25 +620,39 @@ var _react2 = _interopRequireDefault(_react);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function Typeahead(_ref) {
+	var width = _ref.width;
 	var skills = _ref.skills;
 	var filtered = _ref.filtered;
+	var selected = _ref.selected;
 	var filterHandler = _ref.filterHandler;
+	var keyPressHandler = _ref.keyPressHandler;
+	var currentIdx = _ref.currentIdx;
 
-	var width = '200px';
-	if (skills.length === filtered.length) filtered = [];
+	if (skills.length === filtered.length + selected.length) filtered = [];
 	return _react2.default.createElement(
 		'div',
 		null,
-		_react2.default.createElement('input', { width: width, onChange: function onChange(e) {
+		_react2.default.createElement('input', { style: {
+				width: width
+			},
+			onKeyUp: function onKeyUp(e) {
+				return keyPressHandler(e.which);
+			},
+			onChange: function onChange(e) {
 				return filterHandler(e.target.value);
-			}, type: 'text' }),
+			},
+			type: 'text' }),
 		filtered.length > 0 ? _react2.default.createElement(
 			'div',
 			null,
 			filtered.map(function (el, i) {
 				return _react2.default.createElement(
 					'div',
-					{ key: i, width: width },
+					{ style: {
+							border: '1px solid lightgray',
+							width: width,
+							backgroundColor: currentIdx === i ? 'lightblue' : null
+						}, key: i },
 					el.attributes.name
 				);
 			})
@@ -619,7 +662,10 @@ function Typeahead(_ref) {
 
 Typeahead.propTypes = {
 	skills: _react.PropTypes.array.isRequired,
-	filtered: _react.PropTypes.array.isRequired
+	filtered: _react.PropTypes.array.isRequired,
+	currentIdx: _react.PropTypes.number.isRequired,
+	filterHandler: _react.PropTypes.func.isRequired,
+	keyPressHandler: _react.PropTypes.func.isRequired
 };
 
 exports.default = Typeahead;
@@ -649,7 +695,7 @@ var _reducers2 = _interopRequireDefault(_reducers);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var loggerMiddleware = (0, _reduxLogger2.default)();
-window.isDev = false;
+window.isDev = true;
 window.API_VERSION = 'v3';
 
 var middlewares = window.isDev ? (0, _redux.applyMiddleware)(_reduxThunk2.default, loggerMiddleware) : (0, _redux.applyMiddleware)(_reduxThunk2.default);
@@ -660,6 +706,8 @@ function configureStore(initialState) {
 
 },{"./reducers":195,"redux":190,"redux-logger":183,"redux-thunk":184}],8:[function(require,module,exports){
 'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -715,8 +763,7 @@ var App = (function (_Component) {
             var toggleProfileOnClick = _props.toggleProfileOnClick;
             var person = _props.person;
             var inputHandlers = _props.inputHandlers;
-            var skills = _props.skills;
-            var filtered = _props.filtered;
+            var keyPressHandler = _props.keyPressHandler;
 
             var loginView = this.props.isReceiving ? _react2.default.createElement(
                 'h2',
@@ -755,7 +802,10 @@ var App = (function (_Component) {
                     _react2.default.createElement(
                         'div',
                         { className: 'col-md-10 col-md-offset-1' },
-                        _react2.default.createElement(_Typeahead2.default, { skills: skills, filtered: filtered, filterHandler: inputHandlers.handleFilteredSkills }),
+                        _react2.default.createElement(_Typeahead2.default, _extends({}, this.props.skillActions, {
+                            width: '200px',
+                            filterHandler: inputHandlers.handleFilteredSkills,
+                            keyPressHandler: keyPressHandler })),
                         this.props.didLogin ? _react2.default.createElement(
                             'div',
                             { className: 'pull-right' },
@@ -781,8 +831,9 @@ var mapStateToProps = function mapStateToProps(state) {
         didLogin: state.loginActions.didLogin,
         isReceiving: state.loginActions.isReceiving,
         isProfileView: state.viewActions.isProfileView,
-        skills: state.skillActions.skills,
-        filtered: state.skillActions.filtered
+        // skills: state.skillActions.skills,
+        // filtered: state.skillActions.filtered,
+        skillActions: state.skillActions
     };
 };
 
@@ -804,6 +855,9 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
             handleFilteredSkills: function handleFilteredSkills(query) {
                 return dispatch((0, _actions.filterSkills)(query));
             }
+        },
+        keyPressHandler: function keyPressHandler(keyCode) {
+            return dispatch((0, _actions.updateActiveTypeaheadField)(keyCode));
         }
     };
 };
@@ -21738,6 +21792,8 @@ var initialState = {
     'skillActions': {
         skills: [],
         filtered: [],
+        selected: [],
+        currentIdx: -1,
         isReceiving: false,
         receivedAt: null,
         didInvalidate: false
@@ -21935,12 +21991,32 @@ function skillActions() {
                 didInvalidate: true
             });
         case _actions.FILTER_SKILLS:
+            // fuzzy string matching only returns a list of names
             return Object.assign({}, state, {
-                filtered: action.filtered.map(function (el) {
+                currentIdx: -1,
+                filtered: action.filtered.map(function (name) {
                     return state.skills.find(function (skill) {
-                        return skill.attributes.name === el;
+                        return skill.attributes.name === name;
+                    });
+                }).filter(function (skill) {
+                    return !state.selected.some(function (selected) {
+                        return selected.id === skill.id;
                     });
                 })
+            });
+        case _actions.SKILL_ROLLOVER:
+            return Object.assign({}, state, {
+                currentIdx: state.currentIdx + action.move < -1 ? -1 : state.currentIdx + action.move
+            });
+        case _actions.SELECT_SKILL_FIELD:
+            return Object.assign({}, state, {
+                filtered: state.filtered.filter(function (skill, i) {
+                    return i !== state.currentIdx;
+                }),
+                currentIdx: -1,
+                selected: [].concat(_toConsumableArray(state.selected), [state.filtered.find(function (skill, i) {
+                    return i === state.currentIdx;
+                })])
             });
         default:
             return state;

@@ -19,6 +19,8 @@ export const UPDATE_EMAIL = 'UPDATE_EMAIL';
 export const UPDATE_NNUMBER = 'UPDATE_NNUMBER';
 export const SEND_PERSON = 'SEND_PERSON';
 export const FILTER_SKILLS = 'FILTER_SKILLS';
+export const SKILL_ROLLOVER = 'SKILL_ROLLOVER';
+export const SELECT_SKILL_FIELD = 'SELECT_SKILL_FIELD';
 
 export function fetchAll() {
     return (dispatch, getState) => {
@@ -90,11 +92,38 @@ function updateFilteredSkills(filtered) {
     }
 }
 
+/*
+Using `fuzzy` wordfilter to do fuzzy string matching on skill typeahead.
+returns filtered names only
+*/
 export function filterSkills(word) {
     return (dispatch, getState) => {
         const options = { extract: el => el.attributes.name };
         const results = fuzzy.filter(word, getState().skillActions.skills, options).map( el => el.string);
         dispatch(updateFilteredSkills(results));
+    }
+}
+
+function selectTypeaheadField() {
+    return {
+        type: SELECT_SKILL_FIELD
+    }
+}
+
+function moveTypeaheadPointer(move) {
+    return {
+        type: SKILL_ROLLOVER,
+        move
+    }
+}
+
+export function updateActiveTypeaheadField(keyCode) {
+    // up 38, down 40, left 37, right 39, enter 13
+    return (dispatch) => {
+        if (keyCode === 38) dispatch(moveTypeaheadPointer(-1));
+        if (keyCode === 40) dispatch(moveTypeaheadPointer(1));
+        if (keyCode === 13) dispatch(selectTypeaheadField());
+
     }
 }
 

@@ -22,6 +22,8 @@ import {
     UPDATE_EMAIL,
     SEND_PERSON,
     FILTER_SKILLS,
+    SKILL_ROLLOVER,
+    SELECT_SKILL_FIELD,
 } from './actions';
 
 const initialState = {
@@ -42,12 +44,14 @@ const initialState = {
     'skillActions': {
         skills: [],
         filtered: [],
+        selected: [],
+        currentIdx: -1,
         isReceiving: false,
         receivedAt: null,
         didInvalidate: false
     },
     'viewActions': {
-        isProfileView: false
+        isProfileView: false,
     }
 }
 
@@ -246,9 +250,27 @@ function skillActions(state = initialState.skillActions, action) {
             didInvalidate: true
         });
     case FILTER_SKILLS:
+        // fuzzy string matching only returns a list of names
         return Object.assign({}, state, {
-            filtered: action.filtered.map(el => state.skills.find(skill => skill.attributes.name === el))
+            currentIdx: -1,
+            filtered:
+                action.filtered.map(name =>
+                    state.skills.find(skill => skill.attributes.name === name))
+                .filter( skill => !state.selected.some( selected => selected.id === skill.id))
         });
+    case SKILL_ROLLOVER:
+        return Object.assign({}, state, {
+            currentIdx: state.currentIdx + action.move < -1 ? -1: state.currentIdx + action.move,
+        });
+    case SELECT_SKILL_FIELD:
+        return Object.assign({}, state, {
+            filtered: state.filtered.filter( (skill, i) => i !== state.currentIdx),
+            currentIdx: -1,
+            selected: [
+                ...state.selected, 
+                state.filtered.find( (skill, i) => i === state.currentIdx),
+            ],
+        })
     default:
         return state;
     }
