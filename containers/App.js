@@ -45,7 +45,7 @@ class App extends Component {
                             <Profile attributes={person.attributes} inputHandlers={inputHandlers}>
                                 <Typeahead
                                 list={this.props.skillActions.skills}
-                                {...this.props.skillActions}
+                                {...this.props.skillActions['skillsPersonHas']}
                                 width='200px'
                                 filterHandler={this.props.inputHandlers.handleFilteredSkills}
                                 keyPressHandler={this.props.inputHandlers.keyPressHandler}

@@ -44,9 +44,11 @@ const initialState = {
     },
     'skillActions': {
         skills: [],
-        filtered: [],
-        selected: [],
-        currentIdx: -1,
+        skillsPersonHas: {
+            filtered: [],
+            selected: [],
+            currentIdx: -1,
+        },
         isReceiving: false,
         receivedAt: null,
         didInvalidate: false
@@ -232,6 +234,8 @@ function loginActions(state = initialState.loginActions, action) {
 }
 
 function skillActions(state = initialState.skillActions, action) {
+    let obj = Object.assign({}, state, {});
+    obj.skillsPersonHas = Object.assign({}, state.skillsPersonHas, {});
     Object.freeze(state);
     switch (action.type) {
     case REQUEST_SKILLS:
@@ -239,15 +243,13 @@ function skillActions(state = initialState.skillActions, action) {
             isReceiving: true,
         });
     case RECEIVE_SKILLS:
-    // console.log(action.json.map(obj => obj.attributes.name));
         const sortedSkills = action.allSkills.slice().sort(sortStringHelper);
-        return Object.assign({}, state, {
-            isReceiving: false,
-            receivedAt: Date.now(),
-            skills: sortedSkills,
-            selected: action.personSkills.map( personSkill => sortedSkills.find(
-                skill => skill.id === personSkill.id )),
-        });
+        obj.isReceiving = false;
+        obj.receivedAt = Date.now();
+        obj.skills = sortedSkills;
+        obj['skillsPersonHas'].selected = action.personSkills.map( personSkill => sortedSkills.find(
+                skill => skill.id === personSkill.id ));
+        return obj;
     case FAIL_TO_GET_SKILLS:
         return Object.assign({}, state, {
             isReceiving: false,
@@ -255,32 +257,29 @@ function skillActions(state = initialState.skillActions, action) {
         });
     case FILTER_SKILLS:
         // fuzzy string matching only returns a list of names
-        return Object.assign({}, state, {
-            currentIdx: -1,
-            filtered:
-                action.filtered.map(name =>
-                    state.skills.find(skill => skill.attributes.name === name))
-                .filter( skill => !state.selected.some( selected => selected.id === skill.id))
-        });
+        obj['skillsPersonHas'].currentIdx = -1;
+        obj['skillsPersonHas'].filtered = action.filtered.map(name =>
+                    state.skills.find(skill => skill.attributes.name === name)).filter(
+                    skill => !state['skillsPersonHas'].selected.some(
+                        selected => selected.id === skill.id));
+        return obj;
     case SKILL_ROLLOVER:
-        return Object.assign({}, state, {
-            currentIdx: state.currentIdx + action.move < -1 ? -1: state.currentIdx + action.move,
-        });
+        obj['skillsPersonHas'].currentIdx = state['skillsPersonHas'].currentIdx + action.move < -1 ?
+            -1: state['skillsPersonHas'].currentIdx + action.move;
+        return obj;
     case SELECT_SKILL_FIELD:
-        return Object.assign({}, state, {
-            filtered: state.filtered.filter( (skill, i) => i !== state.currentIdx),
-            currentIdx: -1,
-            selected: [
-                ...state.selected, 
-                state.filtered.find( (skill, i) => i === state.currentIdx),
-            ],
-        });
+        obj['skillsPersonHas'].filtered = state['skillsPersonHas'].filtered.filter((skill, i) => i !== state['skillsPersonHas'].currentIdx),
+        obj['skillsPersonHas'].currentIdx = -1;
+        obj['skillsPersonHas'].selected = [
+                ...state['skillsPersonHas'].selected,
+                state['skillsPersonHas'].filtered.find( (skill, i) => i === state['skillsPersonHas'].currentIdx)
+                ];
+        return obj;
     case DELETE_SKILL_SELECTION:
-        return Object.assign({}, state, {
-            currentIdx: -1,
-            selected: state.selected.filter( (el, i) => i !== action.index),
-            filtered: [ ...state.filtered, state.selected[action.index]],
-        })
+        obj['skillsPersonHas'].currentIdx = -1;
+        obj['skillsPersonHas'].selected = state['skillsPersonHas'].selected.filter( (el, i) => i !== action.index);
+        obj['skillsPersonHas'].filtered = [ ...state['skillsPersonHas'].filtered, state['skillsPersonHas'].selected[action.index]];
+        return obj;
     default:
         return state;
     }

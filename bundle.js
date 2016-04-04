@@ -100,7 +100,7 @@ function postPerson() {
     return function (dispatch, getState) {
         dispatch(sendPerson());
         var nNumber = getState().loginActions.person.attributes.nNumber;
-        var skills = getState().skillActions.selected;
+        var skills = getState().skillActions['skillsPersonHas'].selected;
         var person = Object.assign({}, getState().loginActions.person, {
             type: 'people',
             id: getState().loginActions.person.id,
@@ -858,7 +858,7 @@ var App = (function (_Component) {
                             { attributes: person.attributes, inputHandlers: inputHandlers },
                             _react2.default.createElement(_Typeahead2.default, _extends({
                                 list: this.props.skillActions.skills
-                            }, this.props.skillActions, {
+                            }, this.props.skillActions['skillsPersonHas'], {
                                 width: '200px',
                                 filterHandler: this.props.inputHandlers.handleFilteredSkills,
                                 keyPressHandler: this.props.inputHandlers.keyPressHandler,
@@ -21840,9 +21840,11 @@ var initialState = {
     },
     'skillActions': {
         skills: [],
-        filtered: [],
-        selected: [],
-        currentIdx: -1,
+        skillsPersonHas: {
+            filtered: [],
+            selected: [],
+            currentIdx: -1
+        },
         isReceiving: false,
         receivedAt: null,
         didInvalidate: false
@@ -22021,6 +22023,8 @@ function skillActions() {
     var state = arguments.length <= 0 || arguments[0] === undefined ? initialState.skillActions : arguments[0];
     var action = arguments[1];
 
+    var obj = Object.assign({}, state, {});
+    obj.skillsPersonHas = Object.assign({}, state.skillsPersonHas, {});
     Object.freeze(state);
     switch (action.type) {
         case _actions.REQUEST_SKILLS:
@@ -22028,18 +22032,16 @@ function skillActions() {
                 isReceiving: true
             });
         case _actions.RECEIVE_SKILLS:
-            // console.log(action.json.map(obj => obj.attributes.name));
             var sortedSkills = action.allSkills.slice().sort(sortStringHelper);
-            return Object.assign({}, state, {
-                isReceiving: false,
-                receivedAt: Date.now(),
-                skills: sortedSkills,
-                selected: action.personSkills.map(function (personSkill) {
-                    return sortedSkills.find(function (skill) {
-                        return skill.id === personSkill.id;
-                    });
-                })
+            obj.isReceiving = false;
+            obj.receivedAt = Date.now();
+            obj.skills = sortedSkills;
+            obj['skillsPersonHas'].selected = action.personSkills.map(function (personSkill) {
+                return sortedSkills.find(function (skill) {
+                    return skill.id === personSkill.id;
+                });
             });
+            return obj;
         case _actions.FAIL_TO_GET_SKILLS:
             return Object.assign({}, state, {
                 isReceiving: false,
@@ -22047,40 +22049,35 @@ function skillActions() {
             });
         case _actions.FILTER_SKILLS:
             // fuzzy string matching only returns a list of names
-            return Object.assign({}, state, {
-                currentIdx: -1,
-                filtered: action.filtered.map(function (name) {
-                    return state.skills.find(function (skill) {
-                        return skill.attributes.name === name;
-                    });
-                }).filter(function (skill) {
-                    return !state.selected.some(function (selected) {
-                        return selected.id === skill.id;
-                    });
-                })
+            obj['skillsPersonHas'].currentIdx = -1;
+            obj['skillsPersonHas'].filtered = action.filtered.map(function (name) {
+                return state.skills.find(function (skill) {
+                    return skill.attributes.name === name;
+                });
+            }).filter(function (skill) {
+                return !state['skillsPersonHas'].selected.some(function (selected) {
+                    return selected.id === skill.id;
+                });
             });
+            return obj;
         case _actions.SKILL_ROLLOVER:
-            return Object.assign({}, state, {
-                currentIdx: state.currentIdx + action.move < -1 ? -1 : state.currentIdx + action.move
-            });
+            obj['skillsPersonHas'].currentIdx = state['skillsPersonHas'].currentIdx + action.move < -1 ? -1 : state['skillsPersonHas'].currentIdx + action.move;
+            return obj;
         case _actions.SELECT_SKILL_FIELD:
-            return Object.assign({}, state, {
-                filtered: state.filtered.filter(function (skill, i) {
-                    return i !== state.currentIdx;
-                }),
-                currentIdx: -1,
-                selected: [].concat(_toConsumableArray(state.selected), [state.filtered.find(function (skill, i) {
-                    return i === state.currentIdx;
-                })])
-            });
+            obj['skillsPersonHas'].filtered = state['skillsPersonHas'].filtered.filter(function (skill, i) {
+                return i !== state['skillsPersonHas'].currentIdx;
+            }), obj['skillsPersonHas'].currentIdx = -1;
+            obj['skillsPersonHas'].selected = [].concat(_toConsumableArray(state['skillsPersonHas'].selected), [state['skillsPersonHas'].filtered.find(function (skill, i) {
+                return i === state['skillsPersonHas'].currentIdx;
+            })]);
+            return obj;
         case _actions.DELETE_SKILL_SELECTION:
-            return Object.assign({}, state, {
-                currentIdx: -1,
-                selected: state.selected.filter(function (el, i) {
-                    return i !== action.index;
-                }),
-                filtered: [].concat(_toConsumableArray(state.filtered), [state.selected[action.index]])
+            obj['skillsPersonHas'].currentIdx = -1;
+            obj['skillsPersonHas'].selected = state['skillsPersonHas'].selected.filter(function (el, i) {
+                return i !== action.index;
             });
+            obj['skillsPersonHas'].filtered = [].concat(_toConsumableArray(state['skillsPersonHas'].filtered), [state['skillsPersonHas'].selected[action.index]]);
+            return obj;
         default:
             return state;
     }

@@ -58,7 +58,7 @@ export function postPerson() {
     return (dispatch, getState) => {
         dispatch(sendPerson());
         const nNumber = getState().loginActions.person.attributes.nNumber;
-        const skills = getState().skillActions.selected;
+        const skills = getState().skillActions['skillsPersonHas'].selected;
         const person = Object.assign({}, getState().loginActions.person, {
             type: 'people',
             id: getState().loginActions.person.id,
