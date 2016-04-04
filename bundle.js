@@ -4,13 +4,14 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.SELECT_SKILL_FIELD = exports.SKILL_ROLLOVER = exports.FILTER_SKILLS = exports.SEND_PERSON = exports.UPDATE_NNUMBER = exports.UPDATE_EMAIL = exports.RSVPD_TO_EVENT = exports.FAIL_TO_GET_SKILLS = exports.RECEIVE_SKILLS = exports.REQUEST_SKILLS = exports.FAIL_TO_RECEIVE_VENUE = exports.RECEIVE_ALL_VENUES = exports.RECEIVE_VENUE = exports.REQUEST_VENUE = exports.FAIL_TO_GET_EVENTS = exports.RECEIVE_EVENTS = exports.REQUEST_EVENTS = exports.FAIL_LOGIN = exports.RECEIVE_LOGIN = exports.REQUEST_LOGIN = exports.TOGGLE_EVENT = exports.TOGGLE_PROFILE_VIEW = undefined;
+exports.DELETE_SKILL_SELECTION = exports.SELECT_SKILL_FIELD = exports.SKILL_ROLLOVER = exports.FILTER_SKILLS = exports.SEND_PERSON = exports.UPDATE_NNUMBER = exports.UPDATE_EMAIL = exports.RSVPD_TO_EVENT = exports.FAIL_TO_GET_SKILLS = exports.RECEIVE_SKILLS = exports.REQUEST_SKILLS = exports.FAIL_TO_RECEIVE_VENUE = exports.RECEIVE_ALL_VENUES = exports.RECEIVE_VENUE = exports.REQUEST_VENUE = exports.FAIL_TO_GET_EVENTS = exports.RECEIVE_EVENTS = exports.REQUEST_EVENTS = exports.FAIL_LOGIN = exports.RECEIVE_LOGIN = exports.REQUEST_LOGIN = exports.TOGGLE_EVENT = exports.TOGGLE_PROFILE_VIEW = undefined;
 exports.fetchAll = fetchAll;
 exports.updateEmail = updateEmail;
 exports.updateNNumber = updateNNumber;
 exports.postPerson = postPerson;
 exports.filterSkills = filterSkills;
 exports.updateActiveTypeaheadField = updateActiveTypeaheadField;
+exports.deleteTypeaheadSelection = deleteTypeaheadSelection;
 exports.toggleProfile = toggleProfile;
 exports.toggleEvent = toggleEvent;
 exports.requestLogin = requestLogin;
@@ -59,6 +60,7 @@ var SEND_PERSON = exports.SEND_PERSON = 'SEND_PERSON';
 var FILTER_SKILLS = exports.FILTER_SKILLS = 'FILTER_SKILLS';
 var SKILL_ROLLOVER = exports.SKILL_ROLLOVER = 'SKILL_ROLLOVER';
 var SELECT_SKILL_FIELD = exports.SELECT_SKILL_FIELD = 'SELECT_SKILL_FIELD';
+var DELETE_SKILL_SELECTION = exports.DELETE_SKILL_SELECTION = 'DELETE_SKILL_SELECTION';
 
 function fetchAll() {
     return function (dispatch, getState) {
@@ -168,6 +170,13 @@ function updateActiveTypeaheadField(keyCode) {
         if (keyCode === 38) dispatch(moveTypeaheadPointer(-1));
         if (keyCode === 40) dispatch(moveTypeaheadPointer(1));
         if (keyCode === 13) dispatch(selectTypeaheadField());
+    };
+}
+
+function deleteTypeaheadSelection(index) {
+    return {
+        type: DELETE_SKILL_SELECTION,
+        index: index
     };
 }
 
@@ -627,6 +636,7 @@ function Typeahead(_ref) {
 	var filterHandler = _ref.filterHandler;
 	var keyPressHandler = _ref.keyPressHandler;
 	var currentIdx = _ref.currentIdx;
+	var deleteSelection = _ref.deleteSelection;
 
 	if (skills.length === filtered.length + selected.length) filtered = [];
 	return _react2.default.createElement(
@@ -656,7 +666,18 @@ function Typeahead(_ref) {
 					el.attributes.name
 				);
 			})
-		) : null
+		) : null,
+		selected.map(function (el, i) {
+			return _react2.default.createElement(
+				'button',
+				{ type: 'button', key: i,
+					onClick: function onClick(_) {
+						return deleteSelection(i);
+					},
+					className: 'btn btn-secondary btn-sm' },
+				el.attributes.name
+			);
+		})
 	);
 }
 
@@ -665,7 +686,8 @@ Typeahead.propTypes = {
 	filtered: _react.PropTypes.array.isRequired,
 	currentIdx: _react.PropTypes.number.isRequired,
 	filterHandler: _react.PropTypes.func.isRequired,
-	keyPressHandler: _react.PropTypes.func.isRequired
+	keyPressHandler: _react.PropTypes.func.isRequired,
+	deleteSelection: _react.PropTypes.func.isRequired
 };
 
 exports.default = Typeahead;
@@ -764,6 +786,7 @@ var App = (function (_Component) {
             var person = _props.person;
             var inputHandlers = _props.inputHandlers;
             var keyPressHandler = _props.keyPressHandler;
+            var deleteSelection = _props.deleteSelection;
 
             var loginView = this.props.isReceiving ? _react2.default.createElement(
                 'h2',
@@ -805,7 +828,8 @@ var App = (function (_Component) {
                         _react2.default.createElement(_Typeahead2.default, _extends({}, this.props.skillActions, {
                             width: '200px',
                             filterHandler: inputHandlers.handleFilteredSkills,
-                            keyPressHandler: keyPressHandler })),
+                            keyPressHandler: keyPressHandler,
+                            deleteSelection: deleteSelection })),
                         this.props.didLogin ? _react2.default.createElement(
                             'div',
                             { className: 'pull-right' },
@@ -858,6 +882,9 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
         },
         keyPressHandler: function keyPressHandler(keyCode) {
             return dispatch((0, _actions.updateActiveTypeaheadField)(keyCode));
+        },
+        deleteSelection: function deleteSelection(i) {
+            return dispatch((0, _actions.deleteTypeaheadSelection)(i));
         }
     };
 };
@@ -22017,6 +22044,13 @@ function skillActions() {
                 selected: [].concat(_toConsumableArray(state.selected), [state.filtered.find(function (skill, i) {
                     return i === state.currentIdx;
                 })])
+            });
+        case _actions.DELETE_SKILL_SELECTION:
+            return Object.assign({}, state, {
+                selected: state.selected.filter(function (el, i) {
+                    return i !== action.index;
+                }),
+                filtered: [].concat(_toConsumableArray(state.filtered), [state.selected[action.index]])
             });
         default:
             return state;

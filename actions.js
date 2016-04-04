@@ -21,6 +21,7 @@ export const SEND_PERSON = 'SEND_PERSON';
 export const FILTER_SKILLS = 'FILTER_SKILLS';
 export const SKILL_ROLLOVER = 'SKILL_ROLLOVER';
 export const SELECT_SKILL_FIELD = 'SELECT_SKILL_FIELD';
+export const DELETE_SKILL_SELECTION = 'DELETE_SKILL_SELECTION';
 
 export function fetchAll() {
     return (dispatch, getState) => {
@@ -124,6 +125,13 @@ export function updateActiveTypeaheadField(keyCode) {
         if (keyCode === 40) dispatch(moveTypeaheadPointer(1));
         if (keyCode === 13) dispatch(selectTypeaheadField());
 
+    }
+}
+
+export function deleteTypeaheadSelection(index) {
+    return {
+        type: DELETE_SKILL_SELECTION,
+        index
     }
 }
 

@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 
-function Typeahead({ width, skills, filtered, selected, filterHandler, keyPressHandler, currentIdx }) {
+function Typeahead({ width, skills, filtered, selected, filterHandler, keyPressHandler, currentIdx, deleteSelection }) {
 	if (skills.length === filtered.length + selected.length) filtered = [];
     return (
     	<div>
@@ -21,6 +21,13 @@ function Typeahead({ width, skills, filtered, selected, filterHandler, keyPressH
 		    		)}
 		    	</div>
 		    	): null}
+		    { selected.map( (el, i) =>
+		    	<button type='button' key={i}
+		    	onClick={ _ => deleteSelection(i)}
+		    	className='btn btn-secondary btn-sm'>
+		    	{el.attributes.name}
+		    	</button>
+		    	)}
 		</div>
 	)
 }
@@ -31,6 +38,7 @@ Typeahead.propTypes = {
 	currentIdx: PropTypes.number.isRequired,
 	filterHandler: PropTypes.func.isRequired,
 	keyPressHandler: PropTypes.func.isRequired,
+	deleteSelection: PropTypes.func.isRequired,
 }
 
 export default Typeahead

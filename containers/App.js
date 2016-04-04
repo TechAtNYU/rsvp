@@ -7,6 +7,7 @@ import {
     postPerson,
     filterSkills,
     updateActiveTypeaheadField,
+    deleteTypeaheadSelection,
 } from '../actions'
 import VisibleEventList from './VisibleEventList'
 import Profile from '../components/Profile'
@@ -19,7 +20,7 @@ class App extends Component {
     }
 
     render() {
-        const { toggleProfileOnClick, person, inputHandlers, keyPressHandler} = this.props;
+        const { toggleProfileOnClick, person, inputHandlers, keyPressHandler, deleteSelection} = this.props;
         const loginView = this.props.isReceiving ? <h2 className='loading'>...Tech@NYU RSVP is loading.</h2>:
         this.props.didLogin ? this.props.isProfileView ? <Profile attributes={person.attributes} inputHandlers={inputHandlers} />: <VisibleEventList />:<Welcome />;
         return (
@@ -37,7 +38,8 @@ class App extends Component {
                         {...this.props.skillActions}
                         width='200px'
                         filterHandler={inputHandlers.handleFilteredSkills}
-                        keyPressHandler={keyPressHandler} />
+                        keyPressHandler={keyPressHandler}
+                        deleteSelection={deleteSelection} />
                     
                     { this.props.didLogin ?
                         <div className='pull-right'>
@@ -73,6 +75,7 @@ const mapDispatchToProps = dispatch => {
            handleFilteredSkills: query => dispatch(filterSkills(query)),
         },
         keyPressHandler: keyCode => dispatch(updateActiveTypeaheadField(keyCode)),
+        deleteSelection: i => dispatch(deleteTypeaheadSelection(i)),
     }
 }
 

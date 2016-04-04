@@ -24,6 +24,7 @@ import {
     FILTER_SKILLS,
     SKILL_ROLLOVER,
     SELECT_SKILL_FIELD,
+    DELETE_SKILL_SELECTION,
 } from './actions';
 
 const initialState = {
@@ -270,6 +271,11 @@ function skillActions(state = initialState.skillActions, action) {
                 ...state.selected, 
                 state.filtered.find( (skill, i) => i === state.currentIdx),
             ],
+        });
+    case DELETE_SKILL_SELECTION:
+        return Object.assign({}, state, {
+            selected: state.selected.filter( (el, i) => i !== action.index),
+            filtered: [ ...state.filtered, state.selected[action.index]],
         })
     default:
         return state;
