@@ -444,10 +444,10 @@ var AppHandler = React.createClass({
 
 		$.getJSON('https://api.tnyu.org/' + window.API_VERSION + '/people/me').done(function (user) {
 			// user is logged in, check for nNumber and email existence
-			var nNumberExists = 'nNumber' in user.data.attributes ? true : false;
+			var nNumberExists = user.data.attributes.nNumber ? true : false;
 			var emailExists = false;
 			var email = '';
-			if ('email' in user.data.attributes.contact) {
+			if (user.data.attributes.contact.email !== undefined) {
 				emailExists = true;
 				email = user.data.attributes.contact.email;
 			}
@@ -537,14 +537,14 @@ var AppHandler = React.createClass({
 		};
 
 		if (email || nNumber) {
-			if (email) data.data.attributes.contact['email'] = email;
-			if (nNumber) data.data.attributes['nNumber'] = nNumber;
+			if (email) data.data.attributes.contact.email = email;
+			if (nNumber) data.data.attributes.nNumber = nNumber;
 
 			$.ajax({
 				type: 'PATCH',
 				acccepts: 'application/vnd.api+json',
 				contentType: 'application/vnd.api+json',
-				url: 'https://api.tnyu.org/' + this.state.API_VERSION + '/people/me',
+				url: 'https://api.tnyu.org/' + window.API_VERSION + '/people/me',
 				crossDomain: true,
 				dataType: 'json',
 				data: JSON.stringify(data)
