@@ -100,14 +100,22 @@ function postPerson() {
     return function (dispatch, getState) {
         dispatch(sendPerson());
         var nNumber = getState().loginActions.person.attributes.nNumber;
+        var skills = getState().skillActions.selected;
         var person = Object.assign({}, getState().loginActions.person, {
             type: 'people',
             id: getState().loginActions.person.id,
             attributes: {
                 contact: getState().loginActions.person.attributes.contact
-            }
+            },
+            relationships: {}
         });
         if (nNumber) if (nNumber.length > 0) person.attributes.nNumber = nNumber;
+        if (skills.length > 0) person.relationships.skills = {
+            data: skills.map(function (skill) {
+                return {
+                    type: 'skill',
+                    id: skill.id };
+            }) };
         var data = {
             data: person
         };

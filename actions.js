@@ -58,14 +58,22 @@ export function postPerson() {
     return (dispatch, getState) => {
         dispatch(sendPerson());
         const nNumber = getState().loginActions.person.attributes.nNumber;
+        const skills = getState().skillActions.selected;
         const person = Object.assign({}, getState().loginActions.person, {
             type: 'people',
             id: getState().loginActions.person.id,
             attributes: {
                 contact: getState().loginActions.person.attributes.contact
-            }
+            },
+            relationships: {}
         });
         if (nNumber) if (nNumber.length > 0) person.attributes.nNumber = nNumber;
+        if (skills.length > 0) person.relationships.skills = {
+            data: skills.map( skill => {
+                return {
+                    type: 'skill',
+                    id: skill.id }
+                })};
         const data = {
             data: person,
         };
