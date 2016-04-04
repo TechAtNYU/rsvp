@@ -76,7 +76,7 @@ const mapDispatchToProps = dispatch => {
             handleEmail: email => dispatch(updateEmail(email)),
             handleNNumber: nNumber => dispatch(updateNNumber(nNumber)),
             handleSubmit: _ => dispatch(postPerson()),
-            handleFilteredSkills: query => dispatch(filterSkills(query)),
+            handleFilteredSkills: (query) => dispatch(filterSkills(query, 'skillsPersonHas')),
             keyPressHandler: keyCode => dispatch(updateActiveTypeaheadField(keyCode)),
             deleteSelection: i => dispatch(deleteTypeaheadSelection(i)),
         }

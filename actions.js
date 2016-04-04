@@ -105,7 +105,7 @@ function updateFilteredSkills(filtered) {
 Using `fuzzy` wordfilter to do fuzzy string matching on skill typeahead.
 returns filtered names only
 */
-export function filterSkills(word) {
+export function filterSkills(word, fieldType) {
     return (dispatch, getState) => {
         const options = { extract: el => el.attributes.name };
         const results = fuzzy.filter(word, getState().skillActions.skills, options).map( el => el.string);
@@ -273,11 +273,13 @@ function requestSkills() {
     };
 }
 
-function receiveSkills(allSkills, personSkills ) {
+function receiveSkills(allSkills, personSkills, wantsToLearn, wantsToHire) {
     return {
         type: RECEIVE_SKILLS,
         allSkills,
-        personSkills
+        personSkills,
+        wantsToLearn,
+        wantsToHire
     };
 }
 
@@ -290,9 +292,12 @@ function failToGetSkills() {
 export function fetchSkills() {
     return (dispatch, getState) => {
         dispatch(requestSkills);
+        const personSkills =  getState().loginActions.person.relationships.skills.data;
+        const wantsToLearn =  getState().loginActions.person.relationships.wantsToLearn.data;
+        const wantsToHire =  getState().loginActions.person.relationships.wantsToHire.data;
         return $.get('https://api.tnyu.org/' + window.API_VERSION + '/skills')
             .done(response => dispatch(receiveSkills(response.data,
-                getState().loginActions.person.relationships.skills.data)))
+                personSkills, wantsToLearn, wantsToHire)))
             .fail(() => dispatch(failToGetSkills()));
     }
 }

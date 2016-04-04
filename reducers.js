@@ -49,6 +49,16 @@ const initialState = {
             selected: [],
             currentIdx: -1,
         },
+        wantsToLearn: {
+            filtered: [],
+            selected: [],
+            currentIdx: -1,
+        },
+        wantsToHire: {
+            filtered: [],
+            selected: [],
+            currentIdx: -1,
+        },
         isReceiving: false,
         receivedAt: null,
         didInvalidate: false
@@ -235,7 +245,10 @@ function loginActions(state = initialState.loginActions, action) {
 
 function skillActions(state = initialState.skillActions, action) {
     let obj = Object.assign({}, state, {});
+    // ALSO COPY NESTED STATES TO PREVENT MUTATING THEM
     obj.skillsPersonHas = Object.assign({}, state.skillsPersonHas, {});
+    obj.wantsToLearn = Object.assign({}, state.wantsToLearn, {});
+    obj.wantsToHire = Object.assign({}, state.wantsToHire, {});
     Object.freeze(state);
     switch (action.type) {
     case REQUEST_SKILLS:
@@ -244,11 +257,13 @@ function skillActions(state = initialState.skillActions, action) {
         });
     case RECEIVE_SKILLS:
         const sortedSkills = action.allSkills.slice().sort(sortStringHelper);
+        const matchSkills = (match) => sortedSkills.find(skill => skill.id === match.id);
         obj.isReceiving = false;
         obj.receivedAt = Date.now();
         obj.skills = sortedSkills;
-        obj['skillsPersonHas'].selected = action.personSkills.map( personSkill => sortedSkills.find(
-                skill => skill.id === personSkill.id ));
+        obj.skillsPersonHas.selected = action.personSkills.map(matchSkills); 
+        obj.wantsToLearn.selected = action.wantsToLearn.map(matchSkills);
+        obj.wantsToHire.selected = action.wantsToHire.map(matchSkills);
         return obj;
     case FAIL_TO_GET_SKILLS:
         return Object.assign({}, state, {

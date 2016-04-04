@@ -147,7 +147,7 @@ function updateFilteredSkills(filtered) {
 Using `fuzzy` wordfilter to do fuzzy string matching on skill typeahead.
 returns filtered names only
 */
-function filterSkills(word) {
+function filterSkills(word, fieldType) {
     return function (dispatch, getState) {
         var options = { extract: function extract(el) {
                 return el.attributes.name;
@@ -323,11 +323,13 @@ function requestSkills() {
     };
 }
 
-function receiveSkills(allSkills, personSkills) {
+function receiveSkills(allSkills, personSkills, wantsToLearn, wantsToHire) {
     return {
         type: RECEIVE_SKILLS,
         allSkills: allSkills,
-        personSkills: personSkills
+        personSkills: personSkills,
+        wantsToLearn: wantsToLearn,
+        wantsToHire: wantsToHire
     };
 }
 
@@ -340,8 +342,11 @@ function failToGetSkills() {
 function fetchSkills() {
     return function (dispatch, getState) {
         dispatch(requestSkills);
+        var personSkills = getState().loginActions.person.relationships.skills.data;
+        var wantsToLearn = getState().loginActions.person.relationships.wantsToLearn.data;
+        var wantsToHire = getState().loginActions.person.relationships.wantsToHire.data;
         return $.get('https://api.tnyu.org/' + window.API_VERSION + '/skills').done(function (response) {
-            return dispatch(receiveSkills(response.data, getState().loginActions.person.relationships.skills.data));
+            return dispatch(receiveSkills(response.data, personSkills, wantsToLearn, wantsToHire));
         }).fail(function () {
             return dispatch(failToGetSkills());
         });
@@ -899,7 +904,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
                 return dispatch((0, _actions.postPerson)());
             },
             handleFilteredSkills: function handleFilteredSkills(query) {
-                return dispatch((0, _actions.filterSkills)(query));
+                return dispatch((0, _actions.filterSkills)(query, 'skillsPersonHas'));
             },
             keyPressHandler: function keyPressHandler(keyCode) {
                 return dispatch((0, _actions.updateActiveTypeaheadField)(keyCode));
@@ -21845,6 +21850,16 @@ var initialState = {
             selected: [],
             currentIdx: -1
         },
+        wantsToLearn: {
+            filtered: [],
+            selected: [],
+            currentIdx: -1
+        },
+        wantsToHire: {
+            filtered: [],
+            selected: [],
+            currentIdx: -1
+        },
         isReceiving: false,
         receivedAt: null,
         didInvalidate: false
@@ -22024,7 +22039,10 @@ function skillActions() {
     var action = arguments[1];
 
     var obj = Object.assign({}, state, {});
+    // ALSO COPY NESTED STATES TO PREVENT MUTATING THEM
     obj.skillsPersonHas = Object.assign({}, state.skillsPersonHas, {});
+    obj.wantsToLearn = Object.assign({}, state.wantsToLearn, {});
+    obj.wantsToHire = Object.assign({}, state.wantsToHire, {});
     Object.freeze(state);
     switch (action.type) {
         case _actions.REQUEST_SKILLS:
@@ -22033,14 +22051,17 @@ function skillActions() {
             });
         case _actions.RECEIVE_SKILLS:
             var sortedSkills = action.allSkills.slice().sort(sortStringHelper);
+            var matchSkills = function matchSkills(match) {
+                return sortedSkills.find(function (skill) {
+                    return skill.id === match.id;
+                });
+            };
             obj.isReceiving = false;
             obj.receivedAt = Date.now();
             obj.skills = sortedSkills;
-            obj['skillsPersonHas'].selected = action.personSkills.map(function (personSkill) {
-                return sortedSkills.find(function (skill) {
-                    return skill.id === personSkill.id;
-                });
-            });
+            obj.skillsPersonHas.selected = action.personSkills.map(matchSkills);
+            obj.wantsToLearn.selected = action.wantsToLearn.map(matchSkills);
+            obj.wantsToHire.selected = action.wantsToHire.map(matchSkills);
             return obj;
         case _actions.FAIL_TO_GET_SKILLS:
             return Object.assign({}, state, {
