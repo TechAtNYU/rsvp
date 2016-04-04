@@ -554,6 +554,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function Profile(_ref) {
 	var attributes = _ref.attributes;
 	var inputHandlers = _ref.inputHandlers;
+	var children = _ref.children;
 
 	return _react2.default.createElement(
 		'div',
@@ -602,6 +603,11 @@ function Profile(_ref) {
 			)
 		),
 		_react2.default.createElement(
+			'div',
+			{ className: 'form-group' },
+			children
+		),
+		_react2.default.createElement(
 			'button',
 			{ onClick: inputHandlers.handleSubmit, className: 'btn' },
 			'SUBMIT'
@@ -630,7 +636,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function Typeahead(_ref) {
 	var width = _ref.width;
-	var skills = _ref.skills;
+	var list = _ref.list;
 	var filtered = _ref.filtered;
 	var selected = _ref.selected;
 	var filterHandler = _ref.filterHandler;
@@ -638,11 +644,16 @@ function Typeahead(_ref) {
 	var currentIdx = _ref.currentIdx;
 	var deleteSelection = _ref.deleteSelection;
 
-	if (skills.length === filtered.length + selected.length) filtered = [];
+	if (list.length === filtered.length + selected.length) filtered = [];
 	return _react2.default.createElement(
 		'div',
-		null,
-		_react2.default.createElement('input', { style: {
+		{ className: 'container' },
+		_react2.default.createElement(
+			'label',
+			null,
+			'Skills'
+		),
+		_react2.default.createElement('input', { type: 'text', style: {
 				width: width
 			},
 			onKeyUp: function onKeyUp(e) {
@@ -670,7 +681,9 @@ function Typeahead(_ref) {
 		selected.map(function (el, i) {
 			return _react2.default.createElement(
 				'button',
-				{ type: 'button', key: i,
+				{
+					type: 'button',
+					key: i,
 					onClick: function onClick(_) {
 						return deleteSelection(i);
 					},
@@ -682,7 +695,7 @@ function Typeahead(_ref) {
 }
 
 Typeahead.propTypes = {
-	skills: _react.PropTypes.array.isRequired,
+	list: _react.PropTypes.array.isRequired,
 	filtered: _react.PropTypes.array.isRequired,
 	currentIdx: _react.PropTypes.number.isRequired,
 	filterHandler: _react.PropTypes.func.isRequired,
@@ -785,14 +798,7 @@ var App = (function (_Component) {
             var toggleProfileOnClick = _props.toggleProfileOnClick;
             var person = _props.person;
             var inputHandlers = _props.inputHandlers;
-            var keyPressHandler = _props.keyPressHandler;
-            var deleteSelection = _props.deleteSelection;
 
-            var loginView = this.props.isReceiving ? _react2.default.createElement(
-                'h2',
-                { className: 'loading' },
-                '...Tech@NYU RSVP is loading.'
-            ) : this.props.didLogin ? this.props.isProfileView ? _react2.default.createElement(_Profile2.default, { attributes: person.attributes, inputHandlers: inputHandlers }) : _react2.default.createElement(_VisibleEventList2.default, null) : _react2.default.createElement(_Welcome2.default, null);
             return _react2.default.createElement(
                 'div',
                 null,
@@ -825,11 +831,6 @@ var App = (function (_Component) {
                     _react2.default.createElement(
                         'div',
                         { className: 'col-md-10 col-md-offset-1' },
-                        _react2.default.createElement(_Typeahead2.default, _extends({}, this.props.skillActions, {
-                            width: '200px',
-                            filterHandler: inputHandlers.handleFilteredSkills,
-                            keyPressHandler: keyPressHandler,
-                            deleteSelection: deleteSelection })),
                         this.props.didLogin ? _react2.default.createElement(
                             'div',
                             { className: 'pull-right' },
@@ -839,7 +840,21 @@ var App = (function (_Component) {
                                 this.props.isProfileView ? 'Event List' : 'Profile'
                             )
                         ) : null,
-                        loginView
+                        this.props.isReceiving ? _react2.default.createElement(
+                            'h2',
+                            { className: 'loading' },
+                            '...Tech@NYU RSVP is loading.'
+                        ) : this.props.didLogin ? this.props.isProfileView ? _react2.default.createElement(
+                            _Profile2.default,
+                            { attributes: person.attributes, inputHandlers: inputHandlers },
+                            _react2.default.createElement(_Typeahead2.default, _extends({
+                                list: this.props.skillActions.skills
+                            }, this.props.skillActions, {
+                                width: '200px',
+                                filterHandler: this.props.inputHandlers.handleFilteredSkills,
+                                keyPressHandler: this.props.inputHandlers.keyPressHandler,
+                                deleteSelection: this.props.inputHandlers.deleteSelection }))
+                        ) : _react2.default.createElement(_VisibleEventList2.default, null) : _react2.default.createElement(_Welcome2.default, null)
                     )
                 )
             );
@@ -855,8 +870,6 @@ var mapStateToProps = function mapStateToProps(state) {
         didLogin: state.loginActions.didLogin,
         isReceiving: state.loginActions.isReceiving,
         isProfileView: state.viewActions.isProfileView,
-        // skills: state.skillActions.skills,
-        // filtered: state.skillActions.filtered,
         skillActions: state.skillActions
     };
 };
@@ -878,13 +891,13 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
             },
             handleFilteredSkills: function handleFilteredSkills(query) {
                 return dispatch((0, _actions.filterSkills)(query));
+            },
+            keyPressHandler: function keyPressHandler(keyCode) {
+                return dispatch((0, _actions.updateActiveTypeaheadField)(keyCode));
+            },
+            deleteSelection: function deleteSelection(i) {
+                return dispatch((0, _actions.deleteTypeaheadSelection)(i));
             }
-        },
-        keyPressHandler: function keyPressHandler(keyCode) {
-            return dispatch((0, _actions.updateActiveTypeaheadField)(keyCode));
-        },
-        deleteSelection: function deleteSelection(i) {
-            return dispatch((0, _actions.deleteTypeaheadSelection)(i));
         }
     };
 };

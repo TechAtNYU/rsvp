@@ -1,10 +1,11 @@
 import React, { PropTypes } from 'react';
 
-function Typeahead({ width, skills, filtered, selected, filterHandler, keyPressHandler, currentIdx, deleteSelection }) {
-	if (skills.length === filtered.length + selected.length) filtered = [];
+function Typeahead({ width, list, filtered, selected, filterHandler, keyPressHandler, currentIdx, deleteSelection }) {
+	if (list.length === filtered.length + selected.length) filtered = [];
     return (
-    	<div>
-		    <input style={{
+    	<div className='container'>
+    		<label>Skills</label>
+		    <input type='text' style={{
 		    	width: width
 		    }}
 		    onKeyUp={ e => keyPressHandler(e.which)}
@@ -22,10 +23,12 @@ function Typeahead({ width, skills, filtered, selected, filterHandler, keyPressH
 		    	</div>
 		    	): null}
 		    { selected.map( (el, i) =>
-		    	<button type='button' key={i}
+		    	<button
+		    	type='button'
+		    	key={i}
 		    	onClick={ _ => deleteSelection(i)}
 		    	className='btn btn-secondary btn-sm'>
-		    	{el.attributes.name}
+			    	{el.attributes.name}
 		    	</button>
 		    	)}
 		</div>
@@ -33,7 +36,7 @@ function Typeahead({ width, skills, filtered, selected, filterHandler, keyPressH
 }
 
 Typeahead.propTypes = {
-	skills: PropTypes.array.isRequired,
+	list: PropTypes.array.isRequired,
 	filtered: PropTypes.array.isRequired,
 	currentIdx: PropTypes.number.isRequired,
 	filterHandler: PropTypes.func.isRequired,

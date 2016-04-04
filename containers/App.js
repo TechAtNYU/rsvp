@@ -20,9 +20,7 @@ class App extends Component {
     }
 
     render() {
-        const { toggleProfileOnClick, person, inputHandlers, keyPressHandler, deleteSelection} = this.props;
-        const loginView = this.props.isReceiving ? <h2 className='loading'>...Tech@NYU RSVP is loading.</h2>:
-        this.props.didLogin ? this.props.isProfileView ? <Profile attributes={person.attributes} inputHandlers={inputHandlers} />: <VisibleEventList />:<Welcome />;
+        const { toggleProfileOnClick, person, inputHandlers} = this.props;
         return (
             <div>
                 <header>
@@ -34,19 +32,27 @@ class App extends Component {
                 </header> 
                 <div className='form'>
                     <div className='col-md-10 col-md-offset-1'>
-                        <Typeahead
-                        {...this.props.skillActions}
-                        width='200px'
-                        filterHandler={inputHandlers.handleFilteredSkills}
-                        keyPressHandler={keyPressHandler}
-                        deleteSelection={deleteSelection} />
                     
                     { this.props.didLogin ?
                         <div className='pull-right'>
                         <button onClick={toggleProfileOnClick} className='btn'>{this.props.isProfileView ? 'Event List': 'Profile'}</button>
                         </div> :
                     null }
-                    {loginView}
+                    { 
+                        this.props.isReceiving ?
+                            <h2 className='loading'>...Tech@NYU RSVP is loading.</h2>:
+                            this.props.didLogin ? this.props.isProfileView ? (
+                            <Profile attributes={person.attributes} inputHandlers={inputHandlers}>
+                                <Typeahead
+                                list={this.props.skillActions.skills}
+                                {...this.props.skillActions}
+                                width='200px'
+                                filterHandler={this.props.inputHandlers.handleFilteredSkills}
+                                keyPressHandler={this.props.inputHandlers.keyPressHandler}
+                                deleteSelection={this.props.inputHandlers.deleteSelection} />
+                            </Profile>
+                            ): <VisibleEventList />: <Welcome />
+                    }
                     </div>
                 </div>
     	    </div>)
@@ -59,8 +65,6 @@ const mapStateToProps = state => {
         didLogin: state.loginActions.didLogin,
         isReceiving: state.loginActions.isReceiving,
         isProfileView: state.viewActions.isProfileView,
-        // skills: state.skillActions.skills,
-        // filtered: state.skillActions.filtered,
         skillActions: state.skillActions,
     }
 }
@@ -69,13 +73,13 @@ const mapDispatchToProps = dispatch => {
     return {
         toggleProfileOnClick: _ => dispatch(toggleProfile()),
         inputHandlers: {
-           handleEmail: email => dispatch(updateEmail(email)),
-           handleNNumber: nNumber => dispatch(updateNNumber(nNumber)),
-           handleSubmit: _ => dispatch(postPerson()),
-           handleFilteredSkills: query => dispatch(filterSkills(query)),
-        },
-        keyPressHandler: keyCode => dispatch(updateActiveTypeaheadField(keyCode)),
-        deleteSelection: i => dispatch(deleteTypeaheadSelection(i)),
+            handleEmail: email => dispatch(updateEmail(email)),
+            handleNNumber: nNumber => dispatch(updateNNumber(nNumber)),
+            handleSubmit: _ => dispatch(postPerson()),
+            handleFilteredSkills: query => dispatch(filterSkills(query)),
+            keyPressHandler: keyCode => dispatch(updateActiveTypeaheadField(keyCode)),
+            deleteSelection: i => dispatch(deleteTypeaheadSelection(i)),
+        }
     }
 }
 
