@@ -56,10 +56,11 @@ var DropDownMenu = React.createClass({
 			var dateObj = this._getTime(i);
 			var isFull = this.props.venueCaps[i] * 2 < this.props.totalRsvps[i];
 			var isRsvpd = this.props.rsvpdEvents[i];
-			// var isPastRsvpDeadline = new Date(this.props.rawJson[i].attributes.rsvpDeadline) < today;
+			var isPastRsvpDeadline = false;
+			if (this.props.rawJson[i].attributes.rsvpDeadline) isPastRsvpDeadline = new Date(this.props.rawJson[i].attributes.rsvpDeadline) < today;
 			var checkbox = <input type='checkbox' key={i} onChange={this._toggleCheckbox.bind(this, i)} />;
 
-			// if (isPastRsvpDeadline) checkbox = <span>Event CLOSED</span>;
+			if (isPastRsvpDeadline) checkbox = <span>Event CLOSED</span>;
 			if (isFull) checkbox = <span>Event FULL</span>;
 			if (isRsvpd) checkbox = <span>RSVP'd</span>;	
 
