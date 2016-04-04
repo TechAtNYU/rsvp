@@ -273,10 +273,11 @@ function requestSkills() {
     };
 }
 
-function receiveSkills(json) {
+function receiveSkills(allSkills, personSkills ) {
     return {
         type: RECEIVE_SKILLS,
-        json
+        allSkills,
+        personSkills
     };
 }
 
@@ -287,10 +288,11 @@ function failToGetSkills() {
 }
 
 export function fetchSkills() {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch(requestSkills);
         return $.get('https://api.tnyu.org/' + window.API_VERSION + '/skills')
-            .done(response => dispatch(receiveSkills(response.data)))
+            .done(response => dispatch(receiveSkills(response.data,
+                getState().loginActions.person.relationships.skills.data)))
             .fail(() => dispatch(failToGetSkills()));
     }
 }

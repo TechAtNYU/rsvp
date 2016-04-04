@@ -323,10 +323,11 @@ function requestSkills() {
     };
 }
 
-function receiveSkills(json) {
+function receiveSkills(allSkills, personSkills) {
     return {
         type: RECEIVE_SKILLS,
-        json: json
+        allSkills: allSkills,
+        personSkills: personSkills
     };
 }
 
@@ -337,10 +338,10 @@ function failToGetSkills() {
 }
 
 function fetchSkills() {
-    return function (dispatch) {
+    return function (dispatch, getState) {
         dispatch(requestSkills);
         return $.get('https://api.tnyu.org/' + window.API_VERSION + '/skills').done(function (response) {
-            return dispatch(receiveSkills(response.data));
+            return dispatch(receiveSkills(response.data, getState().loginActions.person.relationships.skills.data));
         }).fail(function () {
             return dispatch(failToGetSkills());
         });
@@ -22028,10 +22029,16 @@ function skillActions() {
             });
         case _actions.RECEIVE_SKILLS:
             // console.log(action.json.map(obj => obj.attributes.name));
+            var sortedSkills = action.allSkills.slice().sort(sortStringHelper);
             return Object.assign({}, state, {
                 isReceiving: false,
                 receivedAt: Date.now(),
-                skills: action.json.slice().sort(sortStringHelper)
+                skills: sortedSkills,
+                selected: action.personSkills.map(function (personSkill) {
+                    return sortedSkills.find(function (skill) {
+                        return skill.id === personSkill.id;
+                    });
+                })
             });
         case _actions.FAIL_TO_GET_SKILLS:
             return Object.assign({}, state, {
@@ -22068,6 +22075,7 @@ function skillActions() {
             });
         case _actions.DELETE_SKILL_SELECTION:
             return Object.assign({}, state, {
+                currentIdx: -1,
                 selected: state.selected.filter(function (el, i) {
                     return i !== action.index;
                 }),

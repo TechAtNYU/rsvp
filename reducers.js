@@ -240,10 +240,13 @@ function skillActions(state = initialState.skillActions, action) {
         });
     case RECEIVE_SKILLS:
     // console.log(action.json.map(obj => obj.attributes.name));
+        const sortedSkills = action.allSkills.slice().sort(sortStringHelper);
         return Object.assign({}, state, {
             isReceiving: false,
             receivedAt: Date.now(),
-            skills: action.json.slice().sort(sortStringHelper)
+            skills: sortedSkills,
+            selected: action.personSkills.map( personSkill => sortedSkills.find(
+                skill => skill.id === personSkill.id )),
         });
     case FAIL_TO_GET_SKILLS:
         return Object.assign({}, state, {
@@ -274,6 +277,7 @@ function skillActions(state = initialState.skillActions, action) {
         });
     case DELETE_SKILL_SELECTION:
         return Object.assign({}, state, {
+            currentIdx: -1,
             selected: state.selected.filter( (el, i) => i !== action.index),
             filtered: [ ...state.filtered, state.selected[action.index]],
         })
