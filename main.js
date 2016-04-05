@@ -33,14 +33,16 @@ var AppHandler = React.createClass({
 
 	componentWillMount: function() {
 		$.getJSON('https://api.tnyu.org/' + window.API_VERSION + '/people/me')
-		.done( (user) => {
+		.done( user => {
 			// user is logged in, check for nNumber and email existence
 			var nNumberExists = (user.data.attributes.nNumber) ? true: false;
 			var emailExists = false;
 			var email = '';
-			if (user.data.attributes.contact.email !== undefined) {
-				emailExists = true;
-				email = user.data.attributes.contact.email;
+			if (user.data.attributes.contact) {
+				if (user.data.attributes.contact.email) {
+					emailExists = true;
+					email = user.data.attributes.contact.email;
+				}
 			}
 
 			this.setState({
@@ -48,15 +50,16 @@ var AppHandler = React.createClass({
 				userId: user.data.id,
 				nNumberExists: nNumberExists,
 				emailExists: emailExists,
-				email: email
+				email: email,
+				user: user
 			});
 
 			// get events
 			$.getJSON('https://api.tnyu.org/' + window.API_VERSION + '/events/upcoming-publicly?page%5Blimit%5D=15&sort=startDateTime')
-			.done( (json) => {
+			.done( json => {
 				var eventIds = [], eventTitles = [], eventStartDates = [],  venueIds = [], rsvps = [], rsvpdEvents = [];
-				json.data.map( (event) => {
-					var alreadyRsvpd = event.relationships.rsvps.data.some( (person) => {
+				json.data.map( event => {
+					var alreadyRsvpd = event.relationships.rsvps.data.some( person => {
 						return person.id.toString() === this.state.userId.toString();
 					});
 
@@ -79,7 +82,7 @@ var AppHandler = React.createClass({
 				});
 			}).then( () => {
 				var venueNames = this.state.venueNames, venueAddresses = this.state.venueAddresses, venueCaps = this.state.venueCaps;
-				this.state.venueIds.map( (venueId) => {
+				this.state.venueIds.map( venueId => {
 					$.getJSON('https://api.tnyu.org/' + window.API_VERSION + '/venues/' + venueId.toString()).done((json) => {
 						venueNames.push(json.data.attributes.name || undefined);
 						venueAddresses.push(json.data.attributes.address || undefined);

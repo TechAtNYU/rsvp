@@ -447,9 +447,11 @@ var AppHandler = React.createClass({
 			var nNumberExists = user.data.attributes.nNumber ? true : false;
 			var emailExists = false;
 			var email = '';
-			if (user.data.attributes.contact.email !== undefined) {
-				emailExists = true;
-				email = user.data.attributes.contact.email;
+			if (user.data.attributes.contact) {
+				if (user.data.attributes.contact.email) {
+					emailExists = true;
+					email = user.data.attributes.contact.email;
+				}
 			}
 
 			_this.setState({
@@ -457,7 +459,8 @@ var AppHandler = React.createClass({
 				userId: user.data.id,
 				nNumberExists: nNumberExists,
 				emailExists: emailExists,
-				email: email
+				email: email,
+				user: user
 			});
 
 			// get events
