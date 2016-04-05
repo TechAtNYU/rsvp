@@ -114,9 +114,10 @@ export function filterSkills(word, fieldType) {
     }
 }
 
-function selectTypeaheadField() {
+function selectTypeaheadField(fieldType) {
     return {
-        type: SELECT_SKILL_FIELD
+        type: SELECT_SKILL_FIELD,
+        fieldType
     }
 }
 
@@ -133,15 +134,16 @@ export function updateActiveTypeaheadField(keyCode, fieldType) {
     return (dispatch) => {
         if (keyCode === 38) dispatch(moveTypeaheadPointer(-1, fieldType));
         if (keyCode === 40) dispatch(moveTypeaheadPointer(1, fieldType));
-        if (keyCode === 13) dispatch(selectTypeaheadField());
+        if (keyCode === 13) dispatch(selectTypeaheadField(fieldType));
 
     }
 }
 
-export function deleteTypeaheadSelection(index) {
+export function deleteTypeaheadSelection(index, fieldType) {
     return {
         type: DELETE_SKILL_SELECTION,
-        index
+        index,
+        fieldType
     }
 }
 

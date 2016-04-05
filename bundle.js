@@ -160,9 +160,10 @@ function filterSkills(word, fieldType) {
     };
 }
 
-function selectTypeaheadField() {
+function selectTypeaheadField(fieldType) {
     return {
-        type: SELECT_SKILL_FIELD
+        type: SELECT_SKILL_FIELD,
+        fieldType: fieldType
     };
 }
 
@@ -179,14 +180,15 @@ function updateActiveTypeaheadField(keyCode, fieldType) {
     return function (dispatch) {
         if (keyCode === 38) dispatch(moveTypeaheadPointer(-1, fieldType));
         if (keyCode === 40) dispatch(moveTypeaheadPointer(1, fieldType));
-        if (keyCode === 13) dispatch(selectTypeaheadField());
+        if (keyCode === 13) dispatch(selectTypeaheadField(fieldType));
     };
 }
 
-function deleteTypeaheadSelection(index) {
+function deleteTypeaheadSelection(index, fieldType) {
     return {
         type: DELETE_SKILL_SELECTION,
-        index: index
+        index: index,
+        fieldType: fieldType
     };
 }
 
@@ -396,14 +398,21 @@ function Event(_ref) {
     var relationships = _ref.relationships;
     var venueSize = _ref.venueSize;
 
-    var rsvpField = rsvp ? _react2.default.createElement(
+    var rsvpField = _react2.default.createElement('input', { type: 'checkbox', onClick: onClick });
+    if (rsvp) rsvpField = _react2.default.createElement(
         'span',
         null,
         'RSVP\'d'
-    ) : relationships.rsvps.data.length < venueSize * 2 ? _react2.default.createElement('input', { type: 'checkbox', onClick: onClick }) : _react2.default.createElement(
+    );
+    if (relationships.rsvps.data.length > venueSize * 2) rsvpField = _react2.default.createElement(
         'span',
         null,
         'Event FULL'
+    );
+    if (attributes.rsvpDeadline) if (new Date(attributes.rsvpDeadline) > Date.now()) rsvpField = _react2.default.createElement(
+        'span',
+        null,
+        'Event Closed'
     );
 
     return _react2.default.createElement(
@@ -914,7 +923,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
                 return dispatch((0, _actions.updateActiveTypeaheadField)(keyCode, 'skillsPersonHas'));
             },
             deleteSelection: function deleteSelection(i) {
-                return dispatch((0, _actions.deleteTypeaheadSelection)(i));
+                return dispatch((0, _actions.deleteTypeaheadSelection)(i, 'skillsPersonHas'));
             }
         }
     };
@@ -22091,19 +22100,24 @@ function skillActions() {
             obj[action.fieldType].currentIdx = state[action.fieldType].currentIdx + action.move < -1 ? -1 : state[action.fieldType].currentIdx + action.move;
             return obj;
         case _actions.SELECT_SKILL_FIELD:
-            obj['skillsPersonHas'].filtered = state['skillsPersonHas'].filtered.filter(function (skill, i) {
-                return i !== state['skillsPersonHas'].currentIdx;
-            }), obj['skillsPersonHas'].currentIdx = -1;
-            obj['skillsPersonHas'].selected = [].concat(_toConsumableArray(state['skillsPersonHas'].selected), [state['skillsPersonHas'].filtered.find(function (skill, i) {
-                return i === state['skillsPersonHas'].currentIdx;
-            })]);
+            obj[action.fieldType] = Object.assign({}, state[action.fieldType], {
+                currentIdx: -1,
+                filtered: obj[action.fieldType].filtered = state[action.fieldType].filtered.filter(function (skill, i) {
+                    return i !== state[action.fieldType].currentIdx;
+                }),
+                selected: [].concat(_toConsumableArray(state[action.fieldType].selected), [state[action.fieldType].filtered.find(function (skill, i) {
+                    return i === state[action.fieldType].currentIdx;
+                })])
+            });
             return obj;
         case _actions.DELETE_SKILL_SELECTION:
-            obj['skillsPersonHas'].currentIdx = -1;
-            obj['skillsPersonHas'].selected = state['skillsPersonHas'].selected.filter(function (el, i) {
-                return i !== action.index;
+            obj[action.fieldType] = Object.assign({}, state[action.fieldType], {
+                currentIdx: -1,
+                selected: state[action.fieldType].selected.filter(function (el, i) {
+                    return i !== action.index;
+                }),
+                filtered: [].concat(_toConsumableArray(state[action.fieldType].filtered), [state[action.fieldType].selected[action.index]])
             });
-            obj['skillsPersonHas'].filtered = [].concat(_toConsumableArray(state['skillsPersonHas'].filtered), [state['skillsPersonHas'].selected[action.index]]);
             return obj;
         default:
             return state;

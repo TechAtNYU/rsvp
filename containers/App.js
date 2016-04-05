@@ -78,7 +78,7 @@ const mapDispatchToProps = dispatch => {
             handleSubmit: _ => dispatch(postPerson()),
             handleFilteredSkills: (query) => dispatch(filterSkills(query, 'skillsPersonHas')),
             keyPressHandler: keyCode => dispatch(updateActiveTypeaheadField(keyCode, 'skillsPersonHas')),
-            deleteSelection: i => dispatch(deleteTypeaheadSelection(i)),
+            deleteSelection: i => dispatch(deleteTypeaheadSelection(i, 'skillsPersonHas')),
         }
     }
 }

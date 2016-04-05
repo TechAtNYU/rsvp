@@ -285,17 +285,21 @@ function skillActions(state = initialState.skillActions, action) {
             -1: state[action.fieldType].currentIdx + action.move;
         return obj;
     case SELECT_SKILL_FIELD:
-        obj['skillsPersonHas'].filtered = state['skillsPersonHas'].filtered.filter((skill, i) => i !== state['skillsPersonHas'].currentIdx),
-        obj['skillsPersonHas'].currentIdx = -1;
-        obj['skillsPersonHas'].selected = [
-                ...state['skillsPersonHas'].selected,
-                state['skillsPersonHas'].filtered.find( (skill, i) => i === state['skillsPersonHas'].currentIdx)
-                ];
+        obj[action.fieldType] = Object.assign({}, state[action.fieldType], {
+            currentIdx: -1,
+            filtered: obj[action.fieldType].filtered = state[action.fieldType].filtered.filter((skill, i) => i !== state[action.fieldType].currentIdx),
+            selected: [
+                ...state[action.fieldType].selected,
+                state[action.fieldType].filtered.find( (skill, i) => i === state[action.fieldType].currentIdx)
+            ]
+        });
         return obj;
     case DELETE_SKILL_SELECTION:
-        obj['skillsPersonHas'].currentIdx = -1;
-        obj['skillsPersonHas'].selected = state['skillsPersonHas'].selected.filter( (el, i) => i !== action.index);
-        obj['skillsPersonHas'].filtered = [ ...state['skillsPersonHas'].filtered, state['skillsPersonHas'].selected[action.index]];
+        obj[action.fieldType] = Object.assign({}, state[action.fieldType], {
+            currentIdx: -1,
+            selected: state[action.fieldType].selected.filter( (el, i) => i !== action.index),
+            filtered: [ ...state[action.fieldType].filtered, state[action.fieldType].selected[action.index]],
+        });
         return obj;
     default:
         return state;
