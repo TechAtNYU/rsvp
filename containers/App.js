@@ -32,7 +32,6 @@ class App extends Component {
                 </header> 
                 <div className='form'>
                     <div className='col-md-10 col-md-offset-1'>
-                    
                     { this.props.didLogin ?
                         <div className='pull-right'>
                         <button onClick={toggleProfileOnClick} className='btn'>{this.props.isProfileView ? 'Event List': 'Profile'}</button>
@@ -45,7 +44,8 @@ class App extends Component {
                             <Profile attributes={person.attributes} inputHandlers={inputHandlers}>
                                 <Typeahead
                                 list={this.props.skillActions.skills}
-                                {...this.props.skillActions['skillsPersonHas']}
+                                fieldType='skillsPersonHas'
+                                {...this.props.skillActions.skillsPersonHas}
                                 width='200px'
                                 filterHandler={this.props.inputHandlers.handleFilteredSkills}
                                 keyPressHandler={this.props.inputHandlers.keyPressHandler}
@@ -77,7 +77,7 @@ const mapDispatchToProps = dispatch => {
             handleNNumber: nNumber => dispatch(updateNNumber(nNumber)),
             handleSubmit: _ => dispatch(postPerson()),
             handleFilteredSkills: (query) => dispatch(filterSkills(query, 'skillsPersonHas')),
-            keyPressHandler: keyCode => dispatch(updateActiveTypeaheadField(keyCode)),
+            keyPressHandler: keyCode => dispatch(updateActiveTypeaheadField(keyCode, 'skillsPersonHas')),
             deleteSelection: i => dispatch(deleteTypeaheadSelection(i)),
         }
     }

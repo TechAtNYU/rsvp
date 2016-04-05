@@ -94,10 +94,11 @@ export function postPerson() {
     }
 }
 
-function updateFilteredSkills(filtered) {
+function updateFilteredSkills(filtered, fieldType) {
     return {
         type: FILTER_SKILLS,
-        filtered
+        filtered,
+        fieldType
     }
 }
 
@@ -109,7 +110,7 @@ export function filterSkills(word, fieldType) {
     return (dispatch, getState) => {
         const options = { extract: el => el.attributes.name };
         const results = fuzzy.filter(word, getState().skillActions.skills, options).map( el => el.string);
-        dispatch(updateFilteredSkills(results));
+        dispatch(updateFilteredSkills(results, fieldType));
     }
 }
 
@@ -119,18 +120,19 @@ function selectTypeaheadField() {
     }
 }
 
-function moveTypeaheadPointer(move) {
+function moveTypeaheadPointer(move, fieldType) {
     return {
         type: SKILL_ROLLOVER,
-        move
+        move,
+        fieldType
     }
 }
 
-export function updateActiveTypeaheadField(keyCode) {
+export function updateActiveTypeaheadField(keyCode, fieldType) {
     // up 38, down 40, left 37, right 39, enter 13
     return (dispatch) => {
-        if (keyCode === 38) dispatch(moveTypeaheadPointer(-1));
-        if (keyCode === 40) dispatch(moveTypeaheadPointer(1));
+        if (keyCode === 38) dispatch(moveTypeaheadPointer(-1, fieldType));
+        if (keyCode === 40) dispatch(moveTypeaheadPointer(1, fieldType));
         if (keyCode === 13) dispatch(selectTypeaheadField());
 
     }

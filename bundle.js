@@ -136,10 +136,11 @@ function postPerson() {
     };
 }
 
-function updateFilteredSkills(filtered) {
+function updateFilteredSkills(filtered, fieldType) {
     return {
         type: FILTER_SKILLS,
-        filtered: filtered
+        filtered: filtered,
+        fieldType: fieldType
     };
 }
 
@@ -155,7 +156,7 @@ function filterSkills(word, fieldType) {
         var results = _fuzzy2.default.filter(word, getState().skillActions.skills, options).map(function (el) {
             return el.string;
         });
-        dispatch(updateFilteredSkills(results));
+        dispatch(updateFilteredSkills(results, fieldType));
     };
 }
 
@@ -165,18 +166,19 @@ function selectTypeaheadField() {
     };
 }
 
-function moveTypeaheadPointer(move) {
+function moveTypeaheadPointer(move, fieldType) {
     return {
         type: SKILL_ROLLOVER,
-        move: move
+        move: move,
+        fieldType: fieldType
     };
 }
 
-function updateActiveTypeaheadField(keyCode) {
+function updateActiveTypeaheadField(keyCode, fieldType) {
     // up 38, down 40, left 37, right 39, enter 13
     return function (dispatch) {
-        if (keyCode === 38) dispatch(moveTypeaheadPointer(-1));
-        if (keyCode === 40) dispatch(moveTypeaheadPointer(1));
+        if (keyCode === 38) dispatch(moveTypeaheadPointer(-1, fieldType));
+        if (keyCode === 40) dispatch(moveTypeaheadPointer(1, fieldType));
         if (keyCode === 13) dispatch(selectTypeaheadField());
     };
 }
@@ -649,6 +651,7 @@ var _react2 = _interopRequireDefault(_react);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function Typeahead(_ref) {
+	var fieldType = _ref.fieldType;
 	var width = _ref.width;
 	var list = _ref.list;
 	var filtered = _ref.filtered;
@@ -671,7 +674,7 @@ function Typeahead(_ref) {
 				width: width
 			},
 			onKeyUp: function onKeyUp(e) {
-				return keyPressHandler(e.which);
+				return keyPressHandler(e.which, fieldType);
 			},
 			onChange: function onChange(e) {
 				return filterHandler(e.target.value);
@@ -862,8 +865,9 @@ var App = (function (_Component) {
                             _Profile2.default,
                             { attributes: person.attributes, inputHandlers: inputHandlers },
                             _react2.default.createElement(_Typeahead2.default, _extends({
-                                list: this.props.skillActions.skills
-                            }, this.props.skillActions['skillsPersonHas'], {
+                                list: this.props.skillActions.skills,
+                                fieldType: 'skillsPersonHas'
+                            }, this.props.skillActions.skillsPersonHas, {
                                 width: '200px',
                                 filterHandler: this.props.inputHandlers.handleFilteredSkills,
                                 keyPressHandler: this.props.inputHandlers.keyPressHandler,
@@ -907,7 +911,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
                 return dispatch((0, _actions.filterSkills)(query, 'skillsPersonHas'));
             },
             keyPressHandler: function keyPressHandler(keyCode) {
-                return dispatch((0, _actions.updateActiveTypeaheadField)(keyCode));
+                return dispatch((0, _actions.updateActiveTypeaheadField)(keyCode, 'skillsPersonHas'));
             },
             deleteSelection: function deleteSelection(i) {
                 return dispatch((0, _actions.deleteTypeaheadSelection)(i));
@@ -22070,19 +22074,21 @@ function skillActions() {
             });
         case _actions.FILTER_SKILLS:
             // fuzzy string matching only returns a list of names
-            obj['skillsPersonHas'].currentIdx = -1;
-            obj['skillsPersonHas'].filtered = action.filtered.map(function (name) {
-                return state.skills.find(function (skill) {
-                    return skill.attributes.name === name;
-                });
-            }).filter(function (skill) {
-                return !state['skillsPersonHas'].selected.some(function (selected) {
-                    return selected.id === skill.id;
-                });
+            obj[action.fieldType] = Object.assign({}, state[action.fieldType], {
+                currentIdx: -1,
+                filtered: action.filtered.map(function (name) {
+                    return state.skills.find(function (skill) {
+                        return skill.attributes.name === name;
+                    });
+                }).filter(function (skill) {
+                    return !state[action.fieldType].selected.some(function (selected) {
+                        return selected.id === skill.id;
+                    });
+                })
             });
             return obj;
         case _actions.SKILL_ROLLOVER:
-            obj['skillsPersonHas'].currentIdx = state['skillsPersonHas'].currentIdx + action.move < -1 ? -1 : state['skillsPersonHas'].currentIdx + action.move;
+            obj[action.fieldType].currentIdx = state[action.fieldType].currentIdx + action.move < -1 ? -1 : state[action.fieldType].currentIdx + action.move;
             return obj;
         case _actions.SELECT_SKILL_FIELD:
             obj['skillsPersonHas'].filtered = state['skillsPersonHas'].filtered.filter(function (skill, i) {

@@ -257,7 +257,7 @@ function skillActions(state = initialState.skillActions, action) {
         });
     case RECEIVE_SKILLS:
         const sortedSkills = action.allSkills.slice().sort(sortStringHelper);
-        const matchSkills = (match) => sortedSkills.find(skill => skill.id === match.id);
+        const matchSkills = match => sortedSkills.find(skill => skill.id === match.id);
         obj.isReceiving = false;
         obj.receivedAt = Date.now();
         obj.skills = sortedSkills;
@@ -272,15 +272,17 @@ function skillActions(state = initialState.skillActions, action) {
         });
     case FILTER_SKILLS:
         // fuzzy string matching only returns a list of names
-        obj['skillsPersonHas'].currentIdx = -1;
-        obj['skillsPersonHas'].filtered = action.filtered.map(name =>
+        obj[action.fieldType] = Object.assign({}, state[action.fieldType], {
+            currentIdx: -1,
+            filtered: action.filtered.map(name =>
                     state.skills.find(skill => skill.attributes.name === name)).filter(
-                    skill => !state['skillsPersonHas'].selected.some(
-                        selected => selected.id === skill.id));
+                    skill => !state[action.fieldType].selected.some(
+                        selected => selected.id === skill.id))
+        });
         return obj;
     case SKILL_ROLLOVER:
-        obj['skillsPersonHas'].currentIdx = state['skillsPersonHas'].currentIdx + action.move < -1 ?
-            -1: state['skillsPersonHas'].currentIdx + action.move;
+        obj[action.fieldType].currentIdx = state[action.fieldType].currentIdx + action.move < -1 ?
+            -1: state[action.fieldType].currentIdx + action.move;
         return obj;
     case SELECT_SKILL_FIELD:
         obj['skillsPersonHas'].filtered = state['skillsPersonHas'].filtered.filter((skill, i) => i !== state['skillsPersonHas'].currentIdx),
