@@ -106,11 +106,13 @@ const mapDispatchToProps = dispatch => {
                 filterHandler: query => dispatch(filterSkills(query, 'wantsToLearn')),
                 keyPressHandler: keyCode => dispatch(updateActiveTypeaheadField(keyCode, 'wantsToLearn')),
                 deleteSelection: i => dispatch(deleteTypeaheadSelection(i, 'wantsToLearn')),
+                onHover: i => dispatch(onHoverTypeahead(i, 'wantsToLearn')),
             },
             wantsToHire: {
                 filterHandler: query => dispatch(filterSkills(query, 'wantsToHire')),
                 keyPressHandler: keyCode => dispatch(updateActiveTypeaheadField(keyCode, 'wantsToHire')),
                 deleteSelection: i => dispatch(deleteTypeaheadSelection(i, 'wantsToHire')),
+                onHover: i => dispatch(onHoverTypeahead(i, 'wantsToHire')),
             },
         }
     }

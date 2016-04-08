@@ -1019,6 +1019,9 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
                 },
                 deleteSelection: function deleteSelection(i) {
                     return dispatch((0, _actions.deleteTypeaheadSelection)(i, 'wantsToLearn'));
+                },
+                onHover: function onHover(i) {
+                    return dispatch((0, _actions.onHoverTypeahead)(i, 'wantsToLearn'));
                 }
             },
             wantsToHire: {
@@ -1030,6 +1033,9 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
                 },
                 deleteSelection: function deleteSelection(i) {
                     return dispatch((0, _actions.deleteTypeaheadSelection)(i, 'wantsToHire'));
+                },
+                onHover: function onHover(i) {
+                    return dispatch((0, _actions.onHoverTypeahead)(i, 'wantsToHire'));
                 }
             }
         }
