@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 
-function Typeahead({ domId, title, value, fieldType, width, list, filtered, selected, filterHandler, keyPressHandler, currentIdx, deleteSelection }) {
+function Typeahead({ domId, title, value, fieldType, width, list, filtered, selected, filterHandler, keyPressHandler, onHover, currentIdx, deleteSelection }) {
 	if (list.length === filtered.length + selected.length) filtered = [];
     return (
     	<div className='container'
@@ -12,7 +12,7 @@ function Typeahead({ domId, title, value, fieldType, width, list, filtered, sele
 			    <input type='text' style={{
 			    	width: width
 			    }}
-			    onKeyUp={ e => keyPressHandler(e.which, fieldType)}
+			    onKeyUp={ e => keyPressHandler(e.which)}
 			    onChange={e => filterHandler(e.target.value)}
 			    defaultValue=''
 			    value={value}
@@ -25,8 +25,14 @@ function Typeahead({ domId, title, value, fieldType, width, list, filtered, sele
 		    			width: width,
 		    			position: 'relative',
 		    			display: 'block',
-		    			backgroundColor: (currentIdx === i) ? 'lightblue': 'white',
-		    	}} key={i}>{el.attributes.name}</div>
+		    			textAlign: 'center',
+		    			backgroundColor: currentIdx === i ? 'lightblue': 'white'}}
+		    			key={i}
+		    			onMouseOver={ _ => onHover(i)}
+						onClick={ _ => keyPressHandler(13)}
+		    			>
+		    			{el.attributes.name}
+		    			</div>
 		    		)}
 		    	</div>
 		    	): null}

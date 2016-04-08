@@ -8,6 +8,7 @@ import {
     filterSkills,
     updateActiveTypeaheadField,
     deleteTypeaheadSelection,
+    onHoverTypeahead,
 } from '../actions'
 import VisibleEventList from './VisibleEventList'
 import Profile from '../components/Profile'
@@ -99,6 +100,7 @@ const mapDispatchToProps = dispatch => {
                 filterHandler: query => dispatch(filterSkills(query, 'skillsPersonHas')),
                 keyPressHandler: keyCode => dispatch(updateActiveTypeaheadField(keyCode, 'skillsPersonHas')),
                 deleteSelection: i => dispatch(deleteTypeaheadSelection(i, 'skillsPersonHas')),
+                onHover: i => dispatch(onHoverTypeahead(i, 'skillsPersonHas')),
             },
             wantsToLearn: {
                 filterHandler: query => dispatch(filterSkills(query, 'wantsToLearn')),

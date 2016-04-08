@@ -11,6 +11,7 @@ exports.updateNNumber = updateNNumber;
 exports.postPerson = postPerson;
 exports.filterSkills = filterSkills;
 exports.updateActiveTypeaheadField = updateActiveTypeaheadField;
+exports.onHoverTypeahead = onHoverTypeahead;
 exports.deleteTypeaheadSelection = deleteTypeaheadSelection;
 exports.toggleProfile = toggleProfile;
 exports.toggleEvent = toggleEvent;
@@ -190,6 +191,12 @@ function updateActiveTypeaheadField(keyCode, fieldType) {
         if (keyCode === 38) dispatch(moveTypeaheadPointer(-1, fieldType));
         if (keyCode === 40) dispatch(moveTypeaheadPointer(1, fieldType));
         if (keyCode === 13) dispatch(selectTypeaheadField(fieldType));
+    };
+}
+
+function onHoverTypeahead(index, fieldType) {
+    return function (dispatch, getState) {
+        dispatch(moveTypeaheadPointer(index - getState().skillActions[fieldType].currentIdx, fieldType));
     };
 }
 
@@ -679,6 +686,7 @@ function Typeahead(_ref) {
 	var selected = _ref.selected;
 	var filterHandler = _ref.filterHandler;
 	var keyPressHandler = _ref.keyPressHandler;
+	var onHover = _ref.onHover;
 	var currentIdx = _ref.currentIdx;
 	var deleteSelection = _ref.deleteSelection;
 
@@ -703,7 +711,7 @@ function Typeahead(_ref) {
 					width: width
 				},
 				onKeyUp: function onKeyUp(e) {
-					return keyPressHandler(e.which, fieldType);
+					return keyPressHandler(e.which);
 				},
 				onChange: function onChange(e) {
 					return filterHandler(e.target.value);
@@ -722,8 +730,16 @@ function Typeahead(_ref) {
 								width: width,
 								position: 'relative',
 								display: 'block',
-								backgroundColor: currentIdx === i ? 'lightblue' : 'white'
-							}, key: i },
+								textAlign: 'center',
+								backgroundColor: currentIdx === i ? 'lightblue' : 'white' },
+							key: i,
+							onMouseOver: function onMouseOver(_) {
+								return onHover(i);
+							},
+							onClick: function onClick(_) {
+								return keyPressHandler(13);
+							}
+						},
 						el.attributes.name
 					);
 				})
@@ -989,6 +1005,9 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
                 },
                 deleteSelection: function deleteSelection(i) {
                     return dispatch((0, _actions.deleteTypeaheadSelection)(i, 'skillsPersonHas'));
+                },
+                onHover: function onHover(i) {
+                    return dispatch((0, _actions.onHoverTypeahead)(i, 'skillsPersonHas'));
                 }
             },
             wantsToLearn: {

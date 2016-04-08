@@ -140,11 +140,17 @@ function moveTypeaheadPointer(move, fieldType) {
 
 export function updateActiveTypeaheadField(keyCode, fieldType) {
     // up 38, down 40, left 37, right 39, enter 13
-    return (dispatch) => {
+    return dispatch => {
         if (keyCode === 38) dispatch(moveTypeaheadPointer(-1, fieldType));
         if (keyCode === 40) dispatch(moveTypeaheadPointer(1, fieldType));
         if (keyCode === 13) dispatch(selectTypeaheadField(fieldType));
 
+    }
+}
+
+export function onHoverTypeahead(index, fieldType) {
+    return (dispatch, getState) => {
+        dispatch(moveTypeaheadPointer(index - getState().skillActions[fieldType].currentIdx, fieldType));
     }
 }
 
