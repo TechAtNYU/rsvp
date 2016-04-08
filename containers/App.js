@@ -43,13 +43,29 @@ class App extends Component {
                             this.props.didLogin ? this.props.isProfileView ? (
                             <Profile attributes={person.attributes} inputHandlers={inputHandlers}>
                                 <Typeahead
-                                list={this.props.skillActions.skills}
-                                fieldType='skillsPersonHas'
-                                {...this.props.skillActions.skillsPersonHas}
-                                width='200px'
-                                filterHandler={this.props.inputHandlers.handleFilteredSkills}
-                                keyPressHandler={this.props.inputHandlers.keyPressHandler}
-                                deleteSelection={this.props.inputHandlers.deleteSelection} />
+                                    title='Skills'
+                                    width='200px'
+                                    fieldType='skillsPersonHas'
+                                    list={this.props.skillActions.skills}
+                                    {...this.props.skillActions.skillsPersonHas}
+                                    {...inputHandlers.skillsPersonHas}
+                                />
+                                <Typeahead
+                                    title='Wants to Learn'
+                                    width='200px'
+                                    fieldType='wantsToLearn'
+                                    list={this.props.skillActions.skills}
+                                    {...this.props.skillActions.wantsToLearn}
+                                    {...inputHandlers.wantsToLearn}
+                                />
+                                <Typeahead
+                                    title='Wants to Hire'
+                                    width='200px'
+                                    fieldType='wantsToHire'
+                                    list={this.props.skillActions.skills}
+                                    {...this.props.skillActions.wantsToHire}
+                                    {...inputHandlers.wantsToHire}
+                                />
                             </Profile>
                             ): <VisibleEventList />: <Welcome />
                     }
@@ -76,9 +92,21 @@ const mapDispatchToProps = dispatch => {
             handleEmail: email => dispatch(updateEmail(email)),
             handleNNumber: nNumber => dispatch(updateNNumber(nNumber)),
             handleSubmit: _ => dispatch(postPerson()),
-            handleFilteredSkills: (query) => dispatch(filterSkills(query, 'skillsPersonHas')),
-            keyPressHandler: keyCode => dispatch(updateActiveTypeaheadField(keyCode, 'skillsPersonHas')),
-            deleteSelection: i => dispatch(deleteTypeaheadSelection(i, 'skillsPersonHas')),
+            skillsPersonHas: {
+                filterHandler: query => dispatch(filterSkills(query, 'skillsPersonHas')),
+                keyPressHandler: keyCode => dispatch(updateActiveTypeaheadField(keyCode, 'skillsPersonHas')),
+                deleteSelection: i => dispatch(deleteTypeaheadSelection(i, 'skillsPersonHas')),
+            },
+            wantsToLearn: {
+                filterHandler: query => dispatch(filterSkills(query, 'wantsToLearn')),
+                keyPressHandler: keyCode => dispatch(updateActiveTypeaheadField(keyCode, 'wantsToLearn')),
+                deleteSelection: i => dispatch(deleteTypeaheadSelection(i, 'wantsToLearn')),
+            },
+            wantsToHire: {
+                filterHandler: query => dispatch(filterSkills(query, 'wantsToHire')),
+                keyPressHandler: keyCode => dispatch(updateActiveTypeaheadField(keyCode, 'wantsToHire')),
+                deleteSelection: i => dispatch(deleteTypeaheadSelection(i, 'wantsToHire')),
+            },
         }
     }
 }

@@ -54,11 +54,23 @@ function sendPerson() {
     }
 }
 
+function mapSkillsToPerson(skills) {
+    return {
+        data: skills.map( skill => {
+            return {
+                type: 'skill',
+                id: skill.id }
+            })
+    }
+}
+
 export function postPerson() {
     return (dispatch, getState) => {
         dispatch(sendPerson());
         const nNumber = getState().loginActions.person.attributes.nNumber;
-        const skills = getState().skillActions['skillsPersonHas'].selected;
+        const skillsPersonHas = getState().skillActions['skillsPersonHas'].selected;
+        const wantsToLearn = getState().skillActions['wantsToLearn'].selected;
+        const wantsToHire = getState().skillActions['wantsToHire'].selected;
         const person = Object.assign({}, getState().loginActions.person, {
             type: 'people',
             id: getState().loginActions.person.id,
@@ -68,12 +80,9 @@ export function postPerson() {
             relationships: {}
         });
         if (nNumber) if (nNumber.length > 0) person.attributes.nNumber = nNumber;
-        if (skills.length > 0) person.relationships.skills = {
-            data: skills.map( skill => {
-                return {
-                    type: 'skill',
-                    id: skill.id }
-                })};
+        if (skillsPersonHas.length > 0) person.relationships.skills = mapSkillsToPerson(skillsPersonHas);
+        if (wantsToLearn.length > 0) person.relationships.wantsToLearn = mapSkillsToPerson(wantsToLearn);
+        if (wantsToHire.length > 0) person.relationships.wantsToHire = mapSkillsToPerson(wantsToHire);
         const data = {
             data: person,
         };

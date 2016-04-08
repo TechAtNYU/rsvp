@@ -1,10 +1,10 @@
 import React, { PropTypes } from 'react';
 
-function Typeahead({ value, fieldType, width, list, filtered, selected, filterHandler, keyPressHandler, currentIdx, deleteSelection }) {
+function Typeahead({ title, value, fieldType, width, list, filtered, selected, filterHandler, keyPressHandler, currentIdx, deleteSelection }) {
 	if (list.length === filtered.length + selected.length) filtered = [];
     return (
     	<div className='container'>
-    		<label>Skills</label>
+    		<label>{title}</label>
 		    <input type='text' style={{
 		    	width: width
 		    }}
@@ -38,6 +38,7 @@ function Typeahead({ value, fieldType, width, list, filtered, selected, filterHa
 }
 
 Typeahead.propTypes = {
+	title: PropTypes.string.isRequired,
 	list: PropTypes.array.isRequired,
 	filtered: PropTypes.array.isRequired,
 	currentIdx: PropTypes.number.isRequired,

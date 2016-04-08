@@ -96,11 +96,23 @@ function sendPerson() {
     };
 }
 
+function mapSkillsToPerson(skills) {
+    return {
+        data: skills.map(function (skill) {
+            return {
+                type: 'skill',
+                id: skill.id };
+        })
+    };
+}
+
 function postPerson() {
     return function (dispatch, getState) {
         dispatch(sendPerson());
         var nNumber = getState().loginActions.person.attributes.nNumber;
-        var skills = getState().skillActions['skillsPersonHas'].selected;
+        var skillsPersonHas = getState().skillActions['skillsPersonHas'].selected;
+        var wantsToLearn = getState().skillActions['wantsToLearn'].selected;
+        var wantsToHire = getState().skillActions['wantsToHire'].selected;
         var person = Object.assign({}, getState().loginActions.person, {
             type: 'people',
             id: getState().loginActions.person.id,
@@ -110,12 +122,9 @@ function postPerson() {
             relationships: {}
         });
         if (nNumber) if (nNumber.length > 0) person.attributes.nNumber = nNumber;
-        if (skills.length > 0) person.relationships.skills = {
-            data: skills.map(function (skill) {
-                return {
-                    type: 'skill',
-                    id: skill.id };
-            }) };
+        if (skillsPersonHas.length > 0) person.relationships.skills = mapSkillsToPerson(skillsPersonHas);
+        if (wantsToLearn.length > 0) person.relationships.wantsToLearn = mapSkillsToPerson(wantsToLearn);
+        if (wantsToHire.length > 0) person.relationships.wantsToHire = mapSkillsToPerson(wantsToHire);
         var data = {
             data: person
         };
@@ -660,6 +669,7 @@ var _react2 = _interopRequireDefault(_react);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function Typeahead(_ref) {
+	var title = _ref.title;
 	var value = _ref.value;
 	var fieldType = _ref.fieldType;
 	var width = _ref.width;
@@ -678,7 +688,7 @@ function Typeahead(_ref) {
 		_react2.default.createElement(
 			'label',
 			null,
-			'Skills'
+			title
 		),
 		_react2.default.createElement('input', { type: 'text', style: {
 				width: width
@@ -724,6 +734,7 @@ function Typeahead(_ref) {
 }
 
 Typeahead.propTypes = {
+	title: _react.PropTypes.string.isRequired,
 	list: _react.PropTypes.array.isRequired,
 	filtered: _react.PropTypes.array.isRequired,
 	currentIdx: _react.PropTypes.number.isRequired,
@@ -877,13 +888,23 @@ var App = (function (_Component) {
                             _Profile2.default,
                             { attributes: person.attributes, inputHandlers: inputHandlers },
                             _react2.default.createElement(_Typeahead2.default, _extends({
-                                list: this.props.skillActions.skills,
-                                fieldType: 'skillsPersonHas'
-                            }, this.props.skillActions.skillsPersonHas, {
+                                title: 'Skills',
                                 width: '200px',
-                                filterHandler: this.props.inputHandlers.handleFilteredSkills,
-                                keyPressHandler: this.props.inputHandlers.keyPressHandler,
-                                deleteSelection: this.props.inputHandlers.deleteSelection }))
+                                fieldType: 'skillsPersonHas',
+                                list: this.props.skillActions.skills
+                            }, this.props.skillActions.skillsPersonHas, inputHandlers.skillsPersonHas)),
+                            _react2.default.createElement(_Typeahead2.default, _extends({
+                                title: 'Wants to Learn',
+                                width: '200px',
+                                fieldType: 'wantsToLearn',
+                                list: this.props.skillActions.skills
+                            }, this.props.skillActions.wantsToLearn, inputHandlers.wantsToLearn)),
+                            _react2.default.createElement(_Typeahead2.default, _extends({
+                                title: 'Wants to Hire',
+                                width: '200px',
+                                fieldType: 'wantsToHire',
+                                list: this.props.skillActions.skills
+                            }, this.props.skillActions.wantsToHire, inputHandlers.wantsToHire))
                         ) : _react2.default.createElement(_VisibleEventList2.default, null) : _react2.default.createElement(_Welcome2.default, null)
                     )
                 )
@@ -919,14 +940,38 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
             handleSubmit: function handleSubmit(_) {
                 return dispatch((0, _actions.postPerson)());
             },
-            handleFilteredSkills: function handleFilteredSkills(query) {
-                return dispatch((0, _actions.filterSkills)(query, 'skillsPersonHas'));
+            skillsPersonHas: {
+                filterHandler: function filterHandler(query) {
+                    return dispatch((0, _actions.filterSkills)(query, 'skillsPersonHas'));
+                },
+                keyPressHandler: function keyPressHandler(keyCode) {
+                    return dispatch((0, _actions.updateActiveTypeaheadField)(keyCode, 'skillsPersonHas'));
+                },
+                deleteSelection: function deleteSelection(i) {
+                    return dispatch((0, _actions.deleteTypeaheadSelection)(i, 'skillsPersonHas'));
+                }
             },
-            keyPressHandler: function keyPressHandler(keyCode) {
-                return dispatch((0, _actions.updateActiveTypeaheadField)(keyCode, 'skillsPersonHas'));
+            wantsToLearn: {
+                filterHandler: function filterHandler(query) {
+                    return dispatch((0, _actions.filterSkills)(query, 'wantsToLearn'));
+                },
+                keyPressHandler: function keyPressHandler(keyCode) {
+                    return dispatch((0, _actions.updateActiveTypeaheadField)(keyCode, 'wantsToLearn'));
+                },
+                deleteSelection: function deleteSelection(i) {
+                    return dispatch((0, _actions.deleteTypeaheadSelection)(i, 'wantsToLearn'));
+                }
             },
-            deleteSelection: function deleteSelection(i) {
-                return dispatch((0, _actions.deleteTypeaheadSelection)(i, 'skillsPersonHas'));
+            wantsToHire: {
+                filterHandler: function filterHandler(query) {
+                    return dispatch((0, _actions.filterSkills)(query, 'wantsToHire'));
+                },
+                keyPressHandler: function keyPressHandler(keyCode) {
+                    return dispatch((0, _actions.updateActiveTypeaheadField)(keyCode, 'wantsToHire'));
+                },
+                deleteSelection: function deleteSelection(i) {
+                    return dispatch((0, _actions.deleteTypeaheadSelection)(i, 'wantsToHire'));
+                }
             }
         }
     };
