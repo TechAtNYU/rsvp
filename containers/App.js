@@ -46,6 +46,7 @@ class App extends Component {
                                     title='Skills'
                                     width='200px'
                                     fieldType='skillsPersonHas'
+                                    domId='skillsPersonHas'
                                     list={this.props.skillActions.skills}
                                     {...this.props.skillActions.skillsPersonHas}
                                     {...inputHandlers.skillsPersonHas}
@@ -54,6 +55,7 @@ class App extends Component {
                                     title='Wants to Learn'
                                     width='200px'
                                     fieldType='wantsToLearn'
+                                    domId='wantsToLearn'
                                     list={this.props.skillActions.skills}
                                     {...this.props.skillActions.wantsToLearn}
                                     {...inputHandlers.wantsToLearn}
@@ -62,6 +64,7 @@ class App extends Component {
                                     title='Wants to Hire'
                                     width='200px'
                                     fieldType='wantsToHire'
+                                    domId='wantsToHire'
                                     list={this.props.skillActions.skills}
                                     {...this.props.skillActions.wantsToHire}
                                     {...inputHandlers.wantsToHire}

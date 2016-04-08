@@ -1,38 +1,64 @@
 import React, { PropTypes } from 'react';
 
-function Typeahead({ title, value, fieldType, width, list, filtered, selected, filterHandler, keyPressHandler, currentIdx, deleteSelection }) {
+function Typeahead({ domId, title, value, fieldType, width, list, filtered, selected, filterHandler, keyPressHandler, currentIdx, deleteSelection }) {
 	if (list.length === filtered.length + selected.length) filtered = [];
     return (
-    	<div className='container'>
-    		<label>{title}</label>
-		    <input type='text' style={{
-		    	width: width
-		    }}
-		    onKeyUp={ e => keyPressHandler(e.which, fieldType)}
-		    onChange={e => filterHandler(e.target.value)}
-		    defaultValue=''
-		    value={value}
-		    type='text'></input>
+    	<div className='container'
+    		domId={domId}>
+    		<div className='row'>
+	    		<label>{title}</label>
+    		</div>
+    		<div className='row'>
+			    <input type='text' style={{
+			    	width: width
+			    }}
+			    onKeyUp={ e => keyPressHandler(e.which, fieldType)}
+			    onChange={e => filterHandler(e.target.value)}
+			    defaultValue=''
+			    value={value}
+			    type='text'></input>
 		    { filtered.length > 0 ? (
-		    	<div>
+		    	<div style={{position: 'fixed', zIndex: '10'}}>
 		    	{filtered.map((el, i) =>
 		    		<div style={{
 		    			border: '1px solid lightgray',
 		    			width: width,
-		    			backgroundColor: (currentIdx === i) ? 'lightblue': null,
+		    			position: 'relative',
+		    			display: 'block',
+		    			backgroundColor: (currentIdx === i) ? 'lightblue': 'white',
 		    	}} key={i}>{el.attributes.name}</div>
 		    		)}
 		    	</div>
 		    	): null}
+		    </div>
+		    <div style={{
+		    	display: 'flex',
+		    	flexDirection: 'row',
+		    	flexWrap: 'wrap',
+		    	justifyContent: 'flex-start',
+		}}>
+		    <span>Selected: </span>
 		    { selected.map( (el, i) =>
-		    	<button
-		    	type='button'
-		    	key={i}
-		    	onClick={ _ => deleteSelection(i)}
-		    	className='btn btn-secondary btn-sm'>
+		    	<div
+		    		key={i}
+			    	style={{
+			    		border: '1px solid lightgray',
+			    		borderRadius: '10px',
+			    		backgroundColor: 'white',
+			    		width: 'auto',
+				    	height: '28px',
+				    	lineHeight: '28px',
+			    		marginRight: '2px',
+			    		marginLeft: '2px',
+			    		paddingRight: '8px',
+			    		paddingLeft: '8px',
+			    		alignSelf: 'center',
+			    	}}
+			    	onClick={ _ => deleteSelection(i)}>
 			    	{el.attributes.name}
-		    	</button>
+		    	</div>
 		    	)}
+		    </div>
 		</div>
 	)
 }

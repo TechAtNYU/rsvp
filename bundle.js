@@ -669,6 +669,7 @@ var _react2 = _interopRequireDefault(_react);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function Typeahead(_ref) {
+	var domId = _ref.domId;
 	var title = _ref.title;
 	var value = _ref.value;
 	var fieldType = _ref.fieldType;
@@ -684,52 +685,88 @@ function Typeahead(_ref) {
 	if (list.length === filtered.length + selected.length) filtered = [];
 	return _react2.default.createElement(
 		'div',
-		{ className: 'container' },
+		{ className: 'container',
+			domId: domId },
 		_react2.default.createElement(
-			'label',
-			null,
-			title
-		),
-		_react2.default.createElement('input', { type: 'text', style: {
-				width: width
-			},
-			onKeyUp: function onKeyUp(e) {
-				return keyPressHandler(e.which, fieldType);
-			},
-			onChange: function onChange(e) {
-				return filterHandler(e.target.value);
-			},
-			defaultValue: '',
-			value: value,
-			type: 'text' }),
-		filtered.length > 0 ? _react2.default.createElement(
 			'div',
-			null,
-			filtered.map(function (el, i) {
+			{ className: 'row' },
+			_react2.default.createElement(
+				'label',
+				null,
+				title
+			)
+		),
+		_react2.default.createElement(
+			'div',
+			{ className: 'row' },
+			_react2.default.createElement('input', { type: 'text', style: {
+					width: width
+				},
+				onKeyUp: function onKeyUp(e) {
+					return keyPressHandler(e.which, fieldType);
+				},
+				onChange: function onChange(e) {
+					return filterHandler(e.target.value);
+				},
+				defaultValue: '',
+				value: value,
+				type: 'text' }),
+			filtered.length > 0 ? _react2.default.createElement(
+				'div',
+				{ style: { position: 'fixed', zIndex: '10' } },
+				filtered.map(function (el, i) {
+					return _react2.default.createElement(
+						'div',
+						{ style: {
+								border: '1px solid lightgray',
+								width: width,
+								position: 'relative',
+								display: 'block',
+								backgroundColor: currentIdx === i ? 'lightblue' : 'white'
+							}, key: i },
+						el.attributes.name
+					);
+				})
+			) : null
+		),
+		_react2.default.createElement(
+			'div',
+			{ style: {
+					display: 'flex',
+					flexDirection: 'row',
+					flexWrap: 'wrap',
+					justifyContent: 'flex-start'
+				} },
+			_react2.default.createElement(
+				'span',
+				null,
+				'Selected: '
+			),
+			selected.map(function (el, i) {
 				return _react2.default.createElement(
 					'div',
-					{ style: {
+					{
+						key: i,
+						style: {
 							border: '1px solid lightgray',
-							width: width,
-							backgroundColor: currentIdx === i ? 'lightblue' : null
-						}, key: i },
+							borderRadius: '10px',
+							backgroundColor: 'white',
+							width: 'auto',
+							height: '28px',
+							lineHeight: '28px',
+							marginRight: '2px',
+							marginLeft: '2px',
+							paddingRight: '8px',
+							paddingLeft: '8px',
+							alignSelf: 'center'
+						},
+						onClick: function onClick(_) {
+							return deleteSelection(i);
+						} },
 					el.attributes.name
 				);
 			})
-		) : null,
-		selected.map(function (el, i) {
-			return _react2.default.createElement(
-				'button',
-				{
-					type: 'button',
-					key: i,
-					onClick: function onClick(_) {
-						return deleteSelection(i);
-					},
-					className: 'btn btn-secondary btn-sm' },
-				el.attributes.name
-			);
-		})
+		)
 	);
 }
 
@@ -891,18 +928,21 @@ var App = (function (_Component) {
                                 title: 'Skills',
                                 width: '200px',
                                 fieldType: 'skillsPersonHas',
+                                domId: 'skillsPersonHas',
                                 list: this.props.skillActions.skills
                             }, this.props.skillActions.skillsPersonHas, inputHandlers.skillsPersonHas)),
                             _react2.default.createElement(_Typeahead2.default, _extends({
                                 title: 'Wants to Learn',
                                 width: '200px',
                                 fieldType: 'wantsToLearn',
+                                domId: 'wantsToLearn',
                                 list: this.props.skillActions.skills
                             }, this.props.skillActions.wantsToLearn, inputHandlers.wantsToLearn)),
                             _react2.default.createElement(_Typeahead2.default, _extends({
                                 title: 'Wants to Hire',
                                 width: '200px',
                                 fieldType: 'wantsToHire',
+                                domId: 'wantsToHire',
                                 list: this.props.skillActions.skills
                             }, this.props.skillActions.wantsToHire, inputHandlers.wantsToHire))
                         ) : _react2.default.createElement(_VisibleEventList2.default, null) : _react2.default.createElement(_Welcome2.default, null)
