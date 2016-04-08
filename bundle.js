@@ -114,15 +114,19 @@ function postPerson() {
         var skillsPersonHas = getState().skillActions['skillsPersonHas'].selected;
         var wantsToLearn = getState().skillActions['wantsToLearn'].selected;
         var wantsToHire = getState().skillActions['wantsToHire'].selected;
+        var contact = getState().loginActions.person.attributes.contact;
         var person = Object.assign({}, getState().loginActions.person, {
             type: 'people',
             id: getState().loginActions.person.id,
             attributes: {
-                contact: getState().loginActions.person.attributes.contact
+                contact: {}
             },
             relationships: {}
         });
         if (nNumber) if (nNumber.length > 0) person.attributes.nNumber = nNumber;
+        if (contact) {
+            if (contact.email) person.attributes.contact.email = contact.email;
+        }
         if (skillsPersonHas.length > 0) person.relationships.skills = mapSkillsToPerson(skillsPersonHas);
         if (wantsToLearn.length > 0) person.relationships.wantsToLearn = mapSkillsToPerson(wantsToLearn);
         if (wantsToHire.length > 0) person.relationships.wantsToHire = mapSkillsToPerson(wantsToHire);
@@ -793,7 +797,8 @@ Typeahead.propTypes = {
 	currentIdx: _react.PropTypes.number.isRequired,
 	filterHandler: _react.PropTypes.func.isRequired,
 	keyPressHandler: _react.PropTypes.func.isRequired,
-	deleteSelection: _react.PropTypes.func.isRequired
+	deleteSelection: _react.PropTypes.func.isRequired,
+	onHover: _react.PropTypes.func.isRequired
 };
 
 exports.default = Typeahead;

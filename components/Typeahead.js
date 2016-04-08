@@ -77,6 +77,7 @@ Typeahead.propTypes = {
 	filterHandler: PropTypes.func.isRequired,
 	keyPressHandler: PropTypes.func.isRequired,
 	deleteSelection: PropTypes.func.isRequired,
+	onHover: PropTypes.func.isRequired,
 }
 
 export default Typeahead
