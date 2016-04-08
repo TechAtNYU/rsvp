@@ -698,7 +698,7 @@ function Typeahead(_ref) {
 	return _react2.default.createElement(
 		'div',
 		{ className: 'container',
-			domId: domId },
+			id: domId },
 		_react2.default.createElement(
 			'div',
 			{ className: 'row' },
@@ -710,7 +710,7 @@ function Typeahead(_ref) {
 		),
 		_react2.default.createElement(
 			'div',
-			{ className: 'row' },
+			null,
 			_react2.default.createElement('input', { type: 'text', style: {
 					width: width
 				},
@@ -725,7 +725,10 @@ function Typeahead(_ref) {
 				type: 'text' }),
 			filtered.length > 0 ? _react2.default.createElement(
 				'div',
-				{ style: { position: 'fixed', zIndex: '10' } },
+				{ style: {
+						position: 'fixed',
+						zIndex: '10',
+						marginTop: '-13px' } },
 				filtered.map(function (el, i) {
 					return _react2.default.createElement(
 						'div',
@@ -733,7 +736,6 @@ function Typeahead(_ref) {
 								border: '1px solid lightgray',
 								width: width,
 								position: 'relative',
-								display: 'block',
 								textAlign: 'center',
 								backgroundColor: currentIdx === i ? 'lightblue' : 'white' },
 							key: i,
@@ -757,11 +759,11 @@ function Typeahead(_ref) {
 					flexWrap: 'wrap',
 					justifyContent: 'flex-start'
 				} },
-			_react2.default.createElement(
+			selected.length > 0 ? _react2.default.createElement(
 				'span',
 				null,
 				'Selected: '
-			),
+			) : null,
 			selected.map(function (el, i) {
 				return _react2.default.createElement(
 					'div',

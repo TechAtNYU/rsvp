@@ -4,13 +4,13 @@ function Typeahead({ domId, title, value, fieldType, width, list, filtered, sele
 	if (list.length === filtered.length + selected.length) filtered = [];
     return (
     	<div className='container'
-    		domId={domId}>
+    		id={domId}>
     		<div className='row'>
 	    		<label>{title}</label>
     		</div>
-    		<div className='row'>
+    		<div>
 			    <input type='text' style={{
-			    	width: width
+			    	width: width,
 			    }}
 			    onKeyUp={ e => keyPressHandler(e.which)}
 			    onChange={e => filterHandler(e.target.value)}
@@ -18,13 +18,15 @@ function Typeahead({ domId, title, value, fieldType, width, list, filtered, sele
 			    value={value}
 			    type='text'></input>
 		    { filtered.length > 0 ? (
-		    	<div style={{position: 'fixed', zIndex: '10'}}>
+		    	<div style={{
+		    		position: 'fixed',
+		    		zIndex: '10',
+		    		marginTop: '-13px'}}>
 		    	{filtered.map((el, i) =>
 		    		<div style={{
 		    			border: '1px solid lightgray',
 		    			width: width,
 		    			position: 'relative',
-		    			display: 'block',
 		    			textAlign: 'center',
 		    			backgroundColor: currentIdx === i ? 'lightblue': 'white'}}
 		    			key={i}
@@ -43,7 +45,7 @@ function Typeahead({ domId, title, value, fieldType, width, list, filtered, sele
 		    	flexWrap: 'wrap',
 		    	justifyContent: 'flex-start',
 		}}>
-		    <span>Selected: </span>
+			{ selected.length > 0 ? <span>Selected: </span>: null}
 		    { selected.map( (el, i) =>
 		    	<div
 		    		key={i}
