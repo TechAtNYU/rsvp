@@ -2,9 +2,9 @@ import React, { PropTypes } from 'react';
 
 function Event({onClick, selected, attributes, rsvp, timeObj, relationships, venueSize}) {
     let rsvpField = <input type='checkbox' onClick={onClick} />;
-    if (rsvp) rsvpField = <span>RSVP'd</span>;
     if (relationships.rsvps.data.length > venueSize*2) rsvpField = <span>Event FULL</span>;
     if (attributes.rsvpDeadline) if (new Date(attributes.rsvpDeadline) > Date.now()) rsvpField = <span>Event Closed</span>;
+    if (rsvp) rsvpField = <span>RSVP'd</span>;
 
     return <li
         className='list-group-item list-group-item clearfix'

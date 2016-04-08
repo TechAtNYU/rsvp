@@ -136,7 +136,7 @@ function postPerson() {
     };
 }
 
-function updateFilteredSkills(filtered, fieldType) {
+function updateFilteredSkills(filtered, fieldType, word) {
     return {
         type: FILTER_SKILLS,
         filtered: filtered,
@@ -156,7 +156,7 @@ function filterSkills(word, fieldType) {
         var results = _fuzzy2.default.filter(word, getState().skillActions.skills, options).map(function (el) {
             return el.string;
         });
-        dispatch(updateFilteredSkills(results, fieldType));
+        dispatch(updateFilteredSkills(results, fieldType, word));
     };
 }
 
@@ -399,11 +399,6 @@ function Event(_ref) {
     var venueSize = _ref.venueSize;
 
     var rsvpField = _react2.default.createElement('input', { type: 'checkbox', onClick: onClick });
-    if (rsvp) rsvpField = _react2.default.createElement(
-        'span',
-        null,
-        'RSVP\'d'
-    );
     if (relationships.rsvps.data.length > venueSize * 2) rsvpField = _react2.default.createElement(
         'span',
         null,
@@ -413,6 +408,11 @@ function Event(_ref) {
         'span',
         null,
         'Event Closed'
+    );
+    if (rsvp) rsvpField = _react2.default.createElement(
+        'span',
+        null,
+        'RSVP\'d'
     );
 
     return _react2.default.createElement(
@@ -660,6 +660,7 @@ var _react2 = _interopRequireDefault(_react);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function Typeahead(_ref) {
+	var value = _ref.value;
 	var fieldType = _ref.fieldType;
 	var width = _ref.width;
 	var list = _ref.list;
@@ -688,6 +689,8 @@ function Typeahead(_ref) {
 			onChange: function onChange(e) {
 				return filterHandler(e.target.value);
 			},
+			defaultValue: '',
+			value: value,
 			type: 'text' }),
 		filtered.length > 0 ? _react2.default.createElement(
 			'div',
@@ -21861,17 +21864,20 @@ var initialState = {
         skillsPersonHas: {
             filtered: [],
             selected: [],
-            currentIdx: -1
+            currentIdx: -1,
+            value: ''
         },
         wantsToLearn: {
             filtered: [],
             selected: [],
-            currentIdx: -1
+            currentIdx: -1,
+            value: ''
         },
         wantsToHire: {
             filtered: [],
             selected: [],
-            currentIdx: -1
+            currentIdx: -1,
+            value: ''
         },
         isReceiving: false,
         receivedAt: null,
@@ -22093,7 +22099,8 @@ function skillActions() {
                     return !state[action.fieldType].selected.some(function (selected) {
                         return selected.id === skill.id;
                     });
-                })
+                }),
+                value: action.value
             });
             return obj;
         case _actions.SKILL_ROLLOVER:
@@ -22102,12 +22109,12 @@ function skillActions() {
         case _actions.SELECT_SKILL_FIELD:
             obj[action.fieldType] = Object.assign({}, state[action.fieldType], {
                 currentIdx: -1,
-                filtered: obj[action.fieldType].filtered = state[action.fieldType].filtered.filter(function (skill, i) {
-                    return i !== state[action.fieldType].currentIdx;
-                }),
+                // filtered: obj[action.fieldType].filtered = state[action.fieldType].filtered.filter((skill, i) => i !== state[action.fieldType].currentIdx),
                 selected: [].concat(_toConsumableArray(state[action.fieldType].selected), [state[action.fieldType].filtered.find(function (skill, i) {
                     return i === state[action.fieldType].currentIdx;
-                })])
+                })]),
+                filtered: [],
+                value: ''
             });
             return obj;
         case _actions.DELETE_SKILL_SELECTION:
@@ -22116,7 +22123,8 @@ function skillActions() {
                 selected: state[action.fieldType].selected.filter(function (el, i) {
                     return i !== action.index;
                 }),
-                filtered: [].concat(_toConsumableArray(state[action.fieldType].filtered), [state[action.fieldType].selected[action.index]])
+                filtered: [],
+                value: ''
             });
             return obj;
         default:

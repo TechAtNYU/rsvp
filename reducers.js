@@ -48,16 +48,19 @@ const initialState = {
             filtered: [],
             selected: [],
             currentIdx: -1,
+            value: '',
         },
         wantsToLearn: {
             filtered: [],
             selected: [],
             currentIdx: -1,
+            value: '',
         },
         wantsToHire: {
             filtered: [],
             selected: [],
             currentIdx: -1,
+            value: '',
         },
         isReceiving: false,
         receivedAt: null,
@@ -92,12 +95,12 @@ function sortStringHelper(a, b) {
     return a.attributes.name < b.attributes.name ? -1: 1;
 }
 
-function updateEvent(state = initialState.eventActions.events, action) {
+function updateEvent(state=initialState.eventActions.events, action) {
     Object.freeze(state);
     switch (action.type) {
     case RECEIVE_EVENTS:
         return action.json.slice().sort(sortDateHelper)
-        .map((event) => mapAttributesToEvents(event));
+        .map(event => mapAttributesToEvents(event));
     case TOGGLE_EVENT:
         return [
             ...state.slice(0, action.index),
@@ -274,10 +277,12 @@ function skillActions(state = initialState.skillActions, action) {
         // fuzzy string matching only returns a list of names
         obj[action.fieldType] = Object.assign({}, state[action.fieldType], {
             currentIdx: -1,
-            filtered: action.filtered.map(name =>
-                    state.skills.find(skill => skill.attributes.name === name)).filter(
-                    skill => !state[action.fieldType].selected.some(
-                        selected => selected.id === skill.id))
+            filtered: action.filtered
+                .map( name => state.skills
+                    .find( skill => skill.attributes.name === name))
+                    .filter( skill => !state[action.fieldType].selected
+                    .some( selected => selected.id === skill.id)),
+            value: action.value,
         });
         return obj;
     case SKILL_ROLLOVER:
@@ -287,18 +292,21 @@ function skillActions(state = initialState.skillActions, action) {
     case SELECT_SKILL_FIELD:
         obj[action.fieldType] = Object.assign({}, state[action.fieldType], {
             currentIdx: -1,
-            filtered: obj[action.fieldType].filtered = state[action.fieldType].filtered.filter((skill, i) => i !== state[action.fieldType].currentIdx),
+            // filtered: obj[action.fieldType].filtered = state[action.fieldType].filtered.filter((skill, i) => i !== state[action.fieldType].currentIdx),
             selected: [
                 ...state[action.fieldType].selected,
                 state[action.fieldType].filtered.find( (skill, i) => i === state[action.fieldType].currentIdx)
-            ]
+            ],
+            filtered: [],
+            value: '',
         });
         return obj;
     case DELETE_SKILL_SELECTION:
         obj[action.fieldType] = Object.assign({}, state[action.fieldType], {
             currentIdx: -1,
             selected: state[action.fieldType].selected.filter( (el, i) => i !== action.index),
-            filtered: [ ...state[action.fieldType].filtered, state[action.fieldType].selected[action.index]],
+            filtered: [],
+            value: '',
         });
         return obj;
     default:

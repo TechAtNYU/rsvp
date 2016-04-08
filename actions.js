@@ -94,7 +94,7 @@ export function postPerson() {
     }
 }
 
-function updateFilteredSkills(filtered, fieldType) {
+function updateFilteredSkills(filtered, fieldType, word) {
     return {
         type: FILTER_SKILLS,
         filtered,
@@ -110,7 +110,7 @@ export function filterSkills(word, fieldType) {
     return (dispatch, getState) => {
         const options = { extract: el => el.attributes.name };
         const results = fuzzy.filter(word, getState().skillActions.skills, options).map( el => el.string);
-        dispatch(updateFilteredSkills(results, fieldType));
+        dispatch(updateFilteredSkills(results, fieldType, word));
     }
 }
 

@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 
-function Typeahead({ fieldType, width, list, filtered, selected, filterHandler, keyPressHandler, currentIdx, deleteSelection }) {
+function Typeahead({ value, fieldType, width, list, filtered, selected, filterHandler, keyPressHandler, currentIdx, deleteSelection }) {
 	if (list.length === filtered.length + selected.length) filtered = [];
     return (
     	<div className='container'>
@@ -10,6 +10,8 @@ function Typeahead({ fieldType, width, list, filtered, selected, filterHandler, 
 		    }}
 		    onKeyUp={ e => keyPressHandler(e.which, fieldType)}
 		    onChange={e => filterHandler(e.target.value)}
+		    defaultValue=''
+		    value={value}
 		    type='text'></input>
 		    { filtered.length > 0 ? (
 		    	<div>
