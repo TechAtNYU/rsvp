@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 
-function Profile({attributes, inputHandlers}) {
+function Profile({attributes, inputHandlers, children}) {
     return <div>
 	    <h2 id='upcoming'>PROFILE</h2>
 	    <div className='form-group'>
@@ -16,6 +16,9 @@ function Profile({attributes, inputHandlers}) {
 		    onChange={e => inputHandlers.handleEmail(e.target.value)}
 		    defaultValue={attributes.contact.email}></input>
 		   	<small className="text-muted">Is this your active email?</small> 
+	    </div>
+	    <div className='form-group'>
+	    	{children}
 	    </div>
 	    <button onClick={inputHandlers.handleSubmit} className='btn'>SUBMIT</button>
 	</div>

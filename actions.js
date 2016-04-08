@@ -1,3 +1,4 @@
+import fuzzy from 'fuzzy';
 export const TOGGLE_PROFILE_VIEW = 'TOGGLE_PROFILE_VIEW';
 export const TOGGLE_EVENT = 'TOGGLE_EVENT';
 export const REQUEST_LOGIN = 'REQUEST_LOGIN';
@@ -17,6 +18,10 @@ export const RSVPD_TO_EVENT = 'RSVPD_TO_EVENT';
 export const UPDATE_EMAIL = 'UPDATE_EMAIL';
 export const UPDATE_NNUMBER = 'UPDATE_NNUMBER';
 export const SEND_PERSON = 'SEND_PERSON';
+export const FILTER_SKILLS = 'FILTER_SKILLS';
+export const SKILL_ROLLOVER = 'SKILL_ROLLOVER';
+export const SELECT_SKILL_FIELD = 'SELECT_SKILL_FIELD';
+export const DELETE_SKILL_SELECTION = 'DELETE_SKILL_SELECTION';
 
 export function fetchAll() {
     return (dispatch, getState) => {
@@ -49,18 +54,39 @@ function sendPerson() {
     }
 }
 
+function mapSkillsToPerson(skills) {
+    return {
+        data: skills.map( skill => {
+            return {
+                type: 'skill',
+                id: skill.id }
+            })
+    }
+}
+
 export function postPerson() {
     return (dispatch, getState) => {
         dispatch(sendPerson());
         const nNumber = getState().loginActions.person.attributes.nNumber;
+        const skillsPersonHas = getState().skillActions['skillsPersonHas'].selected;
+        const wantsToLearn = getState().skillActions['wantsToLearn'].selected;
+        const wantsToHire = getState().skillActions['wantsToHire'].selected;
+        const contact = getState().loginActions.person.attributes.contact;
         const person = Object.assign({}, getState().loginActions.person, {
             type: 'people',
             id: getState().loginActions.person.id,
             attributes: {
-                contact: getState().loginActions.person.attributes.contact
-            }
+                contact: {}
+            },
+            relationships: {}
         });
         if (nNumber) if (nNumber.length > 0) person.attributes.nNumber = nNumber;
+        if (contact) {
+            if (contact.email) person.attributes.contact.email = contact.email;
+        }
+        if (skillsPersonHas.length > 0) person.relationships.skills = mapSkillsToPerson(skillsPersonHas);
+        if (wantsToLearn.length > 0) person.relationships.wantsToLearn = mapSkillsToPerson(wantsToLearn);
+        if (wantsToHire.length > 0) person.relationships.wantsToHire = mapSkillsToPerson(wantsToHire);
         const data = {
             data: person,
         };
@@ -78,6 +104,65 @@ export function postPerson() {
             dispatch(toggleProfile());
         })
         .fail( e => console.log(e.responseText));
+    }
+}
+
+function updateFilteredSkills(filtered, fieldType, word) {
+    return {
+        type: FILTER_SKILLS,
+        filtered,
+        fieldType
+    }
+}
+
+/*
+Using `fuzzy` wordfilter to do fuzzy string matching on skill typeahead.
+returns filtered names only
+*/
+export function filterSkills(word, fieldType) {
+    return (dispatch, getState) => {
+        const options = { extract: el => el.attributes.name };
+        const results = fuzzy.filter(word, getState().skillActions.skills, options).map( el => el.string);
+        dispatch(updateFilteredSkills(results, fieldType, word));
+    }
+}
+
+function selectTypeaheadField(fieldType) {
+    return {
+        type: SELECT_SKILL_FIELD,
+        fieldType
+    }
+}
+
+function moveTypeaheadPointer(move, fieldType) {
+    return {
+        type: SKILL_ROLLOVER,
+        move,
+        fieldType
+    }
+}
+
+export function updateActiveTypeaheadField(keyCode, fieldType) {
+    // up 38, down 40, left 37, right 39, enter 13
+    return dispatch => {
+        if (keyCode === 38) dispatch(moveTypeaheadPointer(-1, fieldType));
+        if (keyCode === 40) dispatch(moveTypeaheadPointer(1, fieldType));
+        if (keyCode === 13) dispatch(selectTypeaheadField(fieldType));
+
+    }
+}
+
+export function onHoverTypeahead(index, fieldType) {
+    return (dispatch, getState) => {
+        dispatch(moveTypeaheadPointer(index - getState().skillActions[fieldType].currentIdx, fieldType));
+    }
+}
+
+export function deleteTypeaheadSelection(index, fieldType) {
+    return {
+        type: DELETE_SKILL_SELECTION,
+        index,
+        fieldType
     }
 }
 
@@ -211,10 +296,13 @@ function requestSkills() {
     };
 }
 
-function receiveSkills(json) {
+function receiveSkills(allSkills, personSkills, wantsToLearn, wantsToHire) {
     return {
         type: RECEIVE_SKILLS,
-        json
+        allSkills,
+        personSkills,
+        wantsToLearn,
+        wantsToHire
     };
 }
 
@@ -225,10 +313,14 @@ function failToGetSkills() {
 }
 
 export function fetchSkills() {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch(requestSkills);
+        const personSkills =  getState().loginActions.person.relationships.skills.data;
+        const wantsToLearn =  getState().loginActions.person.relationships.wantsToLearn.data;
+        const wantsToHire =  getState().loginActions.person.relationships.wantsToHire.data;
         return $.get('https://api.tnyu.org/' + window.API_VERSION + '/skills')
-            .done(response => dispatch(receiveSkills(response.data)))
+            .done(response => dispatch(receiveSkills(response.data,
+                personSkills, wantsToLearn, wantsToHire)))
             .fail(() => dispatch(failToGetSkills()));
     }
 }
