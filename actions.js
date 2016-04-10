@@ -25,8 +25,8 @@ export const DELETE_SKILL_SELECTION = 'DELETE_SKILL_SELECTION';
 
 export function fetchAll() {
     return (dispatch, getState) => {
-        dispatch(fetchPerson()).then(() => dispatch(fetchEvents())
-            .then(() => Promise.all(
+        dispatch(fetchPerson()).then( _ => dispatch(fetchEvents())
+            .then( _ => Promise.all(
                 getState().eventActions.events.map((event, i) => dispatch(fetchVenue(event.relationships.venue.data.id, i))))
                 .then(() => dispatch(fetchSkills())
             )
