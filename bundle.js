@@ -65,8 +65,8 @@ var DELETE_SKILL_SELECTION = exports.DELETE_SKILL_SELECTION = 'DELETE_SKILL_SELE
 
 function fetchAll() {
     return function (dispatch, getState) {
-        dispatch(fetchPerson()).then(function () {
-            return dispatch(fetchEvents()).then(function () {
+        dispatch(fetchPerson()).then(function (_) {
+            return dispatch(fetchEvents()).then(function (_) {
                 return Promise.all(getState().eventActions.events.map(function (event, i) {
                     return dispatch(fetchVenue(event.relationships.venue.data.id, i));
                 })).then(function () {
