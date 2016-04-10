@@ -755,48 +755,44 @@ function Typeahead(_ref) {
 		_react2.default.createElement(
 			'div',
 			{ style: {
+					marginTop: '10px',
+					display: '-webkit-box',
+					display: '-moz-box',
+					display: '-ms-flexbox',
+					display: '-moz-flex',
+					display: '-webkit-flex',
 					display: 'flex',
-					flexDirection: 'row',
-					flexWrap: 'wrap',
-					justifyContent: 'flex-start'
+					webkitFlexWrap: 'wrap',
+					flexWrap: 'wrap'
 				} },
-			_react2.default.createElement(
-				'div',
-				{ style: {
-						marginTop: '5px',
-						display: 'flex',
-						flexDirection: 'row'
-					} },
-				selected.length > 0 ? _react2.default.createElement(
-					'span',
-					null,
-					'Selected: '
-				) : null,
-				selected.map(function (el, i) {
-					return _react2.default.createElement(
-						'div',
-						{
-							key: i,
-							style: {
-								border: '1px solid lightgray',
-								borderRadius: '10px',
-								backgroundColor: 'white',
-								width: 'auto',
-								height: '28px',
-								lineHeight: '28px',
-								marginRight: '2px',
-								marginLeft: '2px',
-								paddingRight: '8px',
-								paddingLeft: '8px',
-								alignSelf: 'center'
-							},
-							onClick: function onClick(_) {
-								return deleteSelection(i);
-							} },
-						el.attributes.name
-					);
-				})
-			)
+			selected.length > 0 ? _react2.default.createElement(
+				'span',
+				null,
+				'Selected: '
+			) : null,
+			selected.map(function (el, i) {
+				return _react2.default.createElement(
+					'div',
+					{
+						key: i,
+						style: {
+							border: '1px solid lightgray',
+							borderRadius: '10px',
+							backgroundColor: 'white',
+							width: 'auto',
+							height: '28px',
+							lineHeight: '28px',
+							margin: '2px 2px 2px 2px',
+							paddingRight: '8px',
+							paddingLeft: '8px',
+							alignSelf: 'center'
+						},
+						onClick: function onClick(_) {
+							return deleteSelection(i);
+						} },
+					el.attributes.name
+				);
+			})
 		)
 	);
 }
