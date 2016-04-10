@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 
 function Profile({attributes, inputHandlers, children}) {
-    return <div>
+    return <div className='profile'>
 	    <h2 id='upcoming'>PROFILE</h2>
 	    <div className='form-group'>
 		    <label>N-Number</label>

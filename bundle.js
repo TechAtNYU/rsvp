@@ -603,7 +603,7 @@ function Profile(_ref) {
 
 	return _react2.default.createElement(
 		'div',
-		null,
+		{ className: 'profile' },
 		_react2.default.createElement(
 			'h2',
 			{ id: 'upcoming' },
@@ -726,9 +726,8 @@ function Typeahead(_ref) {
 			filtered.length > 0 ? _react2.default.createElement(
 				'div',
 				{ style: {
-						position: 'fixed',
-						zIndex: '10',
-						overflow: 'hidden'
+						overflowY: 'scroll',
+						position: 'absolute'
 					} },
 				filtered.map(function (el, i) {
 					return _react2.default.createElement(
@@ -736,6 +735,7 @@ function Typeahead(_ref) {
 						{ style: {
 								border: '1px solid lightgray',
 								width: width,
+								zIndex: '10',
 								position: 'relative',
 								textAlign: 'center',
 								backgroundColor: currentIdx === i ? 'lightblue' : 'white' },

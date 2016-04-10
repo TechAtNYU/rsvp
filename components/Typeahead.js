@@ -19,14 +19,14 @@ function Typeahead({ domId, title, value, fieldType, width, list, filtered, sele
 			    type='text'></input>
 		    { filtered.length > 0 ? (
 		    	<div style={{
-		    		position: 'fixed',
-		    		zIndex: '10',
-		    		overflow: 'hidden'
+		    		overflowY: 'scroll',
+		    		position: 'absolute',
 		    	}}>
 		    	{filtered.map((el, i) =>
 		    		<div style={{
 		    			border: '1px solid lightgray',
 		    			width: width,
+		    			zIndex: '10',
 		    			position: 'relative',
 		    			textAlign: 'center',
 		    			backgroundColor: currentIdx === i ? 'lightblue': 'white'}}
