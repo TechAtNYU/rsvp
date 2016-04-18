@@ -74,6 +74,8 @@ const initialState = {
 function mapAttributesToEvents(event) {
     // CHANGE IT TO -5 WHEN DAYLIGHT SAVING IS OVER, -4 WHEN DAYLIGHT SAVING IS GOING ON
     let hour = parseInt(event.attributes.startDateTime.substring(11, 13)) - 4;
+    console.log(event.attributes.startDateTime);
+    console.log(hour);
     const timestring = hour < 12 ? 'AM': 'PM';
     if (hour > 12) hour -= 12;
     return Object.assign({}, event, {
