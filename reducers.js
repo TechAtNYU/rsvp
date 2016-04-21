@@ -26,6 +26,9 @@ import {
     SKILL_ROLLOVER,
     SELECT_SKILL_FIELD,
     DELETE_SKILL_SELECTION,
+    REQUEST_SCHOOLS,
+    RECEIVE_SCHOOLS,
+    FAIL_TO_GET_SCHOOLS,
 } from './actions';
 
 const initialState = {
@@ -45,6 +48,7 @@ const initialState = {
     },
     'skillActions': {
         skills: [],
+        schools: [],
         skillsPersonHas: {
             filtered: [],
             selected: [],
@@ -58,6 +62,12 @@ const initialState = {
             value: '',
         },
         wantsToHire: {
+            filtered: [],
+            selected: [],
+            currentIdx: -1,
+            value: '',
+        },
+        personSchools: {
             filtered: [],
             selected: [],
             currentIdx: -1,
@@ -229,7 +239,8 @@ function loginActions(state = initialState.loginActions, action) {
         return Object.assign({}, state, {
             person: Object.assign({}, state.person, {
                 attributes: Object.assign({}, state.person.attributes, {
-                   nNumber: action.nNumber
+                   nNumber: action.nNumber,
+                   nNumberValid: action.valid
                 })
             })
         })
@@ -254,63 +265,73 @@ function skillActions(state = initialState.skillActions, action) {
     obj.skillsPersonHas = Object.assign({}, state.skillsPersonHas, {});
     obj.wantsToLearn = Object.assign({}, state.wantsToLearn, {});
     obj.wantsToHire = Object.assign({}, state.wantsToHire, {});
+    obj.personSchools = Object.assign({}, state.personSchools, {});
     Object.freeze(state);
     switch (action.type) {
-    case REQUEST_SKILLS:
-        return Object.assign({}, state, {
-            isReceiving: true,
-        });
-    case RECEIVE_SKILLS:
-        const sortedSkills = action.allSkills.slice().sort(sortStringHelper);
-        const matchSkills = match => sortedSkills.find(skill => skill.id === match.id);
-        obj.isReceiving = false;
-        obj.receivedAt = Date.now();
-        obj.skills = sortedSkills;
-        obj.skillsPersonHas.selected = action.personSkills.map(matchSkills); 
-        obj.wantsToLearn.selected = action.wantsToLearn.map(matchSkills);
-        obj.wantsToHire.selected = action.wantsToHire.map(matchSkills);
-        return obj;
-    case FAIL_TO_GET_SKILLS:
-        return Object.assign({}, state, {
-            isReceiving: false,
-            didInvalidate: true
-        });
-    case FILTER_SKILLS:
-        // fuzzy string matching only returns a list of names
-        obj[action.fieldType] = Object.assign({}, state[action.fieldType], {
-            currentIdx: -1,
-            filtered: action.filtered
-                .map( name => state.skills
-                    .find( skill => skill.attributes.name === name))
-                    .filter( skill => !state[action.fieldType].selected
-                    .some( selected => selected.id === skill.id)),
-            value: action.value,
-        });
-        return obj;
-    case SKILL_ROLLOVER:
-        obj[action.fieldType].currentIdx = state[action.fieldType].currentIdx + action.move < -1 ?
-            -1: state[action.fieldType].currentIdx + action.move;
-        return obj;
-    case SELECT_SKILL_FIELD:
-        obj[action.fieldType] = Object.assign({}, state[action.fieldType], {
-            currentIdx: -1,
-            // filtered: obj[action.fieldType].filtered = state[action.fieldType].filtered.filter((skill, i) => i !== state[action.fieldType].currentIdx),
-            selected: [
-                ...state[action.fieldType].selected,
-                state[action.fieldType].filtered.find( (skill, i) => i === state[action.fieldType].currentIdx)
-            ],
-            filtered: [],
-            value: '',
-        });
-        return obj;
-    case DELETE_SKILL_SELECTION:
-        obj[action.fieldType] = Object.assign({}, state[action.fieldType], {
-            currentIdx: -1,
-            selected: state[action.fieldType].selected.filter( (el, i) => i !== action.index),
-            filtered: [],
-            value: '',
-        });
-        return obj;
+        case REQUEST_SCHOOLS:
+            return Object.assign({}, state, {});
+        case RECEIVE_SCHOOLS:
+            return Object.assign({}, state, {});
+        case FAIL_TO_GET_SCHOOLS:
+            return Object.assign({}, state, {
+                isReceiving: false,
+                didInvalidate: true
+            });
+        case REQUEST_SKILLS:
+            return Object.assign({}, state, {
+                isReceiving: true,
+            });
+        case RECEIVE_SKILLS:
+            const sortedSkills = action.allSkills.slice().sort(sortStringHelper);
+            const matchSkills = match => sortedSkills.find( skill => skill.id === match.id);
+            obj.isReceiving = false;
+            obj.receivedAt = Date.now();
+            obj.skills = sortedSkills;
+            obj.skillsPersonHas.selected = action.personSkills.map(matchSkills); 
+            obj.wantsToLearn.selected = action.wantsToLearn.map(matchSkills);
+            obj.wantsToHire.selected = action.wantsToHire.map(matchSkills);
+            return obj;
+        case FAIL_TO_GET_SKILLS:
+            return Object.assign({}, state, {
+                isReceiving: false,
+                didInvalidate: true
+            });
+        case FILTER_SKILLS:
+            // fuzzy string matching only returns a list of names
+            obj[action.fieldType] = Object.assign({}, state[action.fieldType], {
+                currentIdx: -1,
+                filtered: action.filtered
+                    .map( name => state.skills
+                        .find( skill => skill.attributes.name === name))
+                        .filter( skill => !state[action.fieldType].selected
+                        .some( selected => selected.id === skill.id)),
+                value: action.value,
+            });
+            return obj;
+        case SKILL_ROLLOVER:
+            obj[action.fieldType].currentIdx = state[action.fieldType].currentIdx + action.move < -1 ?
+                -1: state[action.fieldType].currentIdx + action.move;
+            return obj;
+        case SELECT_SKILL_FIELD:
+            obj[action.fieldType] = Object.assign({}, state[action.fieldType], {
+                currentIdx: -1,
+                // filtered: obj[action.fieldType].filtered = state[action.fieldType].filtered.filter((skill, i) => i !== state[action.fieldType].currentIdx),
+                selected: [
+                    ...state[action.fieldType].selected,
+                    state[action.fieldType].filtered.find( (skill, i) => i === state[action.fieldType].currentIdx)
+                ],
+                filtered: [],
+                value: '',
+            });
+            return obj;
+        case DELETE_SKILL_SELECTION:
+            obj[action.fieldType] = Object.assign({}, state[action.fieldType], {
+                currentIdx: -1,
+                selected: state[action.fieldType].selected.filter( (el, i) => i !== action.index),
+                filtered: [],
+                value: '',
+            });
+            return obj;
     default:
         return state;
     }

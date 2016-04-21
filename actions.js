@@ -22,6 +22,11 @@ export const FILTER_SKILLS = 'FILTER_SKILLS';
 export const SKILL_ROLLOVER = 'SKILL_ROLLOVER';
 export const SELECT_SKILL_FIELD = 'SELECT_SKILL_FIELD';
 export const DELETE_SKILL_SELECTION = 'DELETE_SKILL_SELECTION';
+export const REQUEST_SCHOOLS = 'REQUEST_SCHOOLS';
+export const FAIL_TO_GET_SCHOOLS = 'FAIL_TO_GET_SCHOOLS';
+export const RECEIVE_SCHOOLS = 'RECEIVE_SCHOOLS';
+
+const BASESTRING = 'https://api.tnyu.org';
 
 export function fetchAll() {
     return (dispatch, getState) => {
@@ -35,6 +40,13 @@ export function fetchAll() {
     }
 }
 
+function validate(str, reg) {
+    // '^[N][1-9]{8}'
+    const re = new RegExp(reg);
+    return re.test(str);
+}
+
+
 export function updateEmail(email) {
     return {
         type: UPDATE_EMAIL,
@@ -43,9 +55,11 @@ export function updateEmail(email) {
 }
 
 export function updateNNumber(nNumber) {
+    const valid = validate(nNumber, '^[N][0-9]{8}');
     return {
         type: UPDATE_NNUMBER,
-        nNumber
+        nNumber,
+        valid
     }
 }
 
@@ -69,6 +83,7 @@ export function postPerson() {
     return (dispatch, getState) => {
         dispatch(sendPerson());
         const nNumber = getState().loginActions.person.attributes.nNumber;
+        const nNumberValid = getState().loginActions.person.attributes.nNumberValid;
         const skillsPersonHas = getState().skillActions['skillsPersonHas'].selected;
         const wantsToLearn = getState().skillActions['wantsToLearn'].selected;
         const wantsToHire = getState().skillActions['wantsToHire'].selected;
@@ -81,7 +96,7 @@ export function postPerson() {
             },
             relationships: {}
         });
-        if (nNumber) if (nNumber.length > 0) person.attributes.nNumber = nNumber;
+        if (nNumber && nNumberValid) if (nNumber.length > 0) person.attributes.nNumber = nNumber;
         if (contact) {
             if (contact.email) person.attributes.contact.email = contact.email;
         }
@@ -95,7 +110,7 @@ export function postPerson() {
                 type: 'PATCH',
                 acccepts: 'application/vnd.api+json',
                 contentType: 'application/vnd.api+json',
-                url: 'https://api.tnyu.org/' + window.API_VERSION + '/people/me',
+                url: `${BASESTRING}/${window.API_VERSION}/people/me`,
                 crossDomain: true,
                 dataType: 'json',
                 data: JSON.stringify(data),
@@ -127,6 +142,7 @@ export function filterSkills(word, fieldType) {
         dispatch(updateFilteredSkills(results, fieldType, word));
     }
 }
+
 
 function selectTypeaheadField(fieldType) {
     return {
@@ -201,15 +217,15 @@ export function failLogin() {
 }
 
 export function shouldFetchFb() {
-    window.location.href = 'https://api.tnyu.org/' + window.API_VERSION + '/auth/facebook?success=' + window.location;
+    window.location.href = `${BASESTRING}/${window.API_VERSION}/auth/facebook?success=${window.location}`;
 }
 
 export function fetchPerson() {
-    return (dispatch) => {
+    return dispatch => {
         dispatch(requestLogin);
-        return $.get('https://api.tnyu.org/' + window.API_VERSION + '/people/me')
-            .done(response => dispatch(receiveLogin(response.data)))
-            .fail(() => dispatch(failLogin()));
+        return $.get(`${BASESTRING}/${window.API_VERSION}/people/me`)
+            .done( response => dispatch(receiveLogin(response.data)))
+            .fail( _ => dispatch(failLogin()));
     }
 }
 
@@ -231,7 +247,7 @@ export function receiveEvents(upcomingEvents, getState) {
 
 function checkIfRsvpd(json, personId) {
     return json.map((event, i) => {
-        if (event.relationships.rsvps.data.filter((person) => person.id === personId).length > 0)
+        if (event.relationships.rsvps.data.filter( person => person.id === personId).length > 0)
             event.rsvp = true;
         return event;
     });
@@ -246,9 +262,9 @@ export function failToGetEvents() {
 export function fetchEvents() {
     return function(dispatch, getState) {
         dispatch(requestEvents);
-        return $.get('https://api.tnyu.org/' + window.API_VERSION + '/events/upcoming-publicly?page%5Blimit%5D=15&sort=startDateTime?')
-            .done(response => dispatch(receiveEvents(response.data, getState)))
-            .fail(() => dispatch(failToGetEvents()));
+        return $.get(`${BASESTRING}/${window.API_VERSION}/events/upcoming-publicly?page%5Blimit%5D=15&sort=startDateTime?`)
+            .done( response => dispatch(receiveEvents(response.data, getState)))
+            .fail( _ => dispatch(failToGetEvents()));
     }
 }
 
@@ -282,11 +298,11 @@ export function failToGetVenue(index) {
 }
 
 export function fetchVenue(id, index) {
-    return (dispatch) => {
+    return dispatch => {
         dispatch(requestVenue);
         return $.get('https://api.tnyu.org/' + window.API_VERSION + '/venues/' + id)
-            .done(response => dispatch(receiveVenue(index, response.data)))
-            .fail(() => dispatch(failToGetVenue(index)));
+            .done( response => dispatch(receiveVenue(index, response.data)))
+            .fail( _ => dispatch(failToGetVenue(index)));
     }
 }
 
@@ -319,10 +335,39 @@ export function fetchSkills() {
         const personSkills =  getState().loginActions.person.relationships.skills.data;
         const wantsToLearn =  getState().loginActions.person.relationships.wantsToLearn.data;
         const wantsToHire =  getState().loginActions.person.relationships.wantsToHire.data;
-        return $.get('https://api.tnyu.org/' + window.API_VERSION + '/skills')
-            .done(response => dispatch(receiveSkills(response.data,
-                personSkills, wantsToLearn, wantsToHire)))
-            .fail(() => dispatch(failToGetSkills()));
+        return $.get(`${BASESTRING}/${window.API_VERSION}/skills`)
+            .done( response => dispatch(
+                receiveSkills(response.data, personSkills, wantsToLearn, wantsToHire)
+                ))
+            .fail( _ => dispatch(failToGetSkills()));
+    }
+}
+
+function requestSchools() {
+    return {
+        type: REQUEST_SCHOOLS
+    }
+}
+
+function failToGetSchools() {
+    return {
+        type: FAIL_TO_GET_SCHOOLS
+    }
+}
+
+function receiveSchools(schools) {
+    return {
+        type: RECEIVE_SCHOOLS,
+        schools
+    }
+}
+
+export function fetchSchools() {
+    return dispatch => {
+        dispatch(requestSchools);
+        return $.get(`${BASESTRING}/${window.API_VERSION}/school-attendances`)
+        .done( response => dispatch(receiveSchools(response.data)))
+        .fail( _ => dispatch(failToGetSchools()));
     }
 }
 
@@ -336,7 +381,7 @@ export function rsvpd(index) {
 export function rsvpToEvents() {
     return (dispatch, getState) => {
         getState().eventActions.events.map((event, i) => {
-            if (event.selected) $.get('https://api.tnyu.org/' + window.API_VERSION + '/events/' + event.id + '/rsvp')
+            if (event.selected) $.get(`${BASESTRING}/${window.API_VERSION}/events/${event.id}/rsvp`)
                 .done(() => dispatch(rsvpd(i)))
                 .fail(() => console.log('RSVP to ' + event.attributes.title + ' failed. Try again later.'));
         })
