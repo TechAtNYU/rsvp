@@ -48,7 +48,7 @@ function Typeahead({ domId, title, value, fieldType, width, list, filtered, sele
   				display: '-moz-flex',
   				display: '-webkit-flex',
 				display: 'flex',
-			  	webkitFlexWrap: 'wrap',
+			  	WebkitFlexWrap: 'wrap',
 			  	flexWrap: 'wrap',
 			}}>
 			{ selected.length > 0 ? <span>Selected: </span>: null}
