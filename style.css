@@ -3,12 +3,6 @@ body {
   color: black;
   background-color: #EEEEEE;
 }
-input[type=checkbox] {
-  margin-top: 20px;
-  margin-left: 25px;
-  width: 30px;
-  height: 20px;
-}
 
 header { 
   margin: 0 auto;
@@ -35,13 +29,23 @@ header p.description, .title {
   padding: 0px 27px;
   margin: 0;
 }
+
+.vcenter{
+    vertical-align: middle;
+}
+
+.loading {
+  text-align: center;
+}
+
 .form {
-    top: 50px;
+    top: 80px;
     width: 100%;
     height: 80%;
     margin-top: 90px;
     position: absolute;
 }
+
 .title {
   float: right;
   color: black;
@@ -56,118 +60,77 @@ header p.description, .title {
 .fb-login button {
   text-align: center;
 }
-.email-section {
-  float: right;
-  width: 30%;
-  margin-right: 2%;
-  top: 100px;
-  height: 250px;
+
+#upcoming {
+  margin-left: 20px;
 }
-.events, .email-section {
-  margin-top: 10px;
-}
-.events {
-  width: 60%;
-  float: left;
-  margin-left: 2%;
-}
-.rsvpDoneText{
-  margin-left: 2%;
-}
-.heading {
-  font-size: 32px;
-  font-weight: bold;
-  padding: 5px;
-}
+
 .list-group-item {
-  height: 100px;
   font-family: "Inconsolata";
   font-size: 20px;
-  padding: 20px;
+  display: flex;
+  justify-content: center;
 }
+
 .when {
   font-size: 16px;
   text-align: center;
   background-color: #d7552d;
-  padding: 6px;
-  width: 20%;
+  float: left;
+/*  max-height: 100px;
+*/  align-self: center;
+  display: flex;
+  justify-content: center;
+}
+
+.date {
+  align-self: center;
+  padding-top: 10px;
 }
 
 .date p {
-  margin: 0;
+  line-height: 15px;
 }
 
 .event-title {
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 60%;
+  align-self: center;
 }
 
 .rsvpd {
-  top: 50%;
-  transform: translateY(-50%);
+  float: right;
+  align-self: center;
 }
 
-.email-field {
-  padding: 3px;
+.rsvp-button {
+  font-size: 20px;
+  width: 150px
 }
 
-.nNumber-field {
-  padding: 3px;
+.rsvp-button-container {
+  margin-top: 20px;
+  margin-right: 40px;
+  margin-bottom: 100px;
 }
 
-.user-stat span {
-  font-size: 18px;
+.profile {
+  margin-bottom: 200px;
 }
 
-.user-stat input {
-  border-radius: 5px;
-  width: 100%;
+#nNumber-notice {
+  margin-left: 20px;
 }
 
-.user-stat-comment {
-  font-size: 16px;
-  padding: 6px;
+#skillsPersonHas {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
-#user-stat-close {
-  position: absolute;
-  padding: 5px;
-  top: 0px;
-  right: 0px;
+#wantsToLearn {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
-#user-stat-close:hover {
-  color: blue;
-}
-
-#user_email {
-  font-style: bold;
-  font-size: 18px;
-  padding: 10px;
-}
-
-.event-list-item {
-  background-color: white;
-  opacity: 1;
-}
-
-.event-list-item span {
-  font-size: 18px;
-}
-
-.event-list-item:hover {
-  background-color: rgb(230,230,250);
-}
-
-.possibleSelection {
-	height: 30px;
-	border: 1px dotted darkgrey;
-	background-color: white;
-	padding: 3px 10px 3px 10px;
-}
-
-.selected {
-	background-color: lightgrey;
+#wantsToHire {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }

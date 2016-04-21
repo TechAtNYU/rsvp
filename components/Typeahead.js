@@ -1,60 +1,90 @@
-var React = require('react');
+import React, { PropTypes } from 'react';
 
-var Typeahead = React.createClass({
-	getInitialState: function() {
-		return {
-			inputVal: '',
-			possibleSelections: [],
-			selectedList: [],
-			indexCurrent: 0
-		}
-	},
-	_handleUp: function() {
-		if (this.state.indexCurrent > 0) this.setState({ indexCurrent: this.state.indexCurrent - 1});
-	},
-	_handleDown: function() {
-		if (this.state.indexCurrent + 1 < this.state.possibleSelections.length) this.setState({ indexCurrent: this.state.indexCurrent + 1});
-	},
-	_handleEnter: function() {
-	
-	},
-	_handleInput: function(e) {
-		e.preventDefault();
-		if (e.keyCode === 38) this._handleUp();
-		else if (e.keyCode === 40) this._handleDown();
-		else if (e.keyCode === 13) this._handleEnter();
-		else {
-			var inputVal = e.target.value;
-			this.setState({inputVal: inputVal});
-			this._getPossibleSelections(inputVal);
-		}
-	},
-	_getPossibleSelections: function(inputVal) {
-		var possibleSelections = (inputVal.length > 0) ? this.props.options.filter((option) => {
-			return option.substring(0, inputVal.length) === inputVal;
-		}): [];
-		this.setState({ possibleSelections: possibleSelections });
-	},
-	render: function() {
-		var possibleSelections = [];
-		var dropDown = (this.state.inputVal.length > 0) ? this.state.possibleSelections.map((selection, i) => {
-			var selected =  (i === this.state.indexCurrent) ? 'selected' : '';
-			return (
-				<div className={"possibleSelection" + selected} key={i}>
-					<span>{selection}</span>
-				</div>
-			)
-		}): null;
+function Typeahead({ domId, title, value, fieldType, width, list, filtered, selected, filterHandler, keyPressHandler, onHover, currentIdx, deleteSelection }) {
+	if (list.length === filtered.length + selected.length) filtered = [];
+    return (
+    	<div className='container'
+    		id={domId}>
+    		<div className='row'>
+	    		<label>{title}</label>
+    		</div>
+    		<div>
+			    <input type='text' style={{
+			    	width: width,
+			    }}
+			    onKeyUp={ e => keyPressHandler(e.which)}
+			    onChange={e => filterHandler(e.target.value)}
+			    defaultValue=''
+			    value={value}
+			    type='text'></input>
+		    { filtered.length > 0 ? (
+		    	<div style={{
+		    		overflowY: 'scroll',
+		    		position: 'absolute',
+		    	}}>
+		    	{filtered.map((el, i) =>
+		    		<div style={{
+		    			border: '1px solid lightgray',
+		    			width: width,
+		    			zIndex: '10',
+		    			position: 'relative',
+		    			textAlign: 'center',
+		    			backgroundColor: currentIdx === i ? 'lightblue': 'white'}}
+		    			key={i}
+		    			onMouseOver={ _ => onHover(i)}
+						onClick={ _ => keyPressHandler(13)}
+		    			>
+		    			{el.attributes.name}
+		    			</div>
+		    		)}
+		    	</div>
+		    	): null}
+		    </div>
+			<div style={{
+				marginTop: '10px',
+				display: '-webkit-box',
+  				display: '-moz-box',
+  				display: '-ms-flexbox',
+  				display: '-moz-flex',
+  				display: '-webkit-flex',
+				display: 'flex',
+			  	WebkitFlexWrap: 'wrap',
+			  	flexWrap: 'wrap',
+			}}>
+			{ selected.length > 0 ? <span>Selected: </span>: null}
+		    { selected.map( (el, i) =>
+		    	<div
+		    		key={i}
+			    	style={{
+			    		border: '1px solid lightgray',
+			    		borderRadius: '10px',
+			    		backgroundColor: 'white',
+			    		width: 'auto',
+				    	height: '28px',
+				    	lineHeight: '28px',
+						margin: '2px 2px 2px 2px',
+			    		paddingRight: '8px',
+			    		paddingLeft: '8px',
+			    		alignSelf: 'center',
+			    	}}
+			    	onClick={ _ => deleteSelection(i)}>
+			    	{el.attributes.name}
+		    	</div>
+		    	)}
+		    </div>
+		</div>
+	)
+}
 
-		return(
-			<div>
-			<input type="text" placeholder="e.g. python" onKeyUp={this._handleInput}></input>
-			<div className="possibleSelectionList">
-			{dropDown}
-			</div>
-			</div>
-		)
-	}
-});
+Typeahead.propTypes = {
+	title: PropTypes.string.isRequired,
+	list: PropTypes.array.isRequired,
+	filtered: PropTypes.array.isRequired,
+	currentIdx: PropTypes.number.isRequired,
+	filterHandler: PropTypes.func.isRequired,
+	keyPressHandler: PropTypes.func.isRequired,
+	deleteSelection: PropTypes.func.isRequired,
+	onHover: PropTypes.func.isRequired,
+}
 
-module.exports = Typeahead;
+export default Typeahead
