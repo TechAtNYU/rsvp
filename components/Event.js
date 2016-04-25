@@ -17,10 +17,15 @@ function Event({onClick, selected, attributes, rsvp, timeObj, relationships, ven
                 <p>{timeObj.hour}</p>
             </div> 
         </div>
-        <div className='col-sm-8 col-xs-5 event-title'>
+        <div className='col-sm-9 col-xs-6 event-title'>
             <span>{attributes.title}</span>
+            <a style={{
+                fontSize: '0.5em',
+                display: 'block',
+                wordWrap: 'break-word'
+            }} target='_blank' href={attributes.rsvpUrl}>{attributes.rsvpUrl}</a>
         </div>
-        <div className='col-sm-2 col-xs-3 rsvpd'>
+        <div className='col-sm-1 col-xs-2 rsvpd'>
             {rsvpField}
         </div>
     </li>
