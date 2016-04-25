@@ -3,16 +3,23 @@ import Event from './Event';
 
 function EventList({events, onEventClick, onRsvpClick}) {
     return <div>
-        <ul className='list-group'>
-            {events.map((event, i) => <Event key={i} {...event} onClick={() => onEventClick(i)}/>
-        )}
-        </ul>
-        <div className='rsvp-button-container'>
-            <div className='row'>
-            <button className='btn rsvp-button pull-right' onClick={onRsvpClick}>RSVP</button>
+        {events.length > 0 ? (
+            <div>
+                <ul className='list-group'>
+                    {events.map((event, i) => <Event key={i} {...event} onClick={() => onEventClick(i)}/>
+                )}
+                </ul>
+                <div className='rsvp-button-container'>
+                    <div className='row'>
+                    <button className='btn rsvp-button pull-right' onClick={onRsvpClick}>RSVP</button>
+                    </div>
+                </div>
             </div>
-        </div>
-
+            ) : (
+            <div className='container'>
+                <h2>There are no upcoming events. Check back next semester.</h2>
+            </div>
+            )}
     </div>
 }
 
