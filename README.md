@@ -17,7 +17,7 @@ npm start
 To compile React code, we use webpack, babel, es2015, and hot-reload (amongst other fancy, new JS libraries). We use Redux to manage the states in a global store.
 
 
-If you have no experience with __React__, go do the Facebook React [Get Started](https://facebook.github.io/react) guide and come back when you do.
+If you have __no experience with React__, go do the Facebook React [Get Started](https://facebook.github.io/react) guide. It is a very good guide that teaches you about the absolute fundamentals.
 
 
 If you have __some experience with React__ but __not with Redux__, then go watch Dan Abramov's (creator of Redux) [Redux videos](https://egghead.io/series/getting-started-with-redux) on Egghead.io. There are ~10 of them. Each is like 2 minutes long. You will be glad that you did.
@@ -35,4 +35,13 @@ In this repo:
 
 ## Suggestions for the future
 - refactor actions, reducers, and reducer constants into individual files
+- add more fields into Profile
+
+
+## Some history if you are interested
+RSVP came about in Fall 2015 along with Check-in to solve the following pain points Tech@NYU was having when we were primarily using Facebook to collect RSVPs/Attending:
+- Facebook RSVPS to physically Attending conversion rate was painfully low
+- Hard to track attendee patterns since we can't tell how many attendees are recurring
+- No way to collect N-numbers for OrgSync, a source of revenue for Tech@NYU
+- Hard for us to email out individual confirmation/feedback/correspondence
 
