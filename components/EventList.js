@@ -17,7 +17,7 @@ function EventList({events, onEventClick, onRsvpClick}) {
             </div>
             ) : (
             <div className='container'>
-                <h2>There are no upcoming events. Check back next semester.</h2>
+                <h2>There are no upcoming events scheduled. Check back later.</h2>
             </div>
             )}
     </div>
