@@ -262,7 +262,7 @@ export function failToGetEvents() {
 export function fetchEvents() {
     return function(dispatch, getState) {
         dispatch(requestEvents);
-        return $.get(`${BASESTRING}/${window.API_VERSION}/events/upcoming-publicly-live?page%5Blimit%5D=15&sort=startDateTime?`)
+        return $.get(`${BASESTRING}/${window.API_VERSION}/events/upcoming-publicly-live?sort=startDateTime?`)
             .done( response => dispatch(receiveEvents(response.data, getState)))
             .fail( _ => dispatch(failToGetEvents()));
     }
