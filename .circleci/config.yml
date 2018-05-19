@@ -1,0 +1,37 @@
+version: 2
+jobs:
+  deploy-staging:
+    docker:
+      # specify the version you desire here
+      - image: circleci/python:2.7.14-stretch-browsers
+
+    steps:
+      - checkout
+      - run: 
+          name: Deploying RSVP [STAGING]
+          command: |
+            git clone git://github.com/cloudnull/turbolift.git
+            cd turbolift
+            sudo python setup.py install
+            if [ -d "$HOME/$CIRCLE_PROJECT_REPONAME/.git" ]; then rm -rf $HOME/$CIRCLE_PROJECT_REPONAME/.git; fi
+            turbolift -u $RAXUSER -a $RAXAPIKEY --os-rax-auth $RAXREGION upload -s $HOME/$CIRCLE_PROJECT_REPONAME -c $STAGECONTAINER;
+  
+  deploy-master:
+    steps:
+      - checkout
+      - run:
+        name: Deploying RSVP [MASTER]
+        command: ./scripts/deploy-ghpages.sh build
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - deploy-staging:
+          filters:
+            branches:
+              only: develop
+      - depploy-master:
+          filters:
+            branches:
+              only: master
