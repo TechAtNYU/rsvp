@@ -23,7 +23,7 @@ jobs:
       - checkout
       - run:
           name: Deploying RSVP [MASTER]
-          command: npm run-script build && ./scripts/deploy-ghpages.sh
+          command: npm install && npm run-script build && ./scripts/deploy-ghpages.sh
 
 workflows:
   version: 2
