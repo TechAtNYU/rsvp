@@ -22,8 +22,8 @@ jobs:
     steps:
       - checkout
       - run:
-        name: Deploying RSVP [MASTER]
-        command: ./scripts/deploy-ghpages.sh build
+          name: Deploying RSVP [MASTER]
+          command: ./scripts/deploy-ghpages.sh build
 
 workflows:
   version: 2
