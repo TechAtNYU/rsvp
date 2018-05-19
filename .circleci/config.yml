@@ -2,7 +2,6 @@ version: 2
 jobs:
   deploy-staging:
     docker:
-      # specify the version you desire here
       - image: circleci/python:2.7.14-stretch-browsers
 
     steps:
@@ -17,6 +16,9 @@ jobs:
             turbolift -u $RAXUSER -a $RAXAPIKEY --os-rax-auth $RAXREGION upload -s $HOME/$CIRCLE_PROJECT_REPONAME -c $STAGECONTAINER;
   
   deploy-master:
+    docker:
+      - image: circleci/node:8.11-stretch-browsers
+
     steps:
       - checkout
       - run:
